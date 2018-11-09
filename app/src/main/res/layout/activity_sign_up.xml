@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/app_background"
+    android:id="@+id/signUpBackgroundLayout"
+    tools:context=".SignUpActivity">
+
+    <TextView
+        android:id="@+id/signUpTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New\nAccount"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="35sp"
+        android:lines="2"
+        android:minLines="2"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="30dp"
+        />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/profilePictureImageView"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:onClick="addImage"
+        app:layout_constraintTop_toBottomOf="@id/signUpTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="19dp"
+        android:src="@drawable/profile_picture_preview"
+        app:civ_border_width="2dp"
+        app:civ_border_color="@android:color/white"
+        />
+
+    <TextView
+        android:id="@+id/profilePictureTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add your profile picture (optional)"
+        android:textColor="@color/colorSignUpProfilePictureText"
+        app:layout_constraintTop_toTopOf="@id/profilePictureImageView"
+        app:layout_constraintBottom_toBottomOf="@id/profilePictureImageView"
+        app:layout_constraintStart_toEndOf="@id/profilePictureImageView"
+        android:layout_marginStart="16sp"
+        />
+
+    <EditText
+        android:id="@+id/nicknameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:textColor="@color/colorSignUpButtonText"
+        android:textColorHint="@color/colorSignUpProfilePictureText"
+        android:backgroundTint="@color/colorSignUpProfilePictureText"
+        android:text=""
+        android:hint="Nickname"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/profilePictureImageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <EditText
+        android:id="@+id/emailEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textEmailAddress"
+        android:hint="E-Mail Address"
+        android:textColorHint="@color/colorSignUpProfilePictureText"
+        android:backgroundTint="@color/colorSignUpProfilePictureText"
+        android:textColor="@color/colorSignUpButtonText"
+        android:text=""
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/nicknameEditText"
+        />
+
+    <EditText
+        android:id="@+id/passwordEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:text=""
+        android:hint="Password"
+        android:textColorHint="@color/colorSignUpProfilePictureText"
+        android:textColor="@color/colorSignUpButtonText"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintTop_toBottomOf="@id/emailEditText"
+        android:backgroundTint="@color/colorSignUpProfilePictureText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <EditText
+        android:id="@+id/repeatPasswordEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:hint="Repeat Password"
+        android:textColorHint="@color/colorSignUpProfilePictureText"
+        android:textColor="@color/colorSignUpButtonText"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintTop_toBottomOf="@id/passwordEditText"
+        android:backgroundTint="@color/colorSignUpProfilePictureText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/errorTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:visibility="visible"
+        android:textColor="@color/colorSignUpError"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/repeatPasswordEditText"
+        android:layout_marginTop="4dp"
+        />
+
+    <Button
+        android:id="@+id/finishedButton"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/round_button"
+        android:text="Sign Up"
+        android:textSize="25sp"
+        android:textColor="@color/colorSignUpButtonText"
+        android:textAllCaps="false"
+        android:onClick="createAccountClicked"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="80dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginEnd="100dp"
+        />
+
+</android.support.constraint.ConstraintLayout>

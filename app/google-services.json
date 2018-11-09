@@ -1,0 +1,317 @@
+{
+  "project_info": {
+    "project_number": "612619116233",
+    "firebase_url": "https://kickertisch-58a8e.firebaseio.com",
+    "project_id": "kickertisch-58a8e",
+    "storage_bucket": "kickertisch-58a8e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:612619116233:android:41c848a4d399ced8",
+        "android_client_info": {
+          "package_name": "com.example.matte.smartkickertisch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "612619116233-91hn9j7gprgdgseeu552rr51rb71h4pr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.matte.firebase_authtest_51",
+            "certificate_hash": "339c39268a5b4f9633ab16d3424b912e1e479940"
+          }
+        },
+        {
+          "client_id": "612619116233-4vov90v4leug0ncb0fokvskpqdat80cv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDur8Bsdk1khish1ExLO_7qj0e_fkcqnY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "612619116233-4vov90v4leug0ncb0fokvskpqdat80cv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "612619116233-i4efep0hn0rj1aeu3p0rft83paich9c3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kickertisch"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:612619116233:android:a9e20c61c26cd347",
+        "android_client_info": {
+          "package_name": "com.example.matte.myapplication_51"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "612619116233-3eave4fbisn6l4hvd3vseg03l4ftgnbh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.matte.myapplication_51",
+            "certificate_hash": "339c39268a5b4f9633ab16d3424b912e1e479940"
+          }
+        },
+        {
+          "client_id": "612619116233-4vov90v4leug0ncb0fokvskpqdat80cv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDur8Bsdk1khish1ExLO_7qj0e_fkcqnY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "612619116233-4vov90v4leug0ncb0fokvskpqdat80cv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "612619116233-i4efep0hn0rj1aeu3p0rft83paich9c3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kickertisch"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:612619116233:android:f8da34771ef2e3aa",
+        "android_client_info": {
+          "package_name": "com.example.matte.studienprojekt_registrierung"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "612619116233-f3vg3rjokhof1b7icimrum82inkk6om6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.matte.studienprojekt_registrierung",
+            "certificate_hash": "339c39268a5b4f9633ab16d3424b912e1e479940"
+          }
+        },
+        {
+          "client_id": "612619116233-4vov90v4leug0ncb0fokvskpqdat80cv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDur8Bsdk1khish1ExLO_7qj0e_fkcqnY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "612619116233-4vov90v4leug0ncb0fokvskpqdat80cv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "612619116233-i4efep0hn0rj1aeu3p0rft83paich9c3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kickertisch"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:612619116233:android:6947854e44ee4dc3",
+        "android_client_info": {
+          "package_name": "com.nodomain.firebasespacken"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "612619116233-nuug0bcun02mqr700ttccv3h965vu5b2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nodomain.firebasespacken",
+            "certificate_hash": "d2236348c8c50f0ab8641165f04b2b1285730224"
+          }
+        },
+        {
+          "client_id": "612619116233-4vov90v4leug0ncb0fokvskpqdat80cv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDur8Bsdk1khish1ExLO_7qj0e_fkcqnY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "612619116233-4vov90v4leug0ncb0fokvskpqdat80cv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "612619116233-i4efep0hn0rj1aeu3p0rft83paich9c3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kickertisch"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:612619116233:android:b15e0204a612e520",
+        "android_client_info": {
+          "package_name": "com.nodomain.mumu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "612619116233-qadnei8g3sevh3tflmhv9g1ivg7hd3rp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nodomain.mumu",
+            "certificate_hash": "d2236348c8c50f0ab8641165f04b2b1285730224"
+          }
+        },
+        {
+          "client_id": "612619116233-4vov90v4leug0ncb0fokvskpqdat80cv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDur8Bsdk1khish1ExLO_7qj0e_fkcqnY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "612619116233-4vov90v4leug0ncb0fokvskpqdat80cv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "612619116233-i4efep0hn0rj1aeu3p0rft83paich9c3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kickertisch"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:612619116233:android:58d014c86ab79253",
+        "android_client_info": {
+          "package_name": "com.nodomain.smart_kicker_20182019"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "612619116233-0ejfpurro6hpchp395685o0a9n9p7dg4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nodomain.smart_kicker_20182019",
+            "certificate_hash": "d2236348c8c50f0ab8641165f04b2b1285730224"
+          }
+        },
+        {
+          "client_id": "612619116233-4vov90v4leug0ncb0fokvskpqdat80cv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDur8Bsdk1khish1ExLO_7qj0e_fkcqnY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "612619116233-4vov90v4leug0ncb0fokvskpqdat80cv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "612619116233-i4efep0hn0rj1aeu3p0rft83paich9c3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kickertisch"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
