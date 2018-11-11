@@ -2,9 +2,15 @@ package com.example.matte.smartkickertisch;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -36,9 +42,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -54,14 +62,88 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private ConstraintLayout signUpConstraintLayout;
     private de.hdodenhof.circleimageview.CircleImageView imageView;
     private Uri profilePictureUri;
+    private static int MAX_IMAGE_DIMENSION = 5000;
+    private Bitmap profilePictureBitmap;
 
-/*    @Override
-    public boolean onKey(View v, int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
-            createAccountClicked(v);
+
+//    check if scaling bitmap is needed, since round imageView already does that
+    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
+                                   boolean filter) {
+        float ratio = Math.min(
+                maxImageSize / realImage.getWidth(),
+                maxImageSize / realImage.getHeight());
+        int width = Math.round(ratio * realImage.getWidth());
+        int height = Math.round(ratio * realImage.getHeight());
+
+        Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width,
+                height, filter);
+        Log.i("newSize:", newBitmap.getByteCount() + "");
+        Log.i("newWidth:", newBitmap.getWidth() + "");
+        Log.i("newHeight:", newBitmap.getHeight() + "");
+        return newBitmap;
+    }
+
+    public static int getOrientation(Context context, Uri photoUri) {
+        /* it's on the external media. */
+        Cursor cursor = context.getContentResolver().query(photoUri,
+                new String[] { MediaStore.Images.ImageColumns.ORIENTATION }, null, null, null);
+
+        if (cursor.getCount() != 1) {
+            return -1;
         }
-        return false;
-    }*/
+
+        cursor.moveToFirst();
+        return cursor.getInt(0);
+    }
+
+    public static Bitmap getCorrectlyOrientedImage(Context context, Uri photoUri) throws IOException {
+        InputStream is = context.getContentResolver().openInputStream(photoUri);
+        BitmapFactory.Options dbo = new BitmapFactory.Options();
+        dbo.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(is, null, dbo);
+        is.close();
+
+        int rotatedWidth, rotatedHeight;
+        int orientation = getOrientation(context, photoUri);
+
+        if (orientation == 90 || orientation == 270) {
+            rotatedWidth = dbo.outHeight;
+            rotatedHeight = dbo.outWidth;
+        } else {
+            rotatedWidth = dbo.outWidth;
+            rotatedHeight = dbo.outHeight;
+        }
+
+        Bitmap srcBitmap;
+        is = context.getContentResolver().openInputStream(photoUri);
+        if (rotatedWidth > MAX_IMAGE_DIMENSION || rotatedHeight > MAX_IMAGE_DIMENSION) {
+            float widthRatio = ((float) rotatedWidth) / ((float) MAX_IMAGE_DIMENSION);
+            float heightRatio = ((float) rotatedHeight) / ((float) MAX_IMAGE_DIMENSION);
+            float maxRatio = Math.max(widthRatio, heightRatio);
+
+            // Create the bitmap from file
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = (int) maxRatio;
+            srcBitmap = BitmapFactory.decodeStream(is, null, options);
+        } else {
+            srcBitmap = BitmapFactory.decodeStream(is);
+        }
+        is.close();
+
+        /*
+         * if the orientation is not 0 (or -1, which means we don't know), we
+         * have to do a rotation.
+         */
+        if (orientation > 0) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(orientation);
+
+            srcBitmap = Bitmap.createBitmap(srcBitmap, 0, 0, srcBitmap.getWidth(),
+                    srcBitmap.getHeight(), matrix, true);
+        }
+
+        return srcBitmap;
+    }
 
     @Override
     public void onClick(View v) {
@@ -103,22 +185,43 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     myRef.child("users").child(mAuth.getCurrentUser().getUid()).child("nickName").setValue(nicknameEditText.getText().toString());
                     Log.i("SIGN_UP", mAuth.getCurrentUser().getUid() + mAuth.getCurrentUser().getUid());
 
-                    mStorageRef.child("users").child(mAuth.getCurrentUser().getUid()).child("profileImage").putFile(profilePictureUri)
-                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                    // Get a URL to the uploaded content
-                                    Intent i = new Intent(SignUpActivity.this, MenuFolderActivity.class);
-                                    startActivity(i);
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception exception) {
-                                    // Handle unsuccessful uploads
-                                    // ...
-                                }
-                            });
+                    // Get the data from an ImageView as bytes
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    profilePictureBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    byte[] data = baos.toByteArray();
+
+                    UploadTask uploadTask = mStorageRef.child("users/" + mAuth.getCurrentUser().getUid() + "/mountains.jpg").putBytes(data);
+                    uploadTask.addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle unsuccessful uploads
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                            // ...
+                            Intent i = new Intent(SignUpActivity.this, MenuFolderActivity.class);
+                            startActivity(i);
+                        }
+                    });
+
+//                    mStorageRef.child("users").child(mAuth.getCurrentUser().getUid()).child("profileImage").putFile(profilePictureUri)
+//                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                                @Override
+//                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                                    // Get a URL to the uploaded content
+//                                    Intent i = new Intent(SignUpActivity.this, MenuFolderActivity.class);
+//                                    startActivity(i);
+//                                }
+//                            })
+//                            .addOnFailureListener(new OnFailureListener() {
+//                                @Override
+//                                public void onFailure(@NonNull Exception exception) {
+//                                    // Handle unsuccessful uploads
+//                                    // ...
+//                                }
+//                            });
                 } else {
                     //error handling
                     try {
@@ -163,8 +266,10 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
             try {
                 profilePictureUri = selectedImage;
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
-                imageView.setImageBitmap(bitmap);
+                profilePictureBitmap = scaleDown(getCorrectlyOrientedImage(this, profilePictureUri),1024,true);
+                imageView.setImageBitmap(profilePictureBitmap);
+                Log.i("WIDTH:", imageView.getWidth() + "");
+                Log.i("HEIGHT:", imageView.getHeight() + "");
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -202,6 +307,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         imageView = findViewById(R.id.profilePictureImageView);
 
         signUpConstraintLayout.setOnClickListener(this);
-//        repeatPasswordEditText.setOnKeyListener(this);
     }
 }
+
