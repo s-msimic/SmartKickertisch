@@ -15,7 +15,8 @@
 
         <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:id="@+id/signUpForegroundConstraintLayout">
 
             <TextView
                     android:id="@+id/signUpTextView"
@@ -148,6 +149,19 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/repeatPasswordEditText"
                     android:layout_marginTop="4dp"/>
+
+            <ProgressBar
+                android:id="@+id/signUpLoadingProgressBar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/repeatPasswordEditText"
+                app:layout_constraintBottom_toTopOf="@id/finishedButton"
+                app:layout_constraintVertical_bias="0.4"
+                android:indeterminate="true" />
 
             <Button
                     android:id="@+id/finishedButton"

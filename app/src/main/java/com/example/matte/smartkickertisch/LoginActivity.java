@@ -10,6 +10,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -29,6 +30,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
     private EditText eMailEditText;
     private EditText passwordEditText;
     private ConstraintLayout loginConstraintLayout;
+    private ProgressBar progressBar;
 
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -59,11 +61,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
 
         signIn();
 
-
-
     }
 
     private void signIn(){
+        progressBar.setVisibility(View.VISIBLE);
 
         mAuth.signInWithEmailAndPassword(eMailEditText.getText().toString(), passwordEditText.getText().toString())
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -125,5 +126,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
 
         passwordEditText.setOnKeyListener(this);
         loginConstraintLayout.setOnClickListener(this);
+        progressBar = findViewById(R.id.loadingProgressBar);
     }
 }

@@ -85,6 +85,19 @@
         app:layout_constraintStart_toEndOf="@+id/textViewRegister"
         app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
 
+    <ProgressBar
+        android:id="@+id/loadingProgressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewRegister"
+        app:layout_constraintBottom_toTopOf="@id/buttonLogin"
+        app:layout_constraintVertical_bias="0.5"
+        android:indeterminate="true" />
+
     <Button
         android:id="@+id/buttonLogin"
         android:layout_width="match_parent"

@@ -1,7 +1,6 @@
 package com.example.matte.smartkickertisch;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,24 +8,19 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -43,8 +37,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -59,11 +51,12 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private EditText passwordEditText;
     private EditText repeatPasswordEditText;
     private TextView errorTextEditText;
-    private ConstraintLayout signUpConstraintLayout;
+    private ConstraintLayout signUpForegroundConstraintLayout;
     private de.hdodenhof.circleimageview.CircleImageView imageView;
     private Uri profilePictureUri;
     private static int MAX_IMAGE_DIMENSION = 5000;
     private Bitmap profilePictureBitmap;
+    private ProgressBar signUpProgressBar;
 
 
 //    check if scaling bitmap is needed, since round imageView already does that
@@ -147,7 +140,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.signUpBackgroundLayout) {
+        if (v.getId() == R.id.signUpForegroundConstraintLayout) {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         }
@@ -173,8 +166,10 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
         errorTextEditText.setText(errorMessage.toString());
 
-        if (errorTextEditText.getText().toString().equals(""))
+        if (errorTextEditText.getText().toString().equals("")) {
+            signUpProgressBar.setVisibility(View.VISIBLE);
             createAccount();
+        }
     }
 
     private void createAccount() {
@@ -185,26 +180,33 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     myRef.child("users").child(mAuth.getCurrentUser().getUid()).child("nickName").setValue(nicknameEditText.getText().toString());
                     Log.i("SIGN_UP", mAuth.getCurrentUser().getUid() + mAuth.getCurrentUser().getUid());
 
-                    // Get the data from an ImageView as bytes
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    profilePictureBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                    byte[] data = baos.toByteArray();
+                    if (profilePictureUri != null) {
+                        // Get the data from an ImageView as bytes
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        profilePictureBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        byte[] data = baos.toByteArray();
 
-                    UploadTask uploadTask = mStorageRef.child("users/" + mAuth.getCurrentUser().getUid() + "/mountains.jpg").putBytes(data);
-                    uploadTask.addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            // Handle unsuccessful uploads
-                        }
-                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                            // ...
-                            Intent i = new Intent(SignUpActivity.this, MenuFolderActivity.class);
-                            startActivity(i);
-                        }
-                    });
+                        UploadTask uploadTask = mStorageRef.child("users/" + mAuth.getCurrentUser().getUid() + "/profileImage.jpg").putBytes(data);
+                        uploadTask.addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                // Handle unsuccessful uploads
+                            }
+                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                                // ...
+                                Intent i = new Intent(SignUpActivity.this, MenuFolderActivity.class);
+                                startActivity(i);
+                                signUpProgressBar.setVisibility(View.INVISIBLE);
+                            }
+                        });
+                    } else {
+                        Intent i = new Intent(SignUpActivity.this, MenuFolderActivity.class);
+                        startActivity(i);
+                        signUpProgressBar.setVisibility(View.INVISIBLE);
+                    }
 
 //                    mStorageRef.child("users").child(mAuth.getCurrentUser().getUid()).child("profileImage").putFile(profilePictureUri)
 //                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -249,6 +251,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 pickImage();
             }
         }
+        else
+            pickImage();
     }
 
     public void pickImage() {
@@ -303,10 +307,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         passwordEditText = findViewById(R.id.passwordEditText);
         repeatPasswordEditText = findViewById(R.id.repeatPasswordEditText);
         errorTextEditText = findViewById(R.id.errorTextView);
-        signUpConstraintLayout = findViewById(R.id.signUpBackgroundLayout);
+        signUpForegroundConstraintLayout = findViewById(R.id.signUpForegroundConstraintLayout);
         imageView = findViewById(R.id.profilePictureImageView);
+        signUpProgressBar = findViewById(R.id.signUpLoadingProgressBar);
 
-        signUpConstraintLayout.setOnClickListener(this);
+        signUpForegroundConstraintLayout.setOnClickListener(this);
     }
 }
 
