@@ -163,6 +163,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             errorMessage.append("Type in your password!\n");
         if (repeatPasswordString.equals("") || !passwordString.equals(repeatPasswordString))
             errorMessage.append("Repeat your password correctly!\n");
+        if (nicknameString.length() > 15)
+            errorMessage.append("Your Nickname can't be longer than 15 characters!");
 
         errorTextEditText.setText(errorMessage.toString());
 
@@ -198,8 +200,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                                 // ...
                                 Intent i = new Intent(SignUpActivity.this, MenuFolderActivity.class);
-                                startActivity(i);
                                 signUpProgressBar.setVisibility(View.INVISIBLE);
+                                startActivity(i);
                             }
                         });
                     } else {

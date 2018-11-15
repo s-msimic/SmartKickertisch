@@ -70,19 +70,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-
+//                        prüfen ob internetverbindung vorhanden(firebase zugriff), sonst notSuccessful trotz richtiger eingaben
                         if(task.isSuccessful()){
                             //no errors
                             Log.i("NUTZERID",mAuth.getCurrentUser().getUid());
 
                             // go to next window
                             Intent i = new Intent(LoginActivity.this, MenuFolderActivity.class);
+                            progressBar.setVisibility(View.INVISIBLE);
                             startActivity(i);
 
                         }
                         else{
                             //error handling
                             try {
+                                progressBar.setVisibility(View.INVISIBLE);
                                 throw task.getException();
                             }catch (FirebaseAuthInvalidCredentialsException e){
                                 Toast.makeText(LoginActivity.this,"Your inputs are false", Toast.LENGTH_SHORT).show();
