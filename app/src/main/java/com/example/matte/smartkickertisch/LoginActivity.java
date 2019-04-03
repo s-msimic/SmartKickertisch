@@ -23,7 +23,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
+// main menu tab bar branch
 public class LoginActivity extends AppCompatActivity implements View.OnKeyListener, View.OnClickListener{
     DatabaseReference ref;
     private FirebaseAuth mAuth;
@@ -115,7 +115,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         eMailEditText = findViewById(R.id.editTextE_Mail);
         passwordEditText = findViewById(R.id.editTextPassword);
         loginConstraintLayout = findViewById(R.id.loginBackgroundLayout);

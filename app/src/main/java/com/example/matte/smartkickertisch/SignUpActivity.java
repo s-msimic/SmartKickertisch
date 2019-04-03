@@ -30,8 +30,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.*;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -39,6 +38,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.function.Function;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -165,6 +165,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             errorMessage.append("Repeat your password correctly!\n");
         if (nicknameString.length() > 15)
             errorMessage.append("Your Nickname can't be longer than 15 characters!");
+        if (nicknameString.contains(" "))
+            errorMessage.append("Your Nickname shouldn't contain any spaces!");
 
         errorTextEditText.setText(errorMessage.toString());
 
