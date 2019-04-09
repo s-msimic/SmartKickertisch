@@ -44,7 +44,6 @@ public class MenuFolderActivity extends Activity {
         menuBottomNavigationView.addSpaceItem(new SpaceItem("GAMES", R.drawable.ic_menu_games_icon));
         menuBottomNavigationView.addSpaceItem(new SpaceItem("STATS", R.drawable.ic_menu_stats_icon));
 
-
         menuBottomNavigationView.setSpaceOnClickListener(new SpaceOnClickListener() {
 
             /**
