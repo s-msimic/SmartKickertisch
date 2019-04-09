@@ -49,6 +49,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
     }
 
     public void onClickLogin(View view){
+        eMailEditText.setText(eMailEditText.getText().toString().trim());
         //if checks
         if(eMailEditText.getText().toString().isEmpty()) {
             Toast.makeText(LoginActivity.this, "Please enter your e-mail address", Toast.LENGTH_SHORT).show();

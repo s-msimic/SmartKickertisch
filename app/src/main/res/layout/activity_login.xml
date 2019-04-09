@@ -64,7 +64,7 @@
         android:layout_marginStart="50dp"
         android:layout_marginTop="30dp"
         android:text="New here?"
-        android:textColor="@android:color/white"
+        android:textColor="@color/colorWhite"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/buttonRegister"

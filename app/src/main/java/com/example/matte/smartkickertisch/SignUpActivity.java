@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -51,101 +52,17 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private EditText passwordEditText;
     private EditText repeatPasswordEditText;
     private TextView errorTextEditText;
-    private ConstraintLayout signUpForegroundConstraintLayout;
     private de.hdodenhof.circleimageview.CircleImageView imageView;
     private Uri profilePictureUri;
-    private static int MAX_IMAGE_DIMENSION = 5000;
     private Bitmap profilePictureBitmap;
     private ProgressBar signUpProgressBar;
 
 
-//    check if scaling bitmap is needed, since round imageView already does that
-    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
-                                   boolean filter) {
-        float ratio = Math.min(
-                maxImageSize / realImage.getWidth(),
-                maxImageSize / realImage.getHeight());
-        int width = Math.round(ratio * realImage.getWidth());
-        int height = Math.round(ratio * realImage.getHeight());
-
-        Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width,
-                height, filter);
-        Log.i("newSize:", newBitmap.getByteCount() + "");
-        Log.i("newWidth:", newBitmap.getWidth() + "");
-        Log.i("newHeight:", newBitmap.getHeight() + "");
-        return newBitmap;
-    }
-
-    public static int getOrientation(Context context, Uri photoUri) {
-        /* it's on the external media. */
-        Cursor cursor = context.getContentResolver().query(photoUri,
-                new String[] { MediaStore.Images.ImageColumns.ORIENTATION }, null, null, null);
-
-        if (cursor.getCount() != 1) {
-            return -1;
-        }
-
-        cursor.moveToFirst();
-        return cursor.getInt(0);
-    }
-
-    public static Bitmap getCorrectlyOrientedImage(Context context, Uri photoUri) throws IOException {
-        InputStream is = context.getContentResolver().openInputStream(photoUri);
-        BitmapFactory.Options dbo = new BitmapFactory.Options();
-        dbo.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(is, null, dbo);
-        is.close();
-
-        int rotatedWidth, rotatedHeight;
-        int orientation = getOrientation(context, photoUri);
-
-        if (orientation == 90 || orientation == 270) {
-            rotatedWidth = dbo.outHeight;
-            rotatedHeight = dbo.outWidth;
-        } else {
-            rotatedWidth = dbo.outWidth;
-            rotatedHeight = dbo.outHeight;
-        }
-
-        Bitmap srcBitmap;
-        is = context.getContentResolver().openInputStream(photoUri);
-        if (rotatedWidth > MAX_IMAGE_DIMENSION || rotatedHeight > MAX_IMAGE_DIMENSION) {
-            float widthRatio = ((float) rotatedWidth) / ((float) MAX_IMAGE_DIMENSION);
-            float heightRatio = ((float) rotatedHeight) / ((float) MAX_IMAGE_DIMENSION);
-            float maxRatio = Math.max(widthRatio, heightRatio);
-
-            // Create the bitmap from file
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = (int) maxRatio;
-            srcBitmap = BitmapFactory.decodeStream(is, null, options);
-        } else {
-            srcBitmap = BitmapFactory.decodeStream(is);
-        }
-        is.close();
-
-        /*
-         * if the orientation is not 0 (or -1, which means we don't know), we
-         * have to do a rotation.
-         */
-        if (orientation > 0) {
-            Matrix matrix = new Matrix();
-            matrix.postRotate(orientation);
-
-            srcBitmap = Bitmap.createBitmap(srcBitmap, 0, 0, srcBitmap.getWidth(),
-                    srcBitmap.getHeight(), matrix, true);
-        }
-
-        return srcBitmap;
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.signUpForegroundConstraintLayout) {
-            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        }
-    }
-
+    /**
+     * Creates account with Nickname, E-Mail and Password. If an error occurs it will be shown in a TextView.
+     * If there are no input errors the account is created in createAccount().
+     * @param view button to create account
+     */
     public void createAccountClicked(View view) {
         String nicknameString = nicknameEditText.getText().toString();
         String eMailString = eMailEditText.getText().toString();
@@ -176,6 +93,10 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    /**
+     * Creates a new entry in Firebase for "Authentication" and "Database" with a unique user id. If there exists a
+     * picture it will be added under "Storage".
+     */
     private void createAccount() {
         mAuth.createUserWithEmailAndPassword(eMailEditText.getText().toString(), passwordEditText.getText().toString()).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
@@ -194,7 +115,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                         uploadTask.addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception exception) {
-                                // Handle unsuccessful uploads
+                                Log.d("Storage", exception.getMessage());
                             }
                         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
@@ -206,6 +127,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                                 startActivity(i);
                             }
                         });
+                        // if there is no picture selected don't upload anything
                     } else {
                         Intent i = new Intent(SignUpActivity.this, MenuFolderActivity.class);
                         startActivity(i);
@@ -233,37 +155,70 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     try {
                         throw task.getException();
                     } catch (FirebaseAuthWeakPasswordException e) {
-                        //error label set text(please enter longer 6 char)
-                        errorTextEditText.setText("Your password must be atleast 6 characters long!");
+                        errorTextEditText.setText(getString(R.string.sign_up_error_password_short));
                     } catch (FirebaseAuthUserCollisionException e) {
                         //mTxtEmail.setError(getString(R.string.error_user_exists));
                         //mTxtEmail.requestFocus();
-                        errorTextEditText.setText("This e-mail address is already taken!");
+                        errorTextEditText.setText(getString(R.string.sign_up_error_email_taken));
                     } catch (Exception e) {
-                        //Log.e(TAG, e.getMessage());
+                        Log.e("Firebase", e.getMessage());
                     }
                 }
             }
         });
     }
 
+    /**
+     * For users with android version 6.0 (Marshmallow, API 23) or greater permission has to be granted to open gallery
+     * if permission is granted (or device doesn't support API 23) pickImage() is called.
+     * @param view round image view
+     */
     public void addImage(View view) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-            } else {
+            }
+            // if the user already gave the permission to use the gallery
+            else {
                 pickImage();
             }
         }
+        // if the users device doesn't support request permission
         else
             pickImage();
     }
 
+    /**
+     * Image can be selected as profile picture.
+     */
     public void pickImage() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, 1);
     }
 
+    /**
+     * If permission is granted to read gallery pickImage() is called.
+     * @param requestCode identifier to assign which activity's result is received (here from gallery)
+     * @param permissions all requested permissions (here READ_EXTERNAL_STORAGE)
+     * @param grantResults is the permission granted (granted == 0, denied == -1)
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                pickImage();
+            }
+        }
+    }
+
+    /**
+     * If picture is selected this is called.
+     * @param requestCode identifier to assign which activity's result is received (here from gallery)
+     * @param resultCode result message (OK == -1, CANCELED == -1)
+     * @param data selected profile picture
+     */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -285,14 +240,114 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    /**
+     * Scales the images
+     * @param realImage image which is supposed to be scaled
+     * @param maxImageSize maximum width or height (maxImageSize x height or height x maxImageSize)
+     * @param filter is the image supposed to be filtered
+     * @return new Image with new size
+     */
+    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
+                                   boolean filter) {
+        float ratio = Math.min(
+                maxImageSize / realImage.getWidth(),
+                maxImageSize / realImage.getHeight());
+        int width = Math.round(ratio * realImage.getWidth());
+        int height = Math.round(ratio * realImage.getHeight());
 
-        if (requestCode == 1) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                pickImage();
-            }
+        Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width,
+                height, filter);
+        Log.i("newSize:", newBitmap.getByteCount() + "");
+        Log.i("newWidth:", newBitmap.getWidth() + "");
+        Log.i("newHeight:", newBitmap.getHeight() + "");
+        return newBitmap;
+    }
+
+    /**
+     * For pictures made with own camera orientation could change. Those picture's orientation has to be corrected.
+     * @param context current context
+     * @param photoUri picture uri
+     * @return correctly orientated picture as Bitmap
+     * @throws IOException inputStream can throw exception
+     */
+    public static Bitmap getCorrectlyOrientedImage(Context context, Uri photoUri) throws IOException {
+        InputStream is = context.getContentResolver().openInputStream(photoUri);
+        BitmapFactory.Options dbo = new BitmapFactory.Options();
+        dbo.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(is, null, dbo);
+        is.close();
+
+        int rotatedWidth, rotatedHeight;
+        int orientation = getOrientation(context, photoUri);
+
+        if (orientation == 90 || orientation == 270) {
+            rotatedWidth = dbo.outHeight;
+            rotatedHeight = dbo.outWidth;
+        } else {
+            rotatedWidth = dbo.outWidth;
+            rotatedHeight = dbo.outHeight;
+        }
+
+        Bitmap srcBitmap;
+        is = context.getContentResolver().openInputStream(photoUri);
+        int MAX_IMAGE_DIMENSION = 5000;
+        if (rotatedWidth > MAX_IMAGE_DIMENSION || rotatedHeight > MAX_IMAGE_DIMENSION) {
+            float widthRatio = ((float) rotatedWidth) / ((float) MAX_IMAGE_DIMENSION);
+            float heightRatio = ((float) rotatedHeight) / ((float) MAX_IMAGE_DIMENSION);
+            float maxRatio = Math.max(widthRatio, heightRatio);
+
+            // Create the bitmap from file
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = (int) maxRatio;
+            srcBitmap = BitmapFactory.decodeStream(is, null, options);
+        } else {
+            srcBitmap = BitmapFactory.decodeStream(is);
+        }
+        is.close();
+
+        /*
+         * if the orientation is not 0 (or -1, which means we don't know), we
+         * have to do a rotation.
+         */
+        if (orientation > 0) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(orientation);
+
+            srcBitmap = Bitmap.createBitmap(srcBitmap, 0, 0, srcBitmap.getWidth(),
+                    srcBitmap.getHeight(), matrix, true);
+        }
+
+        return srcBitmap;
+    }
+
+    /**
+     * Gets the orientation of the picture.
+     * @param context current context
+     * @param photoUri picture uri
+     * @return int of the orientation in degrees (either 0, 90, 180, 270)
+     */
+    public static int getOrientation(Context context, Uri photoUri) {
+        /* it's on the external media. */
+        Cursor cursor = context.getContentResolver().query(photoUri,
+                new String[] { MediaStore.Images.ImageColumns.ORIENTATION }, null, null, null);
+
+        if (cursor.getCount() != 1) {
+            return -1;
+        }
+
+        cursor.moveToFirst();
+        return cursor.getInt(0);
+    }
+
+    /**
+     * Exits keyboard if app background is clicked while using the keyboard.
+     * @param v clicked element
+     */
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.signUpForegroundConstraintLayout) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         }
     }
 
@@ -311,11 +366,12 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         passwordEditText = findViewById(R.id.passwordEditText);
         repeatPasswordEditText = findViewById(R.id.repeatPasswordEditText);
         errorTextEditText = findViewById(R.id.errorTextView);
-        signUpForegroundConstraintLayout = findViewById(R.id.signUpForegroundConstraintLayout);
+        ConstraintLayout signUpForegroundConstraintLayout = findViewById(R.id.signUpForegroundConstraintLayout);
         imageView = findViewById(R.id.profilePictureImageView);
         signUpProgressBar = findViewById(R.id.signUpLoadingProgressBar);
 
         signUpForegroundConstraintLayout.setOnClickListener(this);
+
     }
 }
 
