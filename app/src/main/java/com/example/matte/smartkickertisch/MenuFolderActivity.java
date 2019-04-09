@@ -2,15 +2,7 @@ package com.example.matte.smartkickertisch;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -20,20 +12,11 @@ import com.luseen.spacenavigation.SpaceItem;
 import com.luseen.spacenavigation.SpaceNavigationView;
 import com.luseen.spacenavigation.SpaceOnClickListener;
 
-import java.util.Objects;
-
 public class MenuFolderActivity extends Activity {
 
     private FirebaseAuth mAuth;
-    private Button scn_btn;
     private DatabaseReference myRef;
     private FirebaseDatabase database;
-
-    public void onClickLogOut(View view){
-        mAuth.signOut();
-        Intent i = new Intent(MenuFolderActivity.this,WelcomeActivity.class);
-        startActivity(i);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,20 +26,21 @@ public class MenuFolderActivity extends Activity {
         myRef = database.getReference();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_folder);
-        scn_btn = (Button) findViewById(R.id.scan_btn);
-        final Activity activity = this;
-        scn_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                IntentIntegrator integrator = new IntentIntegrator(activity);
-                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
-                integrator.setPrompt("just scan the kicker side you want to play");
-                integrator.setCameraId(0);
-                integrator.setBeepEnabled(false);
-                integrator.setBarcodeImageEnabled(false);
-                integrator.initiateScan();
-            }
-        });
+
+//        scn_btn = findViewById(R.id.scan_btn);
+//        final Activity activity = this;
+//        scn_btn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                IntentIntegrator integrator = new IntentIntegrator(activity);
+//                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
+//                integrator.setPrompt("just scan the kicker side you want to play");
+//                integrator.setCameraId(0);
+//                integrator.setBeepEnabled(false);
+//                integrator.setBarcodeImageEnabled(false);
+//                integrator.initiateScan();
+//            }
+//        });
 
         final SpaceNavigationView menuBottomNavigationView = findViewById(R.id.menuBottomNavigationView);
         menuBottomNavigationView.initWithSaveInstanceState(savedInstanceState);
@@ -70,8 +54,13 @@ public class MenuFolderActivity extends Activity {
              */
             @Override
             public void onCentreButtonClick() {
-                Toast.makeText(MenuFolderActivity.this, "This opens the QR-Code scanner", Toast.LENGTH_SHORT).show();
-
+                IntentIntegrator integrator = new IntentIntegrator(MenuFolderActivity.this);
+                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
+//                integrator.setPrompt("just scan the kicker side you want to play");
+                integrator.setCameraId(0);
+                integrator.setBeepEnabled(false);
+                integrator.setBarcodeImageEnabled(false);
+                integrator.initiateScan();
             }
 
             /**

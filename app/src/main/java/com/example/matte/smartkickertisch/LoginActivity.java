@@ -32,6 +32,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
     private ConstraintLayout loginConstraintLayout;
     private ProgressBar progressBar;
 
+    /**
+     * While in the "password" text box the "ENTER" button of the keyboard will automatically press the "Login" button and
+     * try to log in the user.
+     * @param v login button
+     * @param keyCode of the enter button in the keyboard (66)
+     * @param event pressed button
+     * @return false if the event isn't handled otherwise the log in process will be started
+     */
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -40,6 +48,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
         return false;
     }
 
+    /**
+     * Exits keyboard if app background is clicked while using the keyboard.
+     * @param v clicked element
+     */
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.loginBackgroundLayout) {
@@ -48,6 +60,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
         }
     }
 
+    /**
+     * Checks if the user typed anything into the requiring text boxes.
+     * @param view button to log in the user and get him to the main menu
+     */
     public void onClickLogin(View view){
         eMailEditText.setText(eMailEditText.getText().toString().trim());
         //if checks
@@ -64,6 +80,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
 
     }
 
+    /**
+     *
+     */
     private void signIn(){
         progressBar.setVisibility(View.VISIBLE);
 
@@ -107,7 +126,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
                 });
     }
 
-    public void onClickRegistrierenSwap(View view){
+    /**
+     * Go to sign up screen.
+     * @param view button to open the sign up screen
+     */
+    public void onClickGoToSignUp(View view){
         Intent i = new Intent(LoginActivity.this, SignUpActivity.class);
         startActivity(i);
     }

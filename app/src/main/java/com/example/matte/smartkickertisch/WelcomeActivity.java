@@ -8,15 +8,21 @@ import android.view.View;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class WelcomeActivity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
 
-    public void onTouchRegister(View view){
+    /**
+     * Opens the sign up screen.
+     * @param view button to open the sign up screen
+     */
+    public void onClickSignUp(View view){
         Intent i = new Intent(WelcomeActivity.this, SignUpActivity.class);
         startActivity(i);
     }
 
+    /**
+     * Opens the log in scree.
+     * @param view button to open the log in screen
+     */
     public void onClickLogin(View view){
-
         Intent i = new Intent(this, LoginActivity.class);
         startActivity(i);
     }
@@ -24,7 +30,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() != null){
             Intent i = new Intent(WelcomeActivity.this, MenuFolderActivity.class);
             startActivity(i);

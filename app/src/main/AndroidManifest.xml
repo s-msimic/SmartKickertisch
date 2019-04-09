@@ -17,8 +17,6 @@
             android:name=".GamesActivity"
             android:screenOrientation="portrait">
         </activity>
-        <activity
-            android:name=".WelcomeActivity"
         <activity android:name=".setupGameActivity"></activity>
         <activity
             android:name=".WelcomeActivity"

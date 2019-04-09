@@ -68,7 +68,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         String eMailString = eMailEditText.getText().toString();
         String passwordString = passwordEditText.getText().toString();
         String repeatPasswordString = repeatPasswordEditText.getText().toString();
-        StringBuilder errorMessage = new StringBuilder();
+        final StringBuilder errorMessage = new StringBuilder();
 
         if (nicknameString.equals(""))
             errorMessage.append("Type in your nickname!\n");
@@ -86,6 +86,36 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             errorMessage.append("Your Nickname shouldn't contain any spaces!");
 
         errorTextEditText.setText(errorMessage.toString());
+
+//        Query query = myRef.orderByChild("nickName").equalTo(nicknameString);
+//        Log.d("query", query.toString());
+//        System.out.println(query.toString());
+//        query.addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                System.out.println(s);
+//            }
+//
+//            @Override
+//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                System.out.println(s + " changed");
+//            }
+//
+//            @Override
+//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
 
         if (errorTextEditText.getText().toString().equals("")) {
             signUpProgressBar.setVisibility(View.VISIBLE);
@@ -247,8 +277,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
      * @param filter is the image supposed to be filtered
      * @return new Image with new size
      */
-    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
-                                   boolean filter) {
+    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize, boolean filter) {
         float ratio = Math.min(
                 maxImageSize / realImage.getWidth(),
                 maxImageSize / realImage.getHeight());
