@@ -13,7 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".WelcomeActivity"
+        <activity android:name=".setupGameActivity"></activity>
+        <activity
+            android:name=".WelcomeActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,13 +23,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MenuFolderActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".SignUpActivity"
+        <activity
+            android:name=".LoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MenuFolderActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SignUpActivity"
             android:screenOrientation="portrait"
-                  android:windowSoftInputMode="adjustResize|stateHidden"
-        />
+            android:windowSoftInputMode="adjustResize|stateHidden" />
     </application>
+
 </manifest>
