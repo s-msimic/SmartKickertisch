@@ -14,7 +14,7 @@
         android:id="@+id/gamesBottomNavigationView"
         android:layout_gravity="bottom"
         app:centre_button_icon="@drawable/ic_menu_football_icon"
-        app:centre_button_color="@color/colorSignUpBackgroundDark"
+        app:centre_button_color="@color/colorSignUpBackgroundBright"
         app:inactive_centre_button_icon_color="@color/colorWhite"
         app:space_item_icon_size="@dimen/space_item_icon_only_size"
         app:active_item_color="@color/colorSignUpButtonText"

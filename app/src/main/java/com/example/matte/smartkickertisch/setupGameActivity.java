@@ -64,7 +64,7 @@ public class setupGameActivity extends AppCompatActivity {
     public void onClickPlayerB1(View view){
         if(deleteMode == true){
 
-            ref.child("lobby").child(getLobbyID()).child("tb").child("o").removeValue();
+            ref.child("lobby").child(getLobbyID()).child("tb").child("d").removeValue();
 
         }
         deleteMode = false;
@@ -74,7 +74,7 @@ public class setupGameActivity extends AppCompatActivity {
     public void onClickPlayerB2(View view){
         if(deleteMode == true){
 
-            ref.child("lobby").child(getLobbyID()).child("tb").child("d").removeValue();
+            ref.child("lobby").child(getLobbyID()).child("tb").child("o").removeValue();
 
         }
         deleteMode = false;
