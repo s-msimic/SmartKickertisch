@@ -3,6 +3,7 @@ package com.example.matte.smartkickertisch;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -17,6 +18,12 @@ public class MenuFolderActivity extends Activity {
     private FirebaseAuth mAuth;
     private DatabaseReference myRef;
     private FirebaseDatabase database;
+
+    public void onClickLogOut(View view) {
+        mAuth.signOut();
+        Intent i = new Intent(MenuFolderActivity.this, WelcomeActivity.class);
+        startActivity(i);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +63,7 @@ public class MenuFolderActivity extends Activity {
             public void onCentreButtonClick() {
                 IntentIntegrator integrator = new IntentIntegrator(MenuFolderActivity.this);
                 integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
-//                integrator.setPrompt("just scan the kicker side you want to play");
+                integrator.setPrompt("");
                 integrator.setCameraId(0);
                 integrator.setBeepEnabled(false);
                 integrator.setBarcodeImageEnabled(false);
@@ -82,7 +89,7 @@ public class MenuFolderActivity extends Activity {
              */
             @Override
             public void onItemReselected(int itemIndex, String itemName) {
-                Toast.makeText(MenuFolderActivity.this, itemIndex + " this is a test " + itemName, Toast.LENGTH_SHORT).show();
+
             }
 
 
@@ -114,7 +121,6 @@ public class MenuFolderActivity extends Activity {
                 // go to new window from here after scan was successful
                 Intent i = new Intent(MenuFolderActivity.this,setupGameActivity.class);
                 startActivity(i);
-                Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
             }
         }
         else {

@@ -50,7 +50,7 @@ public class GamesActivity extends AppCompatActivity {
             public void onCentreButtonClick() {
                 IntentIntegrator integrator = new IntentIntegrator(GamesActivity.this);
                 integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
-//                integrator.setPrompt("just scan the kicker side you want to play");
+                integrator.setPrompt("");
                 integrator.setCameraId(0);
                 integrator.setBeepEnabled(false);
                 integrator.setBarcodeImageEnabled(false);
