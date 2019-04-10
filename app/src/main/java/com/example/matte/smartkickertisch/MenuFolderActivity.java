@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -24,10 +26,11 @@ public class MenuFolderActivity extends Activity {
         startActivity(i);
     }
 
-    public void onClickScan(View view){
-        Intent i = new Intent(MenuFolderActivity.this,setupGameActivity.class);
-        startActivity(i);
-    }
+
+//    public void onClickScan(View view){
+//        Intent i = new Intent(MenuFolderActivity.this,setupGameActivity.class);
+//        startActivity(i);
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +61,28 @@ public class MenuFolderActivity extends Activity {
                 Toast.makeText(this, "You cancelled the scan", Toast.LENGTH_LONG).show();
             }
             else{
+                if(result.getContents().matches("(sk[0-9]+)\\/((tb)|(tr))\\/((o)|(d))")) {
+                    // go to new window from here after scan was successful
 
-                // go to new window from here after scan was successful
-                Intent i = new Intent(MenuFolderActivity.this,setupGameActivity.class);
-                startActivity(i);
-                Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
+                    DatabaseReference ref;
+                    ref = FirebaseDatabase.getInstance().getReference();
+
+
+                    ref.child("lobby").child(result.getContents()).setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+
+
+//                    mAuth.getCurrentUser().getUid();
+
+                    Intent i = new Intent(MenuFolderActivity.this, setupGameActivity.class);
+                    i.putExtra("lobbyPath", result.getContents());
+                    startActivity(i);
+                    Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
+                }
+                else{
+                    // QR Code is none of HAW - Landshut
+                    Toast.makeText(this, "Scanned QR Code is not viable", Toast.LENGTH_LONG).show();
+                }
             }
         }
         else {
