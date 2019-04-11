@@ -9,6 +9,7 @@ public class PlayerButtonTag extends android.support.v7.widget.AppCompatButton {
     String playerUID;
     String playerNickName;
     boolean isHost = false;
+
     public PlayerButtonTag(Context context) {
         super(context);
     }

@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,7 +23,7 @@ import java.util.List;
 
 public class setupGameActivity extends AppCompatActivity {
 
-
+    boolean isWiggling = false;
     boolean deleteMode = false;
     String lobbyPath;
     DatabaseReference ref;
@@ -32,9 +34,30 @@ public class setupGameActivity extends AppCompatActivity {
     PlayerButtonTag bottomLeftButton;
     PlayerButtonTag bottomRightButton;
     List<PlayerButtonTag> players = new ArrayList<>();
+    Button deleteButton;
 
     public void onClickDelete(View view){
-        deleteMode = !deleteMode;
+        if (!isWiggling) {
+            deleteMode = !deleteMode;
+            isWiggling = true;
+            Animation wiggle = AnimationUtils.loadAnimation(this, R.anim.wiggle);
+
+            for (PlayerButtonTag el : players) {
+                el.startAnimation(wiggle);
+            }
+
+            deleteButton.setTextColor(getResources().getColor(R.color.colorSignUpBackgroundDark));
+            deleteButton.setBackground(getDrawable(R.drawable.round_button_yellow));
+        } else {
+            deleteMode = !deleteMode;
+            isWiggling =false;
+
+            for (PlayerButtonTag el : players) {
+                el.clearAnimation();
+            }
+            deleteButton.setTextColor(getResources().getColor(R.color.colorSignUpButtonText));
+            deleteButton.setBackground(getDrawable(R.drawable.round_button));
+        }
     }
 
 
@@ -42,43 +65,23 @@ public class setupGameActivity extends AppCompatActivity {
 
 
     public void onClickPlayerR1(View view){
-        if(deleteMode == true){
-
+        if(deleteMode)
             ref.child("lobby").child(getLobbyID()).child("tr").child("o").removeValue();
-
-        }
-        deleteMode = false;
-
     }
 
     public void onClickPlayerR2(View view){
-        if(deleteMode == true){
-
-
+        if(deleteMode)
             ref.child("lobby").child(getLobbyID()).child("tr").child("d").removeValue();
-        }
-        deleteMode = false;
-
     }
 
     public void onClickPlayerB1(View view){
-        if(deleteMode == true){
-
+        if(deleteMode)
             ref.child("lobby").child(getLobbyID()).child("tb").child("d").removeValue();
-
-        }
-        deleteMode = false;
-
     }
 
     public void onClickPlayerB2(View view){
-        if(deleteMode == true){
-
+        if(deleteMode)
             ref.child("lobby").child(getLobbyID()).child("tb").child("o").removeValue();
-
-        }
-        deleteMode = false;
-
     }
 
     public String myUID(){
@@ -365,6 +368,8 @@ public class setupGameActivity extends AppCompatActivity {
         players.add(topRightButton);
         players.add(bottomLeftButton);
         players.add(bottomRightButton);
+
+        deleteButton = findViewById(R.id.buttonDelete);
 
     }
 }
