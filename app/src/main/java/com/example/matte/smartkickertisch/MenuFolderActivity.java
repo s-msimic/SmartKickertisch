@@ -139,7 +139,7 @@ public class MenuFolderActivity extends Activity {
                     Intent i = new Intent(MenuFolderActivity.this, setupGameActivity.class);
                     i.putExtra("lobbyPath", result.getContents());
                     startActivity(i);
-                    Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
+//                    Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
                 }
                 else{
                     // QR Code is none of HAW - Landshut

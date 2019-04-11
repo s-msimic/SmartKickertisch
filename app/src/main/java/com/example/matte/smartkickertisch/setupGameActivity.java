@@ -366,6 +366,5 @@ public class setupGameActivity extends AppCompatActivity {
         players.add(bottomLeftButton);
         players.add(bottomRightButton);
 
-
     }
 }
