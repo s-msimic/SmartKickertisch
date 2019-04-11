@@ -151,5 +151,5 @@ public class MenuFolderActivity extends Activity {
             super.onActivityResult(requestCode, resultCode, data);
         }
 
-    };
+    }
 }

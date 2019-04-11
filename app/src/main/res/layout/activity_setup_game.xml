@@ -10,22 +10,19 @@
     <Button
         android:id="@+id/buttonDelete"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_height="55dp"
         android:onClick="onClickDelete"
         android:background="@drawable/round_button"
         android:textColor="@color/colorSignUpButtonText"
         android:text="Delete"
+        android:textSize="17sp"
         android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.908"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.014" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintVertical_bias="0.03" />
 
     <ImageView
         android:id="@+id/imageViewSoccerField"
@@ -37,7 +34,7 @@
         android:layout_marginBottom="264dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
@@ -45,11 +42,13 @@
 
     <com.example.matte.smartkickertisch.PlayerButtonTag
         android:id="@+id/buttonR1"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorAccent"
+        android:background="@drawable/border_button_red"
         android:onClick="onClickPlayerR1"
         android:text="player 1"
+        android:textSize="12sp"
+        android:textColor="@color/colorWhite"
         android:textAllCaps="false"
         app:layout_constraintBottom_toTopOf="@id/imageViewSoccerField"
         app:layout_constraintStart_toStartOf="@id/imageViewSoccerField"
@@ -59,10 +58,12 @@
 
     <com.example.matte.smartkickertisch.PlayerButtonTag
         android:id="@+id/buttonR2"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorAccent"
+        android:background="@drawable/border_button_red"
         android:text="player 2"
+        android:textColor="@color/colorWhite"
+        android:textSize="12sp"
         android:textAllCaps="false"
         android:onClick="onClickPlayerR2"
         app:layout_constraintBottom_toTopOf="@id/imageViewSoccerField"
@@ -73,11 +74,13 @@
 
     <com.example.matte.smartkickertisch.PlayerButtonTag
         android:id="@+id/buttonB1"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/zxing_custom_viewfinder_laser"
+        android:background="@drawable/border_button_blue"
+        android:textColor="@color/colorWhite"
         android:onClick="onClickPlayerB1"
         android:text="player 3"
+        android:textSize="12sp"
         android:textAllCaps="false"
         app:layout_constraintTop_toBottomOf="@id/imageViewSoccerField"
         app:layout_constraintStart_toStartOf="@id/imageViewSoccerField"
@@ -87,11 +90,13 @@
 
     <com.example.matte.smartkickertisch.PlayerButtonTag
         android:id="@+id/buttonB2"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/zxing_custom_viewfinder_laser"
+        android:background="@drawable/border_button_blue"
+        android:textColor="@color/colorWhite"
         android:onClick="onClickPlayerB2"
         android:text="player 4"
+        android:textSize="12sp"
         android:textAllCaps="false"
         app:layout_constraintTop_toBottomOf="@id/imageViewSoccerField"
         app:layout_constraintStart_toEndOf="@id/buttonB1"
@@ -101,7 +106,7 @@
 
     <Button
         android:id="@+id/buttonStartGame"
-        android:layout_width="110dp"
+        android:layout_width="120dp"
         android:layout_height="55dp"
         android:background="@drawable/round_button"
         android:textColor="@color/colorSignUpButtonText"

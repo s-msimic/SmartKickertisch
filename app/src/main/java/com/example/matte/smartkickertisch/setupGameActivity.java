@@ -34,7 +34,7 @@ public class setupGameActivity extends AppCompatActivity {
     List<PlayerButtonTag> players = new ArrayList<>();
 
     public void onClickDelete(View view){
-        deleteMode = true;
+        deleteMode = !deleteMode;
     }
 
 
