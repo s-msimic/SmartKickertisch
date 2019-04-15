@@ -23,6 +23,9 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Objects;
+
 // main menu tab bar branch
 public class LoginActivity extends AppCompatActivity implements View.OnKeyListener, View.OnClickListener{
     DatabaseReference ref;
@@ -56,7 +59,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
     public void onClick(View v) {
         if (v.getId() == R.id.loginBackgroundLayout) {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+            try {
+                if (inputMethodManager.isActive())
+                    inputMethodManager.hideSoftInputFromWindow(Objects.requireNonNull(getCurrentFocus()).getWindowToken(), 0);
+            } catch (NullPointerException e) {
+                Log.e("ERROR", "login onclick null", e);
+            }
         }
     }
 

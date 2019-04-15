@@ -39,6 +39,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
@@ -376,7 +377,12 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         if (v.getId() == R.id.signUpForegroundConstraintLayout) {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+            try {
+                if (inputMethodManager.isActive())
+                    inputMethodManager.hideSoftInputFromWindow(Objects.requireNonNull(getCurrentFocus()).getWindowToken(), 0);
+            } catch (NullPointerException e) {
+                Log.e("ERROR", "sign up onclick null", e);
+            }
         }
     }
 
