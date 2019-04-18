@@ -375,14 +375,10 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
      */
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.signUpForegroundConstraintLayout) {
+        if (v.getId() == R.id.loginBackgroundLayout) {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            try {
-                if (inputMethodManager.isActive())
-                    inputMethodManager.hideSoftInputFromWindow(Objects.requireNonNull(getCurrentFocus()).getWindowToken(), 0);
-            } catch (NullPointerException e) {
-                Log.e("ERROR", "sign up onclick null", e);
-            }
+            if (getCurrentFocus() != null)
+                inputMethodManager.hideSoftInputFromWindow(Objects.requireNonNull(getCurrentFocus()).getWindowToken(), 0);
         }
     }
 

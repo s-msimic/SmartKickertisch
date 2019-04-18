@@ -4,13 +4,13 @@
     <string name="welcome_signup_button">Let\'s Go!</string>
     <string name="welcome_login_text">Not the first time here?</string>
     <string name="welcome_login_button">log in</string>
-    <string name="sign_up_headline">New Account</string>
+    <string name="sign_up_headline">New \nAccount</string>
     <string name="sign_up_profile_picture">Add your profile picture (optional)</string>
     <string name="sign_up_nickname_hint">Nickname</string>
     <string name="sign_up_email_hint">E-Mail Address</string>
     <string name="sign_up_password_hint">Password</string>
     <string name="sign_up_repeat_password_hint">Repeat Password</string>
     <string name="sign_up_button">Sign Up</string>
-    <string name="sign_up_error_password_short">Your password must be atleast 6 characters long!</string>
+    <string name="sign_up_error_password_short">Your password must be at least 6 characters long!</string>
     <string name="sign_up_error_email_taken">This e-mail address is already taken!</string>
 </resources>

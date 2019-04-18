@@ -59,12 +59,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
     public void onClick(View v) {
         if (v.getId() == R.id.loginBackgroundLayout) {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            try {
-                if (inputMethodManager.isActive())
-                    inputMethodManager.hideSoftInputFromWindow(Objects.requireNonNull(getCurrentFocus()).getWindowToken(), 0);
-            } catch (NullPointerException e) {
-                Log.e("ERROR", "login onclick null", e);
-            }
+            if (getCurrentFocus() != null)
+                inputMethodManager.hideSoftInputFromWindow(Objects.requireNonNull(getCurrentFocus()).getWindowToken(), 0);
         }
     }
 

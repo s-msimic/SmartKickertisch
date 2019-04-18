@@ -26,11 +26,6 @@ public class MenuFolderActivity extends Activity {
         startActivity(i);
     }
 
-    public void onClickScan(View view){
-        Intent i = new Intent(MenuFolderActivity.this,setupGameActivity.class);
-        startActivity(i);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
