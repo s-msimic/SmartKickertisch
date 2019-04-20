@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
 //                        prüfen ob internetverbindung vorhanden(firebase zugriff), sonst notSuccessful trotz richtiger eingaben
                         if(task.isSuccessful()){
                             //no errors
-                            Log.i("NUTZERID",mAuth.getCurrentUser().getUid());
+                            Log.i("SmartKickerUID",mAuth.getCurrentUser().getUid());
 
                             // go to next window
                             Intent i = new Intent(LoginActivity.this, MenuFolderActivity.class);
@@ -108,6 +108,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
                         else{
                             //error handling
                             try {
+                                Log.e("SmartKickerLoginError", Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
                                 progressBar.setVisibility(View.INVISIBLE);
                                 throw task.getException();
                             }catch (FirebaseAuthInvalidCredentialsException e){

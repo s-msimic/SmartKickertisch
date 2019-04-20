@@ -3,6 +3,7 @@ package com.example.matte.smartkickertisch;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
@@ -14,6 +15,8 @@ import com.luseen.spacenavigation.SpaceItem;
 import com.luseen.spacenavigation.SpaceNavigationView;
 import com.luseen.spacenavigation.SpaceOnClickListener;
 
+import java.util.Objects;
+
 public class MenuFolderActivity extends Activity {
 
     private FirebaseAuth mAuth;
@@ -24,7 +27,9 @@ public class MenuFolderActivity extends Activity {
         mAuth.signOut();
         Intent i = new Intent(MenuFolderActivity.this, WelcomeActivity.class);
         startActivity(i);
+
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +126,7 @@ public class MenuFolderActivity extends Activity {
                 if(result.getContents().matches("(sk[0-9]+)\\/((tb)|(tr))\\/((o)|(d))")) {
                     // go to new window from here after scan was successful
 
+                    Log.i("SmartKickerScanStatus", Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
                     DatabaseReference ref;
                     ref = FirebaseDatabase.getInstance().getReference();
 
@@ -147,4 +153,6 @@ public class MenuFolderActivity extends Activity {
         }
 
     }
+
 }
+

@@ -209,6 +209,7 @@ public class setupGameActivity extends AppCompatActivity {
     ValueEventListener topRightEventListener;
     ValueEventListener bottomLeftEventListener;
     ValueEventListener bottomRightEventListener;
+
     public void playerNameQuery(final DataSnapshot snapshot){
 
         if(topLeftEventListener != null){
