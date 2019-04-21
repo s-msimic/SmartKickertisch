@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
                             Log.i("SmartKickerUID",mAuth.getCurrentUser().getUid());
 
                             // go to next window
-                            Intent i = new Intent(LoginActivity.this, MenuFolderActivity.class);
+                            Intent i = new Intent(LoginActivity.this, GamesActivity.class);
                             progressBar.setVisibility(View.INVISIBLE);
                             startActivity(i);
 

@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -40,7 +39,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
-import java.util.function.Function;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -82,7 +80,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         if (repeatPasswordString.equals("") || !passwordString.equals(repeatPasswordString))
             errorMessage.append("Repeat your password correctly!\n");
         if (nicknameString.length() > 15)
-            errorMessage.append("Your Nickname can't be longer than 15 characters!");
+            errorMessage.append("Your Nickname can't be longer than 15 characters!\n");
         if (nicknameString.contains(" "))
             errorMessage.append("Your Nickname shouldn't contain any spaces!");
 
@@ -153,14 +151,14 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                                 // ...
-                                Intent i = new Intent(SignUpActivity.this, MenuFolderActivity.class);
+                                Intent i = new Intent(SignUpActivity.this, GamesActivity.class);
                                 signUpProgressBar.setVisibility(View.INVISIBLE);
                                 startActivity(i);
                             }
                         });
                         // if there is no picture selected don't upload anything
                     } else {
-                        Intent i = new Intent(SignUpActivity.this, MenuFolderActivity.class);
+                        Intent i = new Intent(SignUpActivity.this, GamesActivity.class);
                         startActivity(i);
                         signUpProgressBar.setVisibility(View.INVISIBLE);
                     }
@@ -170,7 +168,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 //                                @Override
 //                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 //                                    // Get a URL to the uploaded content
-//                                    Intent i = new Intent(SignUpActivity.this, MenuFolderActivity.class);
+//                                    Intent i = new Intent(SignUpActivity.this, GamesActivity.class);
 //                                    startActivity(i);
 //                                }
 //                            })

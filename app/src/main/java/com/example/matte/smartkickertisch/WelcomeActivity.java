@@ -32,7 +32,7 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() != null){
-            Intent i = new Intent(WelcomeActivity.this, MenuFolderActivity.class);
+            Intent i = new Intent(WelcomeActivity.this, GamesActivity.class);
             startActivity(i);
         }
 

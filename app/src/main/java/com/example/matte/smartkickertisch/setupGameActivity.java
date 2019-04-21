@@ -19,7 +19,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.List;
 
 public class setupGameActivity extends AppCompatActivity {
@@ -40,7 +39,7 @@ public class setupGameActivity extends AppCompatActivity {
     public void onClickReturn(View view){
 
         ref.child("lobby").child(lobbyPath).removeValue();
-        Intent i = new Intent(setupGameActivity.this, MenuFolderActivity.class);
+        Intent i = new Intent(setupGameActivity.this, GamesActivity.class);
         startActivity(i);
     }
 
