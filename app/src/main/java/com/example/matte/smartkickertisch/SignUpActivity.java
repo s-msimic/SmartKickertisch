@@ -55,6 +55,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private Uri profilePictureUri;
     private Bitmap profilePictureBitmap;
     private ProgressBar signUpProgressBar;
+    private static final String TAG = "SignUpActivity";
 
 
     /**
@@ -132,7 +133,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     myRef.child("users").child(mAuth.getCurrentUser().getUid()).child("nickName").setValue(nicknameEditText.getText().toString());
-                    Log.i("SIGN_UP", mAuth.getCurrentUser().getUid() + mAuth.getCurrentUser().getUid());
+                    Log.i(TAG, "onComplete: successful UID = " + mAuth.getCurrentUser().getUid());
 
                     if (profilePictureUri != null) {
                         // Get the data from an ImageView as bytes
@@ -190,7 +191,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                         //mTxtEmail.requestFocus();
                         errorTextEditText.setText(getString(R.string.sign_up_error_email_taken));
                     } catch (Exception e) {
-                        Log.e("Firebase", e.getMessage());
+                        Log.e(TAG, "onComplete: sign up error = " + e.getMessage() ,e);
                     }
                 }
             }

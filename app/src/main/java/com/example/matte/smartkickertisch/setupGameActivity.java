@@ -35,6 +35,7 @@ public class setupGameActivity extends AppCompatActivity {
     PlayerButtonTag bottomRightButton;
     List<PlayerButtonTag> players = new ArrayList<>();
     Button deleteButton;
+    private static final String TAG = "setupGameActivity";
 
     public void onClickReturn(View view){
 

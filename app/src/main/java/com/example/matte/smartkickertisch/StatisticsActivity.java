@@ -20,27 +20,6 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
 public class StatisticsActivity extends AppCompatActivity {
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-//        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-//        if(result != null){
-//            if(result.getContents() == null){
-//                Toast.makeText(this, "You cancelled the scan", Toast.LENGTH_LONG).show();
-//            }
-//            else{
-//
-//                // go to new window from here after scan was successful
-//                Intent i = new Intent(StatisticsActivity.this,setupGameActivity.class);
-//                startActivity(i);
-//                Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
-//            }
-//        }
-//        else {
-//            super.onActivityResult(requestCode, resultCode, data);
-//        }
-//
-//    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
@@ -58,14 +37,9 @@ public class StatisticsActivity extends AppCompatActivity {
 
                     ref.child("lobby").child(result.getContents()).setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-
-
-//                    mAuth.getCurrentUser().getUid();
-
                     Intent i = new Intent(StatisticsActivity.this, setupGameActivity.class);
                     i.putExtra("lobbyPath", result.getContents());
                     startActivity(i);
-//                    Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
                 }
                 else{
                     // QR Code is none of HAW - Landshut

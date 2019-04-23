@@ -22,6 +22,7 @@ public class GamesActivity extends Activity {
     private FirebaseAuth mAuth;
     private DatabaseReference myRef;
     private FirebaseDatabase database;
+    private static final String TAG = "GamesActivity";
 
     public void onClickLogOut(View view) {
         mAuth.signOut();
@@ -39,21 +40,6 @@ public class GamesActivity extends Activity {
         myRef = database.getReference();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_folder);
-
-//        scn_btn = findViewById(R.id.scan_btn);
-//        final Activity activity = this;
-//        scn_btn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                IntentIntegrator integrator = new IntentIntegrator(activity);
-//                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
-//                integrator.setPrompt("just scan the kicker side you want to play");
-//                integrator.setCameraId(0);
-//                integrator.setBeepEnabled(false);
-//                integrator.setBarcodeImageEnabled(false);
-//                integrator.initiateScan();
-//            }
-//        });
 
         final SpaceNavigationView menuBottomNavigationView = findViewById(R.id.menuBottomNavigationView);
         menuBottomNavigationView.initWithSaveInstanceState(savedInstanceState);
@@ -126,21 +112,16 @@ public class GamesActivity extends Activity {
                 if(result.getContents().matches("(sk[0-9]+)\\/((tb)|(tr))\\/((o)|(d))")) {
                     // go to new window from here after scan was successful
 
-                    Log.i("SmartKickerScanStatus", Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
                     DatabaseReference ref;
                     ref = FirebaseDatabase.getInstance().getReference();
 
-
+                    Log.i(TAG, "onActivityResult: UID = " + Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
                     ref.child("lobby").child(result.getContents()).setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
-
-
-
-//                    mAuth.getCurrentUser().getUid();
+                    Log.i(TAG, "onActivityResult: Path = " + ref.child("lobby").child(result.getContents()).toString());
 
                     Intent i = new Intent(GamesActivity.this, setupGameActivity.class);
                     i.putExtra("lobbyPath", result.getContents());
                     startActivity(i);
-//                    Toast.makeText(this, result.getContents(), Toast.LENGTH_LONG).show();
                 }
                 else{
                     // QR Code is none of HAW - Landshut

@@ -34,6 +34,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
     private EditText passwordEditText;
     private ConstraintLayout loginConstraintLayout;
     private ProgressBar progressBar;
+    private static final String TAG = "LoginActivity";
 
     /**
      * While in the "password" text box the "ENTER" button of the keyboard will automatically press the "Login" button and
@@ -45,9 +46,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
      */
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
+        if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)
             onClickLogin(v);
-        }
         return false;
     }
 
@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
 //                        prüfen ob internetverbindung vorhanden(firebase zugriff), sonst notSuccessful trotz richtiger eingaben
                         if(task.isSuccessful()){
                             //no errors
-                            Log.i("SmartKickerUID",mAuth.getCurrentUser().getUid());
+                            Log.i(TAG, "onComplete: successful = " + mAuth.getCurrentUser().getUid());
 
                             // go to next window
                             Intent i = new Intent(LoginActivity.this, GamesActivity.class);
@@ -108,7 +108,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
                         else{
                             //error handling
                             try {
-                                Log.e("SmartKickerLoginError", Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
+                                Log.e(TAG, "onComplete: login error = ", task.getException());
                                 progressBar.setVisibility(View.INVISIBLE);
                                 throw task.getException();
                             }catch (FirebaseAuthInvalidCredentialsException e){
