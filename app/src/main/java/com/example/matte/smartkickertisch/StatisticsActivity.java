@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -60,8 +61,8 @@ public class StatisticsActivity extends AppCompatActivity {
 
         SpaceNavigationView menuBottomNavigationView = findViewById(R.id.statisticsBottomNavigationView);
         menuBottomNavigationView.initWithSaveInstanceState(savedInstanceState);
-        menuBottomNavigationView.addSpaceItem(new SpaceItem("GAMES", R.drawable.ic_menu_games_icon));
-        menuBottomNavigationView.addSpaceItem(new SpaceItem("STATS", R.drawable.ic_menu_stats_icon));
+        menuBottomNavigationView.addSpaceItem(new SpaceItem("RANKING", R.drawable.ic_leaderboard_icon));
+        menuBottomNavigationView.addSpaceItem(new SpaceItem("PROFILE", R.drawable.ic_menu_stats_icon));
         menuBottomNavigationView.changeCurrentItem(1);
 
         menuBottomNavigationView.setSpaceOnClickListener(new SpaceOnClickListener() {
@@ -92,8 +93,8 @@ public class StatisticsActivity extends AppCompatActivity {
 
         FragmentPagerItems pages = new FragmentPagerItems(this);
         pages.add(FragmentPagerItem.of(getString(R.string.all_time_stats),AllTimeFragment.class));
-        pages.add(FragmentPagerItem.of(getString(R.string.last_month_stats), LastMonthFragment.class));
-        pages.add(FragmentPagerItem.of(getString(R.string.leaderboard_stats), LeaderboaradFragment.class));
+        pages.add(FragmentPagerItem.of(getString(R.string.match_history), LastMonthFragment.class));
+        pages.add(FragmentPagerItem.of("Settings", LeaderboaradFragment.class));
 
         FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(),pages);

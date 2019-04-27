@@ -3,9 +3,13 @@ package com.example.matte.smartkickertisch;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.card.MaterialCardView;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.*;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -17,19 +21,18 @@ import com.luseen.spacenavigation.SpaceOnClickListener;
 
 import java.util.Objects;
 
-public class GamesActivity extends Activity {
+public class GamesActivity extends Activity implements AdapterView.OnItemSelectedListener {
 
     private FirebaseAuth mAuth;
     private DatabaseReference myRef;
     private FirebaseDatabase database;
     private static final String TAG = "GamesActivity";
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
+    private TextView spinnerTextView;
+    private TextView scoreTextView;
 
-    public void onClickLogOut(View view) {
-        mAuth.signOut();
-        Intent i = new Intent(GamesActivity.this, WelcomeActivity.class);
-        startActivity(i);
-
-    }
 
 
     @Override
@@ -40,11 +43,24 @@ public class GamesActivity extends Activity {
         myRef = database.getReference();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_folder);
+        recyclerView = findViewById(R.id.recyclerView);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new RecyclerViewAdapter();
+        recyclerView.setAdapter(adapter);
+        spinnerTextView = findViewById(R.id.spinnerTextView);
+        scoreTextView = findViewById(R.id.leaderboardScoreTextView);
+
+        Spinner dropdown = findViewById(R.id.spinner);
+        String[] items = new String[]{"ELO", "Wins", "Games"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        dropdown.setAdapter(adapter);
+        dropdown.setOnItemSelectedListener(this);
 
         final SpaceNavigationView menuBottomNavigationView = findViewById(R.id.menuBottomNavigationView);
         menuBottomNavigationView.initWithSaveInstanceState(savedInstanceState);
-        menuBottomNavigationView.addSpaceItem(new SpaceItem("GAMES", R.drawable.ic_menu_games_icon));
-        menuBottomNavigationView.addSpaceItem(new SpaceItem("STATS", R.drawable.ic_menu_stats_icon));
+        menuBottomNavigationView.addSpaceItem(new SpaceItem("RANKING", R.drawable.ic_leaderboard_icon));
+        menuBottomNavigationView.addSpaceItem(new SpaceItem("PROFILE", R.drawable.ic_menu_stats_icon));
 
         menuBottomNavigationView.setSpaceOnClickListener(new SpaceOnClickListener() {
 
@@ -135,5 +151,26 @@ public class GamesActivity extends Activity {
 
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        spinnerTextView.setText("Ranking sorted by: " + parent.getItemAtPosition(position));
+
+//        switch (position) {
+//            case 1:
+//                scoreTextView.setText("ELO Rating: 2000");
+//                break;
+//            case 2:
+//                scoreTextView.setText("Games Won: 50");
+//                break;
+//            case 3:
+//                scoreTextView.setText("Games played: 100");
+//                break;
+//        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        Toast.makeText(this, "Nothing selected", Toast.LENGTH_LONG).show();
+    }
 }
 

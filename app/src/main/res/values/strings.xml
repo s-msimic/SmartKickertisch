@@ -18,4 +18,5 @@
     <string name="all_time_stats">All Time</string>
     <string name="leaderboard_stats">Leaderboard</string>
     <string name="last_month_stats">Last Month</string>
+    <string name="match_history">Match history</string>
 </resources>

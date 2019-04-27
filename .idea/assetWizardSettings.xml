@@ -14,11 +14,11 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="height" value="1024" />
-                            <entry key="outputName" value="ic_menu_football_icon" />
+                            <entry key="height" value="67" />
+                            <entry key="outputName" value="ic_leaderboard_icon" />
                             <entry key="overrideSize" value="true" />
-                            <entry key="sourceFile" value="C:\Users\matte\Pictures\Android Studio Bilder\fussball.svg" />
-                            <entry key="width" value="1024" />
+                            <entry key="sourceFile" value="C:\Users\matte\Pictures\Android Studio Bilder\leaderboard_icon.svg" />
+                            <entry key="width" value="83" />
                           </map>
                         </option>
                       </PersistentState>
