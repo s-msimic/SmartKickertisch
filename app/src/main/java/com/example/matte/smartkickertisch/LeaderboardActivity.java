@@ -3,8 +3,6 @@ package com.example.matte.smartkickertisch;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.card.MaterialCardView;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -21,12 +19,12 @@ import com.luseen.spacenavigation.SpaceOnClickListener;
 
 import java.util.Objects;
 
-public class GamesActivity extends Activity implements AdapterView.OnItemSelectedListener {
+public class LeaderboardActivity extends Activity implements AdapterView.OnItemSelectedListener {
 
     private FirebaseAuth mAuth;
     private DatabaseReference myRef;
     private FirebaseDatabase database;
-    private static final String TAG = "GamesActivity";
+    private static final String TAG = "LeaderboardActivity";
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -42,7 +40,7 @@ public class GamesActivity extends Activity implements AdapterView.OnItemSelecte
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_menu_folder);
+        setContentView(R.layout.activity_leaderboard);
         recyclerView = findViewById(R.id.recyclerView);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -69,7 +67,7 @@ public class GamesActivity extends Activity implements AdapterView.OnItemSelecte
              */
             @Override
             public void onCentreButtonClick() {
-                IntentIntegrator integrator = new IntentIntegrator(GamesActivity.this);
+                IntentIntegrator integrator = new IntentIntegrator(LeaderboardActivity.this);
                 integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
                 integrator.setPrompt("");
                 integrator.setCameraId(0);
@@ -86,7 +84,7 @@ public class GamesActivity extends Activity implements AdapterView.OnItemSelecte
             @Override
             public void onItemClick(int itemIndex, String itemName) {
 
-                Intent i = new Intent(GamesActivity.this, StatisticsActivity.class);
+                Intent i = new Intent(LeaderboardActivity.this, ProfileActivity.class);
                 startActivity(i);
             }
 
@@ -135,7 +133,7 @@ public class GamesActivity extends Activity implements AdapterView.OnItemSelecte
                     ref.child("lobby").child(result.getContents()).setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
                     Log.i(TAG, "onActivityResult: Path = " + ref.child("lobby").child(result.getContents()).toString());
 
-                    Intent i = new Intent(GamesActivity.this, setupGameActivity.class);
+                    Intent i = new Intent(LeaderboardActivity.this, setupGameActivity.class);
                     i.putExtra("lobbyPath", result.getContents());
                     startActivity(i);
                 }

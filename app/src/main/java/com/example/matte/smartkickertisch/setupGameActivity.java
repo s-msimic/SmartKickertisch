@@ -40,7 +40,7 @@ public class setupGameActivity extends AppCompatActivity {
     public void onClickReturn(View view){
 
         ref.child("lobby").child(lobbyPath).removeValue();
-        Intent i = new Intent(setupGameActivity.this, GamesActivity.class);
+        Intent i = new Intent(setupGameActivity.this, LeaderboardActivity.class);
         startActivity(i);
     }
 

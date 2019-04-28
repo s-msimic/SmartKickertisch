@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -19,7 +18,7 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
-public class StatisticsActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -38,7 +37,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
                     ref.child("lobby").child(result.getContents()).setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-                    Intent i = new Intent(StatisticsActivity.this, setupGameActivity.class);
+                    Intent i = new Intent(ProfileActivity.this, setupGameActivity.class);
                     i.putExtra("lobbyPath", result.getContents());
                     startActivity(i);
                 }
@@ -57,7 +56,7 @@ public class StatisticsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_statistics);
+        setContentView(R.layout.activity_profile);
 
         SpaceNavigationView menuBottomNavigationView = findViewById(R.id.statisticsBottomNavigationView);
         menuBottomNavigationView.initWithSaveInstanceState(savedInstanceState);
@@ -69,7 +68,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
             @Override
             public void onCentreButtonClick() {
-                IntentIntegrator integrator = new IntentIntegrator(StatisticsActivity.this);
+                IntentIntegrator integrator = new IntentIntegrator(ProfileActivity.this);
                 integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
                 integrator.setPrompt("");
                 integrator.setCameraId(0);
@@ -80,7 +79,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
             @Override
             public void onItemClick(int itemIndex, String itemName) {
-                Intent i = new Intent(StatisticsActivity.this, GamesActivity.class);
+                Intent i = new Intent(ProfileActivity.this, LeaderboardActivity.class);
                 startActivity(i);
 
             }
@@ -93,8 +92,8 @@ public class StatisticsActivity extends AppCompatActivity {
 
         FragmentPagerItems pages = new FragmentPagerItems(this);
         pages.add(FragmentPagerItem.of(getString(R.string.all_time_stats),AllTimeFragment.class));
-        pages.add(FragmentPagerItem.of(getString(R.string.match_history), LastMonthFragment.class));
-        pages.add(FragmentPagerItem.of("Settings", LeaderboaradFragment.class));
+        pages.add(FragmentPagerItem.of(getString(R.string.match_history), MatchHistoryFragment.class));
+        pages.add(FragmentPagerItem.of("Settings", SettingsFragment.class));
 
         FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(),pages);

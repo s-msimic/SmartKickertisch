@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
                             Log.i(TAG, "onComplete: successful = " + mAuth.getCurrentUser().getUid());
 
                             // go to next window
-                            Intent i = new Intent(LoginActivity.this, GamesActivity.class);
+                            Intent i = new Intent(LoginActivity.this, LeaderboardActivity.class);
                             progressBar.setVisibility(View.INVISIBLE);
                             startActivity(i);
 

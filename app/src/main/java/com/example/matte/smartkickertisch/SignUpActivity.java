@@ -152,14 +152,14 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                                 // ...
-                                Intent i = new Intent(SignUpActivity.this, GamesActivity.class);
+                                Intent i = new Intent(SignUpActivity.this, LeaderboardActivity.class);
                                 signUpProgressBar.setVisibility(View.INVISIBLE);
                                 startActivity(i);
                             }
                         });
                         // if there is no picture selected don't upload anything
                     } else {
-                        Intent i = new Intent(SignUpActivity.this, GamesActivity.class);
+                        Intent i = new Intent(SignUpActivity.this, LeaderboardActivity.class);
                         startActivity(i);
                         signUpProgressBar.setVisibility(View.INVISIBLE);
                     }
@@ -169,7 +169,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 //                                @Override
 //                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 //                                    // Get a URL to the uploaded content
-//                                    Intent i = new Intent(SignUpActivity.this, GamesActivity.class);
+//                                    Intent i = new Intent(SignUpActivity.this, LeaderboardActivity.class);
 //                                    startActivity(i);
 //                                }
 //                            })

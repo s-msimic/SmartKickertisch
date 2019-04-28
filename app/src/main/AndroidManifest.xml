@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".StatisticsActivity"
+            android:name=".ProfileActivity"
             android:screenOrientation="portrait">
         </activity>
         <activity
@@ -34,7 +34,7 @@
             android:name=".LoginActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".GamesActivity"
+            android:name=".LeaderboardActivity"
             android:screenOrientation="portrait"/>
         <activity
             android:name=".SignUpActivity"
