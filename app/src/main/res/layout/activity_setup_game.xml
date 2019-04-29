@@ -8,30 +8,13 @@
     tools:context=".setupGameActivity">
 
     <Button
-        android:id="@+id/buttonReturn"
-        android:layout_width="wrap_content"
-        android:layout_height="55dp"
-        android:onClick="onClickReturn"
-        android:background="@drawable/round_button"
-        android:text="Return"
-        android:textColor="@color/colorSignUpButtonText"
-        android:textSize="17sp"
-        android:textAllCaps="false"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintHorizontal_bias="0.08"
-        app:layout_constraintVertical_bias="0.03" />
-
-    <Button
         android:id="@+id/buttonDelete"
         android:layout_width="wrap_content"
         android:layout_height="55dp"
         android:onClick="onClickDelete"
         android:background="@drawable/round_button"
-        android:text="Delete"
         android:textColor="@color/colorSignUpButtonText"
+        android:text="Delete"
         android:textSize="17sp"
         android:textAllCaps="false"
         app:layout_constraintTop_toTopOf="parent"
@@ -40,6 +23,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.9"
         app:layout_constraintVertical_bias="0.03" />
+
+    <Button
+        android:id="@+id/buttonReturn"
+        android:layout_width="wrap_content"
+        android:layout_height="55dp"
+        android:background="@drawable/round_button"
+        android:onClick="onClickReturn"
+        android:text="Return"
+        android:textAllCaps="false"
+        android:textColor="@color/colorSignUpButtonText"
+        android:textSize="17sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.08"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.029" />
 
 
     <ImageView

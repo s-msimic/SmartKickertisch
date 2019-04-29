@@ -1,5 +1,6 @@
 package com.example.matte.smartkickertisch;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -37,10 +38,30 @@ public class setupGameActivity extends AppCompatActivity {
     Button deleteButton;
     private static final String TAG = "setupGameActivity";
 
+    @Override
+    public void onDestroy() {
+        ref.child("lobby").child(lobbyPath).removeValue();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onStop(){
+        ref.child("lobby").child(lobbyPath).removeValue();
+        finish();
+        super.onStop();
+    }
+
     public void onClickReturn(View view){
 
         ref.child("lobby").child(lobbyPath).removeValue();
         Intent i = new Intent(setupGameActivity.this, LeaderboardActivity.class);
+        startActivity(i);
+    }
+
+    public void onClickStartGame(View view){
+
+        Intent i = new Intent(setupGameActivity.this, ResultActivity.class);
+        i.putExtra("lobbyPath", lobbyPath);
         startActivity(i);
     }
 
