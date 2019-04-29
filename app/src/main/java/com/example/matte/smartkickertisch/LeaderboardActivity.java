@@ -133,7 +133,7 @@ public class LeaderboardActivity extends Activity implements AdapterView.OnItemS
                     ref.child("lobby").child(result.getContents()).setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
                     Log.i(TAG, "onActivityResult: Path = " + ref.child("lobby").child(result.getContents()).toString());
 
-                    Intent i = new Intent(LeaderboardActivity.this, setupGameActivity.class);
+                    Intent i = new Intent(LeaderboardActivity.this, LobbyActivity.class);
                     i.putExtra("lobbyPath", result.getContents());
                     startActivity(i);
                 }

@@ -1,6 +1,5 @@
 package com.example.matte.smartkickertisch;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,7 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class setupGameActivity extends AppCompatActivity {
+public class LobbyActivity extends AppCompatActivity {
 
     boolean isWiggling = false;
     boolean deleteMode = false;
@@ -36,7 +35,7 @@ public class setupGameActivity extends AppCompatActivity {
     PlayerButtonTag bottomRightButton;
     List<PlayerButtonTag> players = new ArrayList<>();
     Button deleteButton;
-    private static final String TAG = "setupGameActivity";
+    private static final String TAG = "LobbyActivity";
 
     @Override
     public void onDestroy() {
@@ -54,13 +53,13 @@ public class setupGameActivity extends AppCompatActivity {
     public void onClickReturn(View view){
 
         ref.child("lobby").child(lobbyPath).removeValue();
-        Intent i = new Intent(setupGameActivity.this, LeaderboardActivity.class);
+        Intent i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
         startActivity(i);
     }
 
     public void onClickStartGame(View view){
 
-        Intent i = new Intent(setupGameActivity.this, ResultActivity.class);
+        Intent i = new Intent(LobbyActivity.this, ResultActivity.class);
         i.putExtra("lobbyPath", lobbyPath);
         startActivity(i);
     }
@@ -382,7 +381,7 @@ public class setupGameActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_setup_game);
+        setContentView(R.layout.activity_lobby);
 
         ref = FirebaseDatabase.getInstance().getReference();
 

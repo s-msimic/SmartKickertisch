@@ -37,7 +37,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                     ref.child("lobby").child(result.getContents()).setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-                    Intent i = new Intent(ProfileActivity.this, setupGameActivity.class);
+                    Intent i = new Intent(ProfileActivity.this, LobbyActivity.class);
                     i.putExtra("lobbyPath", result.getContents());
                     startActivity(i);
                 }

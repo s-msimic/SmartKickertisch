@@ -36,7 +36,7 @@ public class ResultActivity extends AppCompatActivity {
 
         ref.child("lobby").child(lobbyPath).removeValue();
 
-        Intent i = new Intent(ResultActivity.this, MenuFolderActivity.class);
+        Intent i = new Intent(ResultActivity.this, LeaderboardActivity.class);
         startActivity(i);
     }
 

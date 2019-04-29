@@ -45,6 +45,7 @@
         app:centre_button_color="@color/colorSignUpBackgroundBright"
         app:inactive_centre_button_icon_color="@color/colorWhite"
         app:space_item_icon_size="@dimen/space_item_icon_only_size"
+        app:space_background_color="@color/colorSignUpButton"
         app:active_item_color="@color/colorSignUpButtonText"
         app:inactive_item_color="@color/colorWhite"
         android:layout_alignParentBottom="true"
