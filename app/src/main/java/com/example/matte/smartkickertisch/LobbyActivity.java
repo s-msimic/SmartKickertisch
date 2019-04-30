@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -19,15 +20,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LobbyActivity extends AppCompatActivity {
 
     boolean isWiggling = false;
     boolean deleteMode = false;
     String lobbyPath;
+    String deletePath;
     DatabaseReference ref;
     private FirebaseAuth mAuth;
+    private boolean isStopped = false;
 
     PlayerButtonTag topLeftButton;
     PlayerButtonTag topRightButton;
@@ -45,9 +50,15 @@ public class LobbyActivity extends AppCompatActivity {
 
     @Override
     public void onStop(){
-        ref.child("lobby").child(lobbyPath).removeValue();
-        finish();
-        super.onStop();
+
+        if(isStopped == false) {
+            ref.child("lobby").child(lobbyPath).removeValue();
+            finish();
+            super.onStop();
+        }
+        else{
+            super.onStop();
+        }
     }
 
     public void onClickReturn(View view){
@@ -59,8 +70,41 @@ public class LobbyActivity extends AppCompatActivity {
 
     public void onClickStartGame(View view){
 
+        if(topLeftButton.playerUID == null && topRightButton.playerUID == null || bottomLeftButton.playerUID == null && bottomRightButton.playerUID == null){
+            Toast.makeText(LobbyActivity.this, "At both teams must be atleast one player", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+
+        Map<String, Object> valueMap = new HashMap<>();
+        Map<String, Object> dataMap = new HashMap<>();
+        Map<String, Object> playerRedMap = new HashMap<>();
+        Map<String, Object> playerBlueMap = new HashMap<>();
+
+
+        dataMap.put("date",System.currentTimeMillis()/1000L);
+        valueMap.put("data", dataMap);
+        playerRedMap.put("player1", this.topLeftButton.playerUID);
+        playerRedMap.put("player2", this.topRightButton.playerUID);
+        playerRedMap.put("score", 0);
+        playerBlueMap.put("player3", this.bottomLeftButton.playerUID);
+        playerBlueMap.put("player4", this.bottomRightButton.playerUID);
+        playerBlueMap.put("score", 0);
+        valueMap.put("teamRed", playerRedMap);
+        valueMap.put("teamBlue", playerBlueMap);
+
+
+        String autoID = ref.child("games").push().getKey();
+        ref.child("games").child(autoID).updateChildren(valueMap);
+        ref.child("lobby").child(lobbyPath).removeValue();
         Intent i = new Intent(LobbyActivity.this, ResultActivity.class);
         i.putExtra("lobbyPath", lobbyPath);
+        i.putExtra("autoID", autoID);
+        i.putExtra("teamRedPlayerOne", this.topLeftButton.playerUID);
+        i.putExtra("teamRedPlayerTwo", this.topRightButton.playerUID);
+        i.putExtra("teamBluePlayerThree", this.bottomLeftButton.playerUID);
+        i.putExtra("teamBluePlayerFour", this.bottomRightButton.playerUID);
         startActivity(i);
     }
 
@@ -399,6 +443,8 @@ public class LobbyActivity extends AppCompatActivity {
         players.add(bottomRightButton);
 
         deleteButton = findViewById(R.id.buttonDelete);
+        String lobbyPathSplit = lobbyPath;
+        deletePath = lobbyPathSplit.split("/")[0];
 
     }
 }
