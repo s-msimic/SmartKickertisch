@@ -1,7 +1,6 @@
 package com.example.matte.smartkickertisch;
 
 import android.support.annotation.NonNull;
-import android.support.design.card.MaterialCardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,14 +10,24 @@ import android.widget.TextView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
 
     private static final String TAG = "RecyclerViewAdapter";
     private ArrayList<String> positions = new ArrayList<>();
     private ArrayList<CircleImageView> profilePictures = new ArrayList<>();
-    private ArrayList<String> nicknames = new ArrayList<>();
-    private ArrayList<String> scores = new ArrayList<>();
+    private ArrayList<String> nicknames;
+    private ArrayList<String> scores;
+    private int countBestPlayers;
+    private int spinnerPosition;
+
+    RecyclerViewAdapter(ArrayList<String> nicknames, ArrayList<String> scores, int count, int spinnerPosition) {
+        this.nicknames = nicknames;
+        this.scores = scores;
+        countBestPlayers = count;
+        this.spinnerPosition = spinnerPosition;
+    }
 
     @NonNull
     @Override
@@ -31,15 +40,21 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+        Log.i(TAG, "onBindViewHolder: nickname = " + nicknames.toString());
         viewHolder.positionTextView.setText((i + 1) + ".");
         viewHolder.profilePictureImageView.setImageResource(R.drawable.profile_picture_preview);
-        viewHolder.nicknameTextView.setText("Nickname");
-        viewHolder.scoreTextView.setText("Games played: 100");
+        if (scores.size() == countBestPlayers) {
+            viewHolder.nicknameTextView.setText("Nickname: " + nicknames.get(i));
+            if (spinnerPosition == 0 )
+                viewHolder.scoreTextView.setText("Wins: " + scores.get(i));
+            else
+                viewHolder.scoreTextView.setText("Games: " + scores.get(i));
+        }
     }
 
     @Override
     public int getItemCount() {
-        return 20;
+        return countBestPlayers;
     }
 }
 
