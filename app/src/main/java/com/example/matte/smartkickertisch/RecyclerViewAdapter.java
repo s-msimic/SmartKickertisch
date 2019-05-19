@@ -7,26 +7,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
 
     private static final String TAG = "RecyclerViewAdapter";
-    private ArrayList<String> positions = new ArrayList<>();
-    private ArrayList<CircleImageView> profilePictures = new ArrayList<>();
-    private ArrayList<String> nicknames;
-    private ArrayList<String> scores;
     private int countBestPlayers;
     private int spinnerPosition;
+    private HashMap<Integer, User> userList;
 
-    RecyclerViewAdapter(ArrayList<String> nicknames, ArrayList<String> scores, int count, int spinnerPosition) {
-        this.nicknames = nicknames;
-        this.scores = scores;
-        countBestPlayers = count;
-        this.spinnerPosition = spinnerPosition;
+
+    RecyclerViewAdapter(HashMap<Integer, User> myUsers, int playerCount, int spinnerPos) {
+        userList = myUsers;
+        countBestPlayers = playerCount;
+        spinnerPosition = spinnerPos;
     }
 
     @NonNull
@@ -39,16 +36,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        Log.i(TAG, "onBindViewHolder: nickname = " + nicknames.toString());
-        viewHolder.positionTextView.setText((i + 1) + ".");
-        viewHolder.profilePictureImageView.setImageResource(R.drawable.profile_picture_preview);
-        if (scores.size() == countBestPlayers) {
-            viewHolder.nicknameTextView.setText("Nickname: " + nicknames.get(i));
-            if (spinnerPosition == 0 )
-                viewHolder.scoreTextView.setText("Wins: " + scores.get(i));
-            else
-                viewHolder.scoreTextView.setText("Games: " + scores.get(i));
+    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
+        if (userList.size() == countBestPlayers) {
+            viewHolder.positionTextView.setText(userList.get(i + 1).getPosition() + ".");
+            viewHolder.nicknameTextView.setText("Nickname: " + userList.get(i + 1).getNickname());
+            if (spinnerPosition == 0) {
+                viewHolder.scoreTextView.setText("Wins: " + userList.get(i + 1).getWins());
+            } else if (spinnerPosition == 1){
+                viewHolder.scoreTextView.setText("Games: " + userList.get(i + 1).getGames());
+            }
+            if (userList.get(i + 1).getProfilePicture() != null){
+                Log.i(TAG, "onBindViewHolder: user nr." + (i + 1) + " " + Objects.requireNonNull(userList.get(i + 1)).getProfilePicture().toString());
+                Picasso.get().load(userList.get(i + 1).getProfilePicture()).placeholder(R.drawable.profile_picture_preview).into(viewHolder.profilePictureImageView);
+            }
         }
     }
 
@@ -65,7 +65,7 @@ class ViewHolder extends RecyclerView.ViewHolder {
     TextView nicknameTextView;
     TextView scoreTextView;
 
-    public ViewHolder(@NonNull View itemView) {
+    public ViewHolder(@NonNull final View itemView) {
         super(itemView);
         positionTextView = itemView.findViewById(R.id.leaderboardRankingTextView);
         profilePictureImageView = itemView.findViewById(R.id.profilePictureImageViewLeaderboard);

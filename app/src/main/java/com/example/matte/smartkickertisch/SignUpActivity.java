@@ -34,6 +34,7 @@ import com.google.firebase.database.*;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -259,7 +260,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
             try {
                 profilePictureUri = selectedImage;
-                profilePictureBitmap = scaleDown(getCorrectlyOrientedImage(this, profilePictureUri),1024,true);
+                profilePictureBitmap = scaleDown(getCorrectlyOrientedImage(this, profilePictureUri),512,true);
                 imageView.setImageBitmap(profilePictureBitmap);
                 Log.i("WIDTH:", imageView.getWidth() + "");
                 Log.i("HEIGHT:", imageView.getHeight() + "");

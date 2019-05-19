@@ -19,4 +19,7 @@
     <string name="leaderboard_stats">Leaderboard</string>
     <string name="last_month_stats">Last Month</string>
     <string name="match_history">Match history</string>
+    <string name="sort_by_wins">Sort by: WINS</string>
+    <string name="sort_by_games">Sort by: GAMES PLAYED</string>
+    <string name="nickname_recycler">Nickname:</string>
 </resources>
