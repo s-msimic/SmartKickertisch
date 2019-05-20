@@ -6,8 +6,8 @@ import android.widget.Button;
 
 public class PlayerButtonTag extends android.support.v7.widget.AppCompatButton {
 
-    String playerUID;
-    String playerNickName;
+    String playerUID = null;
+    String playerNickName = null;
     boolean isHost = false;
 
     public PlayerButtonTag(Context context) {

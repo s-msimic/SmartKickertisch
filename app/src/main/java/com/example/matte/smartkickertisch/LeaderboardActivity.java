@@ -1,7 +1,9 @@
 package com.example.matte.smartkickertisch;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,6 +32,61 @@ public class LeaderboardActivity extends Activity implements AdapterView.OnItemS
     private RecyclerView.LayoutManager layoutManager;
     private TextView spinnerTextView;
     private TextView scoreTextView;
+    private String lobbyPathForRecentGameCheck;
+    private String fullLobyPath;
+    private String playerR1;
+    private String playerR2;
+    private String playerB3;
+    private String playerB4;
+    private String autoID;
+
+
+    public void checkForRecentGame(){
+//        getSharedPreferences("MyPreferences", 0).edit().clear().apply();
+        Log.i(TAG, "checkForRecentGame: run into checkForRecentGame");
+        SharedPreferences preferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.apply();
+        if(getSharedPreferences("MyPreferences", 0).contains("var1")) {
+//            if(getSharedPreferences("MyPreferences", 0) == null)
+                Log.i(TAG, "checkForRecentGame: nullcheck true");
+            Log.i(TAG, "checkForRecentGame: " + getSharedPreferences("MyPreferences", 0).getString("var1", null));
+            if ((getSharedPreferences("MyPreferences", 0).getString("var1", null).contains("sk"))) {
+                Log.i(TAG, "checkForRecentGame: ran into else checkForRecentGame");
+                Log.i(TAG, "checkForRecentGame: " + getSharedPreferences("MyPreferences", 0).toString());
+                Log.i(TAG, "checkForRecentGame: " + getSharedPreferences("MyPreferences", 0).getString("var1", "nothing there"));
+                lobbyPathForRecentGameCheck = getSharedPreferences("MyPreferences", 0).getString("var1", null);
+                playerR1 = getSharedPreferences("MyPreferences", 0).getString("varPlayerR1", null);
+                playerR2 = getSharedPreferences("MyPreferences",0).getString("varPlayerR2", null);
+                playerB3 = getSharedPreferences("MyPreferences",0).getString("varPlayerB3", null);
+                playerB4 = getSharedPreferences("MyPreferences",0).getString("varPlayerB4", null);
+                autoID = getSharedPreferences("MyPreferences", 0).getString("autoID", null);
+
+            } else {
+                lobbyPathForRecentGameCheck = null;
+
+            }
+        }
+
+    }
+    @Override
+    protected void onStart(){
+
+        checkForRecentGame();
+        Log.i(TAG, "onCreate: "+ lobbyPathForRecentGameCheck);
+        if(!(lobbyPathForRecentGameCheck == null)){
+            fullLobyPath = getSharedPreferences("MyPreferences",0).getString("var2", null);
+            Log.i(TAG, "onStart: " + fullLobyPath +" is the full lobby path");
+            Intent i;
+            i = new Intent(LeaderboardActivity.this, ResultActivity.class);
+            i.putExtra("lobbyPath", fullLobyPath);
+            i.putExtra("autoID", autoID);
+            startActivity(i);
+
+        }
+
+        super.onStart();
+    }
 
 
 
@@ -113,6 +170,7 @@ public class LeaderboardActivity extends Activity implements AdapterView.OnItemS
 //            }
 
 //        });
+
 
     }
     @Override

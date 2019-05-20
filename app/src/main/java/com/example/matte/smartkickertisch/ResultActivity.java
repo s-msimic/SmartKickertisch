@@ -1,8 +1,11 @@
 package com.example.matte.smartkickertisch;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -18,6 +21,7 @@ public class ResultActivity extends AppCompatActivity {
     private EditText editTextResultBlue;
     private String lobbyPath;
     private String autoID;
+    private String fullLobyPath;
     private int editTextNumberResultRed;
     private int editTextNumberResultBlue;
     private String teamRedPlayerOne;
@@ -25,11 +29,45 @@ public class ResultActivity extends AppCompatActivity {
     private String teamBluePlayerThree;
     private String teamBluePlayerFour;
     private String [] lobbyArray = new String[3];
+    public boolean hostActivity = true;
+    private static final String TAG = "ResultActivity";
+    private boolean onStopCalled = true;
+
 
     @Override
-    public void onDestroy() {
-        ref.child("lobby").child(lobbyPath).removeValue();
-        super.onDestroy();
+    public void onStop() {
+        Log.i(TAG, "onStop: went to onStop");
+        // andere Spieler mit denen der Host in Lobby war, müssen aus Lobby auf ihrem Screen zum Hauptmenü zurückkehren.
+        if(onStopCalled == true) {
+            SharedPreferences preferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("var1", lobbyPath);
+            editor.putString("var2", fullLobyPath);
+            editor.putString("varPlayerR1", teamRedPlayerOne);
+            editor.putString("varPlayerR2", teamRedPlayerTwo);
+            editor.putString("varPlayerB3", teamBluePlayerThree);
+            editor.putString("varPlayerB4", teamBluePlayerFour);
+            editor.putString("autoID", autoID);
+            editor.apply();
+            Log.i(TAG, "onDestroy: " + getSharedPreferences("MyPreferences", 0).getString("var1", null));
+            Log.i(TAG, "onDestroy: " + getSharedPreferences("MyPreferences", 0).getString("var2", null));
+
+//        hostActivity = false;
+//        ref.child("lobby").child(lobbyPath).removeValue();
+            super.onStop();
+        }
+        else{
+            super.onStop();
+        }
+    }
+
+    public boolean getHostActivity(){
+        return hostActivity;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(this, "Please enter a result before leaving", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -51,6 +89,7 @@ public class ResultActivity extends AppCompatActivity {
             return;
         }
         //put results in each players firebase data
+        Log.i(TAG, "onClickCommitResult: " + autoID);
         ref.child("games").child(autoID).child("teamBlue").child("score").setValue(editTextNumberResultBlue);
         ref.child("games").child(autoID).child("teamRed").child("score").setValue(editTextNumberResultRed);
         if(teamRedPlayerOne != null) {
@@ -67,8 +106,10 @@ public class ResultActivity extends AppCompatActivity {
         }
         
         //ref.child("lobby").child(lobbyPath).removeValue();
-
+        getSharedPreferences("MyPreferences", 0).edit().clear().apply();
+        Log.i(TAG, "onClickCommitResult: " + getSharedPreferences("MyPreferences", 0).getAll());
         Intent i = new Intent(ResultActivity.this, LeaderboardActivity.class);
+        onStopCalled = false;
         startActivity(i);
     }
 
@@ -85,7 +126,9 @@ public class ResultActivity extends AppCompatActivity {
         teamBluePlayerThree = (String)this.getIntent().getExtras().get("teamBluePlayerThree");
         teamBluePlayerFour = (String)this.getIntent().getExtras().get("teamBluePlayerFour");
 
+        Log.i(TAG, "onCreate: " + lobbyPath);
         ref = FirebaseDatabase.getInstance().getReference();
+        fullLobyPath = lobbyPath;
         lobbyArray = lobbyPath.split("/");
         lobbyPath = lobbyArray[0];
 
