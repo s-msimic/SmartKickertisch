@@ -34,32 +34,32 @@ public class ResultActivity extends AppCompatActivity {
     private boolean onStopCalled = true;
 
 
-    @Override
-    public void onStop() {
-        Log.i(TAG, "onStop: went to onStop");
-        // andere Spieler mit denen der Host in Lobby war, müssen aus Lobby auf ihrem Screen zum Hauptmenü zurückkehren.
-        if(onStopCalled == true) {
-            SharedPreferences preferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putString("var1", lobbyPath);
-            editor.putString("var2", fullLobyPath);
-            editor.putString("varPlayerR1", teamRedPlayerOne);
-            editor.putString("varPlayerR2", teamRedPlayerTwo);
-            editor.putString("varPlayerB3", teamBluePlayerThree);
-            editor.putString("varPlayerB4", teamBluePlayerFour);
-            editor.putString("autoID", autoID);
-            editor.apply();
-            Log.i(TAG, "onDestroy: " + getSharedPreferences("MyPreferences", 0).getString("var1", null));
-            Log.i(TAG, "onDestroy: " + getSharedPreferences("MyPreferences", 0).getString("var2", null));
-
-//        hostActivity = false;
-//        ref.child("lobby").child(lobbyPath).removeValue();
-            super.onStop();
-        }
-        else{
-            super.onStop();
-        }
-    }
+//    @Override
+//    public void onStop() {
+//        Log.i(TAG, "onStop: went to onStop");
+//        // andere Spieler mit denen der Host in Lobby war, müssen aus Lobby auf ihrem Screen zum Hauptmenü zurückkehren.
+//        if(onStopCalled == true) {
+//            SharedPreferences preferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
+//            SharedPreferences.Editor editor = preferences.edit();
+//            editor.putString("var1", lobbyPath);
+//            editor.putString("var2", fullLobyPath);
+//            editor.putString("varPlayerR1", teamRedPlayerOne);
+//            editor.putString("varPlayerR2", teamRedPlayerTwo);
+//            editor.putString("varPlayerB3", teamBluePlayerThree);
+//            editor.putString("varPlayerB4", teamBluePlayerFour);
+//            editor.putString("autoID", autoID);
+//            editor.apply();
+//            Log.i(TAG, "onDestroy: " + getSharedPreferences("MyPreferences", 0).getString("var1", null));
+//            Log.i(TAG, "onDestroy: " + getSharedPreferences("MyPreferences", 0).getString("var2", null));
+//
+////        hostActivity = false;
+////        ref.child("lobby").child(lobbyPath).removeValue();
+//            super.onStop();
+//        }
+//        else{
+//            super.onStop();
+//        }
+//    }
 
     public boolean getHostActivity(){
         return hostActivity;
@@ -113,9 +113,25 @@ public class ResultActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+    public void commitPreferences(){
+        SharedPreferences preferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("var1", lobbyPath);
+        editor.putString("var2", fullLobyPath);
+        editor.putString("varPlayerR1", teamRedPlayerOne);
+        editor.putString("varPlayerR2", teamRedPlayerTwo);
+        editor.putString("varPlayerB3", teamBluePlayerThree);
+        editor.putString("varPlayerB4", teamBluePlayerFour);
+        editor.putString("autoID", autoID);
+        editor.apply();
+        Log.i(TAG, "onDestroy: " + getSharedPreferences("MyPreferences", 0).getString("var1", null));
+        Log.i(TAG, "onDestroy: " + getSharedPreferences("MyPreferences", 0).getString("var2", null));
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate: is called");
         setContentView(R.layout.activity_result);
         editTextResultBlue = findViewById(R.id.editTextResultBlue);
         editTextResultRed = findViewById(R.id.editTextResultRed);
@@ -131,6 +147,7 @@ public class ResultActivity extends AppCompatActivity {
         fullLobyPath = lobbyPath;
         lobbyArray = lobbyPath.split("/");
         lobbyPath = lobbyArray[0];
+        commitPreferences();
 
     }
 }

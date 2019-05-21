@@ -1,6 +1,8 @@
 package com.example.matte.smartkickertisch;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.service.autofill.FieldClassification;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +15,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -83,7 +87,7 @@ public class LobbyActivity extends AppCompatActivity {
     }
 
     public void onClickReturn(View view){
-
+        Log.i(TAG, "onClickReturn: return button was clicked");
         ref.child("lobby").child(lobbyPath).removeValue();
         Intent i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
         startActivity(i);
@@ -120,17 +124,25 @@ public class LobbyActivity extends AppCompatActivity {
         String autoID = ref.child("games").push().getKey();
         ref.child("games").child(autoID).updateChildren(valueMap);
 //        ref.child("lobby").child(lobbyPath).removeValue();
-        Intent i = new Intent(LobbyActivity.this, ResultActivity.class);
+        final Intent i = new Intent(LobbyActivity.this, ResultActivity.class);
         i.putExtra("lobbyPath", lobbyPath);
         i.putExtra("autoID", autoID);
         i.putExtra("teamRedPlayerOne", this.topLeftButton.playerUID);
         i.putExtra("teamRedPlayerTwo", this.topRightButton.playerUID);
         i.putExtra("teamBluePlayerThree", this.bottomLeftButton.playerUID);
         i.putExtra("teamBluePlayerFour", this.bottomRightButton.playerUID);
-        ref.child("lobby").child(getLobbyID()).child("tr").child("o").removeValue();
-        ref.child("lobby").child(getLobbyID()).child("tr").child("d").removeValue();
-        ref.child("lobby").child(getLobbyID()).child("tb").child("o").removeValue();
-        ref.child("lobby").child(getLobbyID()).child("tb").child("d").removeValue();
+        Task t = ref.child("lobby").child(getLobbyID()).removeValue();
+        if(topLeftEventListener != null)
+        ref.removeEventListener(topLeftEventListener);
+        if(topRightEventListener != null)
+        ref.removeEventListener(topRightEventListener);
+        if(bottomLeftEventListener != null)
+        ref.removeEventListener(bottomLeftEventListener);
+        if(bottomRightEventListener != null)
+        ref.removeEventListener(bottomRightEventListener);
+        if(myOwnStatusEventListener != null)
+        ref.removeEventListener(myOwnStatusEventListener);
+        Log.i(TAG, "onClickStartGame: " + i);
         Log.i(TAG, "onClickStartGame: players deleted");
 
         startActivity(i);
@@ -165,23 +177,48 @@ public class LobbyActivity extends AppCompatActivity {
 
 
     public void onClickPlayerR1(View view){
-        if(deleteMode)
+        if(deleteMode) {
+            if(topLeftButton.playerUID.equals(myUID())) {
+                ref.child("lobby").child(getLobbyID()).child("tr").child("o").removeValue();
+                Intent i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
+                startActivity(i);
+            }
             ref.child("lobby").child(getLobbyID()).child("tr").child("o").removeValue();
+        }
+
     }
 
     public void onClickPlayerR2(View view){
-        if(deleteMode)
+        if(deleteMode) {
+            if(topRightButton.playerUID.equals(myUID())) {
+                ref.child("lobby").child(getLobbyID()).child("tr").child("d").removeValue();
+                Intent i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
+                startActivity(i);
+            }
             ref.child("lobby").child(getLobbyID()).child("tr").child("d").removeValue();
+        }
     }
 
     public void onClickPlayerB1(View view){
-        if(deleteMode)
+        if(deleteMode) {
+            if(bottomLeftButton.playerUID.equals(myUID())) {
+                ref.child("lobby").child(getLobbyID()).child("tb").child("d").removeValue();
+                Intent i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
+                startActivity(i);
+            }
             ref.child("lobby").child(getLobbyID()).child("tb").child("d").removeValue();
+        }
     }
 
     public void onClickPlayerB2(View view){
-        if(deleteMode)
+        if(deleteMode) {
+            if(bottomRightButton.playerUID.equals(myUID())) {
+                ref.child("lobby").child(getLobbyID()).child("tb").child("o").removeValue();
+                Intent i = new Intent(LobbyActivity.this,LeaderboardActivity.class);
+                startActivity(i);
+            }
             ref.child("lobby").child(getLobbyID()).child("tb").child("o").removeValue();
+        }
     }
 
     public String myUID(){
@@ -245,22 +282,22 @@ public class LobbyActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                DatabaseReference dbRefr1 = ref.child("lobby").child("tr").child("o");
-                DatabaseReference dbRefr2 = ref.child("lobby").child("tr").child("d");
-                DatabaseReference dbRefb3 = ref.child("lobby").child("tb").child("d");
-                DatabaseReference dbRefb4 = ref.child("lobby").child("tb").child("o");
-                Log.i(TAG, "onChildRemoved: " + dbRefr1);
-
-                FirebaseDatabase newDatabase = FirebaseDatabase.getInstance();
-
-                Log.i(TAG, "onChildRemoved: " + dataSnapshot.child(getLobbyID()));
-                playerNameQuery(dataSnapshot);
-                Log.i(TAG, "onChildRemoved: child was removed " + ref.child("lobby").child("tr").child("o"));
-                if(dbRefr1.equals(ref.child("lobby").child("tr").child("o")) || dbRefr2.equals(ref.child("lobby").child("tr").child("d"))
-                || dbRefb3.equals(ref.child("lobby").child("tb").child("d")) || dbRefb4.equals(ref.child("lobby").child("tb").child("d"))) {
-                    Intent i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
-                    startActivity(i);
-                }
+//                DatabaseReference dbRefr1 = ref.child("lobby").child("tr").child("o");
+//                DatabaseReference dbRefr2 = ref.child("lobby").child("tr").child("d");
+//                DatabaseReference dbRefb3 = ref.child("lobby").child("tb").child("d");
+//                DatabaseReference dbRefb4 = ref.child("lobby").child("tb").child("o");
+//                Log.i(TAG, "onChildRemoved: " + dbRefr1);
+//
+//                FirebaseDatabase newDatabase = FirebaseDatabase.getInstance();
+//
+//                Log.i(TAG, "onChildRemoved: " + dataSnapshot.child(getLobbyID()));
+                  playerNameQuery(dataSnapshot);
+//                Log.i(TAG, "onChildRemoved: child was removed " + ref.child("lobby").child("tr").child("o"));
+//                if(dbRefr1.equals(ref.child("lobby").child("tr").child("o")) || dbRefr2.equals(ref.child("lobby").child("tr").child("d"))
+//                || dbRefb3.equals(ref.child("lobby").child("tb").child("d")) || dbRefb4.equals(ref.child("lobby").child("tb").child("d"))) {
+//                    Intent i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
+//                    startActivity(i);
+//                }
 
 
             }
@@ -353,7 +390,7 @@ public class LobbyActivity extends AppCompatActivity {
                         topLeftButton.playerNickName = dataSnapshot.child("nickName").getValue().toString();
                         topLeftButton.isHost = true;
                         topRightButton.isHost = false;
-                        Log.i(TAG, "onDataChange: " + topRightButton.isHost);
+                        Log.i(TAG, "onDataChange: trOffense host: " + topRightButton.isHost);
 
                         // new code CHECK
 //                        if(hostActivity == false){
@@ -597,6 +634,7 @@ public class LobbyActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
 
