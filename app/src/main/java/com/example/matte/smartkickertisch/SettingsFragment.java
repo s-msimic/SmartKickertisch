@@ -58,8 +58,6 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
-//        cardView = view.findViewById(R.id.leaderboardCardView);
-//        cardView.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.cardview_round_corners_stroke));
         logoutButton = view.findViewById(R.id.logoutSettingsButton);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
