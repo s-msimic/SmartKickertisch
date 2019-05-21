@@ -1,8 +1,10 @@
 package com.example.matte.smartkickertisch;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,6 +43,64 @@ public class LeaderboardActivity extends Activity {
     private HashMap<Integer, User> userList = new HashMap<>();
     private ProgressBar progressBar;
     private SpaceNavigationView menuBottomNavigationView;
+    private TextView scoreTextView;
+    private String lobbyPathForRecentGameCheck;
+    private String fullLobyPath;
+    private String playerR1;
+    private String playerR2;
+    private String playerB3;
+    private String playerB4;
+    private String autoID;
+
+
+    public void checkForRecentGame(){
+//        getSharedPreferences("MyPreferences", 0).edit().clear().apply();
+        Log.i(TAG, "checkForRecentGame: run into checkForRecentGame");
+        SharedPreferences preferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.apply();
+        if(getSharedPreferences("MyPreferences", 0).contains("var1")) {
+//            if(getSharedPreferences("MyPreferences", 0) == null)
+                Log.i(TAG, "checkForRecentGame: nullcheck true");
+            Log.i(TAG, "checkForRecentGame: " + getSharedPreferences("MyPreferences", 0).getString("var1", null));
+            if ((getSharedPreferences("MyPreferences", 0).getString("var1", null).contains("sk"))) {
+                Log.i(TAG, "checkForRecentGame: ran into else checkForRecentGame");
+                Log.i(TAG, "checkForRecentGame: " + getSharedPreferences("MyPreferences", 0).toString());
+                Log.i(TAG, "checkForRecentGame: " + getSharedPreferences("MyPreferences", 0).getString("var1", "nothing there"));
+                lobbyPathForRecentGameCheck = getSharedPreferences("MyPreferences", 0).getString("var1", null);
+                playerR1 = getSharedPreferences("MyPreferences", 0).getString("varPlayerR1", null);
+                playerR2 = getSharedPreferences("MyPreferences",0).getString("varPlayerR2", null);
+                playerB3 = getSharedPreferences("MyPreferences",0).getString("varPlayerB3", null);
+                playerB4 = getSharedPreferences("MyPreferences",0).getString("varPlayerB4", null);
+                autoID = getSharedPreferences("MyPreferences", 0).getString("autoID", null);
+
+            } else {
+                lobbyPathForRecentGameCheck = null;
+
+            }
+        }
+
+    }
+    @Override
+    protected void onStart(){
+
+        checkForRecentGame();
+        Log.i(TAG, "onCreate: "+ lobbyPathForRecentGameCheck);
+        if(!(lobbyPathForRecentGameCheck == null)){
+            fullLobyPath = getSharedPreferences("MyPreferences",0).getString("var2", null);
+            Log.i(TAG, "onStart: " + fullLobyPath +" is the full lobby path");
+            Intent i;
+            i = new Intent(LeaderboardActivity.this, ResultActivity.class);
+            i.putExtra("lobbyPath", fullLobyPath);
+            i.putExtra("autoID", autoID);
+            startActivity(i);
+
+        }
+
+        super.onStart();
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,13 +248,14 @@ public class LeaderboardActivity extends Activity {
     };
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (result != null) {
-            if (result.getContents() == null) {
+        if(result != null){
+            if(result.getContents() == null){
                 Toast.makeText(this, "You cancelled the scan", Toast.LENGTH_LONG).show();
-            } else {
-                if (result.getContents().matches("(sk[0-9]+)\\/((tb)|(tr))\\/((o)|(d))")) {
+            }
+            else{
+                if(result.getContents().matches("(sk[0-9]+)\\/((tb)|(tr))\\/((o)|(d))")) {
                     // go to new window from here after scan was successful
 
                     DatabaseReference ref;
@@ -207,12 +268,14 @@ public class LeaderboardActivity extends Activity {
                     Intent i = new Intent(LeaderboardActivity.this, LobbyActivity.class);
                     i.putExtra("lobbyPath", result.getContents());
                     startActivity(i);
-                } else {
+                }
+                else{
                     // QR Code is none of HAW - Landshut
                     Toast.makeText(this, "Scanned QR Code is not viable", Toast.LENGTH_LONG).show();
                 }
             }
-        } else {
+        }
+        else {
             super.onActivityResult(requestCode, resultCode, data);
         }
 
