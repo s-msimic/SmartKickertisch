@@ -81,7 +81,6 @@ public class ProfileActivity extends AppCompatActivity {
             public void onItemClick(int itemIndex, String itemName) {
                 Intent i = new Intent(ProfileActivity.this, LeaderboardActivity.class);
                 startActivity(i);
-
             }
 
             @Override
@@ -93,7 +92,7 @@ public class ProfileActivity extends AppCompatActivity {
         FragmentPagerItems pages = new FragmentPagerItems(this);
         pages.add(FragmentPagerItem.of(getString(R.string.all_time_stats),AllTimeFragment.class));
         pages.add(FragmentPagerItem.of(getString(R.string.match_history), MatchHistoryFragment.class));
-        pages.add(FragmentPagerItem.of("Settings", SettingsFragment.class));
+        pages.add(FragmentPagerItem.of(getString(R.string.settings), SettingsFragment.class));
 
         FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(),pages);

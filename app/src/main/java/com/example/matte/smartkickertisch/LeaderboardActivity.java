@@ -25,7 +25,7 @@ import com.luseen.spacenavigation.SpaceOnClickListener;
 
 import java.util.*;
 
-public class LeaderboardActivity extends Activity implements AdapterView.OnItemSelectedListener {
+public class LeaderboardActivity extends Activity {
 
     public static String WINS = "data/winCounter";
     public static String GAMES = "data/playedGames";
@@ -37,7 +37,7 @@ public class LeaderboardActivity extends Activity implements AdapterView.OnItemS
     private RecyclerView.LayoutManager layoutManager;
     private TextView spinnerTextView;
     private Spinner dropdown;
-    private int countBestPlayers = 10;
+    private int countBestPlayers = 15;
     private HashMap<Integer, User> userList = new HashMap<>();
     private ProgressBar progressBar;
     private SpaceNavigationView menuBottomNavigationView;
@@ -110,7 +110,7 @@ public class LeaderboardActivity extends Activity implements AdapterView.OnItemS
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             Log.i(TAG, "onItemSelected OnItemSelectedListener: posi " + position);
 
-            switch (position){
+            switch (position) {
                 case 0:
                     Query wins = FirebaseDatabase.getInstance().getReference("users")
                             .orderByChild(WINS)
@@ -151,31 +151,31 @@ public class LeaderboardActivity extends Activity implements AdapterView.OnItemS
                         posi--, snap.child(WINS).getValue().toString(), snap.child(GAMES).getValue().toString()));
                 storageRef.child(uid).getDownloadUrl()
                         .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        Log.i(TAG, "onSuccess: uri successfully retrieved = " + uri.getPath());
-                    }
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Log.i(TAG, "onSuccess: uri successfully retrieved = " + uri.getPath());
+                            }
                         })
                         .addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        if (task.getException() == null) {
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
+                                if (task.getException() == null) {
 
-                            for (User el : userList.values()) {
-                                if (task.getResult().getPath().contains(el.getUid())) {
-                                    el.setProfilePicture(task.getResult());
-                                    Log.i(TAG, "onComplete: added uri to user = " + el.toString());
+                                    for (User el : userList.values()) {
+                                        if (task.getResult().getPath().contains(el.getUid())) {
+                                            el.setProfilePicture(task.getResult());
+                                            Log.i(TAG, "onComplete: added uri to user = " + el.toString());
+                                        }
+                                    }
+                                }
+
+                                if (userList.size() == countBestPlayers) {
+                                    adapter = new RecyclerViewAdapter(userList, countBestPlayers, dropdown.getSelectedItemPosition());
+                                    recyclerView.setAdapter(adapter);
+                                    adapter.notifyDataSetChanged();
+                                    progressBar.setVisibility(View.GONE);
                                 }
                             }
-                        }
-
-                        if (userList.size() == countBestPlayers) {
-                            adapter = new RecyclerViewAdapter(userList, countBestPlayers, dropdown.getSelectedItemPosition());
-                            recyclerView.setAdapter(adapter);
-                            adapter.notifyDataSetChanged();
-                            progressBar.setVisibility(View.INVISIBLE);
-                        }
-                    }
 
                         });
             }
@@ -188,14 +188,13 @@ public class LeaderboardActivity extends Activity implements AdapterView.OnItemS
     };
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if(result != null){
-            if(result.getContents() == null){
+        if (result != null) {
+            if (result.getContents() == null) {
                 Toast.makeText(this, "You cancelled the scan", Toast.LENGTH_LONG).show();
-            }
-            else{
-                if(result.getContents().matches("(sk[0-9]+)\\/((tb)|(tr))\\/((o)|(d))")) {
+            } else {
+                if (result.getContents().matches("(sk[0-9]+)\\/((tb)|(tr))\\/((o)|(d))")) {
                     // go to new window from here after scan was successful
 
                     DatabaseReference ref;
@@ -208,27 +207,15 @@ public class LeaderboardActivity extends Activity implements AdapterView.OnItemS
                     Intent i = new Intent(LeaderboardActivity.this, LobbyActivity.class);
                     i.putExtra("lobbyPath", result.getContents());
                     startActivity(i);
-                }
-                else{
+                } else {
                     // QR Code is none of HAW - Landshut
                     Toast.makeText(this, "Scanned QR Code is not viable", Toast.LENGTH_LONG).show();
                 }
             }
-        }
-        else {
+        } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
 
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        Toast.makeText(this, "Nothing selected", Toast.LENGTH_LONG).show();
-    }
 }
-

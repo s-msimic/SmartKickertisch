@@ -26,10 +26,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+import com.google.firebase.auth.*;
 import com.google.firebase.database.*;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -88,36 +85,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
         errorTextEditText.setText(errorMessage.toString());
 
-//        Query query = myRef.orderByChild("nickName").equalTo(nicknameString);
-//        Log.d("query", query.toString());
-//        System.out.println(query.toString());
-//        query.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                System.out.println(s);
-//            }
-//
-//            @Override
-//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                System.out.println(s + " changed");
-//            }
-//
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-//
-//            }
-//
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-
         if (errorTextEditText.getText().toString().equals("")) {
             signUpProgressBar.setVisibility(View.VISIBLE);
             createAccount();
@@ -135,7 +102,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 if (task.isSuccessful()) {
                     myRef.child("users").child(mAuth.getCurrentUser().getUid()).child("nickName").setValue(nicknameEditText.getText().toString());
                     Log.i(TAG, "onComplete: successful UID = " + mAuth.getCurrentUser().getUid());
-
                     if (profilePictureUri != null) {
                         // Get the data from an ImageView as bytes
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -153,34 +119,59 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                                 // ...
+                                String picUid = "users/" + mAuth.getCurrentUser().getUid() + "/profileImage.jpg";
+                                mStorageRef.child(picUid).getDownloadUrl()
+                                        .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                            @Override
+                                            public void onSuccess(Uri uri) {
+                                                Log.i(TAG, "onSuccess: uri successfully retrieved = " + uri);
+                                                UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
+                                                        .setDisplayName(nicknameEditText.getText().toString())
+                                                        .setPhotoUri(uri)
+                                                        .build();
+
+                                                mAuth.getCurrentUser().updateProfile(profileUpdate)
+                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                if (task.isSuccessful()) {
+                                                                    Log.i(TAG, "onComplete: name = " + mAuth.getCurrentUser().getDisplayName());
+                                                                    Log.i(TAG, "onComplete: mail = " + mAuth.getCurrentUser().getEmail());
+                                                                    Log.i(TAG, "onComplete: photoURL = " + mAuth.getCurrentUser().getPhotoUrl());
+                                                                }
+                                                            }
+                                                        });
+                                            }
+                                        });
                                 Intent i = new Intent(SignUpActivity.this, LeaderboardActivity.class);
-                                signUpProgressBar.setVisibility(View.INVISIBLE);
+                                signUpProgressBar.setVisibility(View.GONE);
                                 startActivity(i);
                             }
                         });
+
                         // if there is no picture selected don't upload anything
                     } else {
+                        UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
+                                .setDisplayName(nicknameEditText.getText().toString())
+                                .build();
+
+                        mAuth.getCurrentUser().updateProfile(profileUpdate)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.i(TAG, "onComplete: name = " + mAuth.getCurrentUser().getDisplayName());
+                                            Log.i(TAG, "onComplete: mail = " + mAuth.getCurrentUser().getEmail());
+                                            Log.i(TAG, "onComplete: photoURL = " + mAuth.getCurrentUser().getPhotoUrl());
+                                        }
+                                    }
+                                });
+
                         Intent i = new Intent(SignUpActivity.this, LeaderboardActivity.class);
                         startActivity(i);
-                        signUpProgressBar.setVisibility(View.INVISIBLE);
+                        signUpProgressBar.setVisibility(View.GONE);
                     }
 
-//                    mStorageRef.child("users").child(mAuth.getCurrentUser().getUid()).child("profileImage").putFile(profilePictureUri)
-//                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                                @Override
-//                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                                    // Get a URL to the uploaded content
-//                                    Intent i = new Intent(SignUpActivity.this, LeaderboardActivity.class);
-//                                    startActivity(i);
-//                                }
-//                            })
-//                            .addOnFailureListener(new OnFailureListener() {
-//                                @Override
-//                                public void onFailure(@NonNull Exception exception) {
-//                                    // Handle unsuccessful uploads
-//                                    // ...
-//                                }
-//                            });
                 } else {
                     //error handling
                     try {

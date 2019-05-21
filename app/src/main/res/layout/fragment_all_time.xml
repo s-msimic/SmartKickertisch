@@ -15,17 +15,6 @@
         android:textColor="@color/colorWhite"
         />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/logoutButton"
-        android:text="logout"
-        android:textColor="@color/colorSignUpButtonText"
-        android:background="@drawable/round_button"
-        android:layout_gravity="bottom|center"
-        android:layout_marginBottom="32dp"
-    />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

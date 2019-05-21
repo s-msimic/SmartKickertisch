@@ -34,16 +34,16 @@ public class AllTimeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_all_time, container, false);
-        button = view.findViewById(R.id.logoutButton);
-        mAuth = FirebaseAuth.getInstance();
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAuth.signOut();
-                Intent i = new Intent(getActivity(), WelcomeActivity.class);
-                startActivity(i);
-            }
-        });
+//        button = view.findViewById(R.id.logoutButton);
+//        mAuth = FirebaseAuth.getInstance();
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mAuth.signOut();
+//                Intent i = new Intent(getActivity(), WelcomeActivity.class);
+//                startActivity(i);
+//            }
+//        });
         return view;
     }
 

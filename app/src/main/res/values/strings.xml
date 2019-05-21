@@ -22,4 +22,7 @@
     <string name="sort_by_wins">Sort by: WINS</string>
     <string name="sort_by_games">Sort by: GAMES PLAYED</string>
     <string name="nickname_recycler">Nickname:</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="settings">Settings</string>
 </resources>

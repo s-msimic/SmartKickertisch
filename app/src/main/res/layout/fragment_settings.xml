@@ -1,35 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
              android:background="@drawable/app_background"
+                                             android:padding="16dp"
              tools:context=".SettingsFragment">
 
-   <android.support.v7.widget.CardView
-       android:layout_width="300dp"
+   <TextView
+       android:layout_width="wrap_content"
        android:layout_height="wrap_content"
-       android:layout_gravity="center"
-       android:id="@+id/leaderboardCardView"
-       android:background="@color/space_transparent"
-       app:cardElevation="32dp"
+       android:id="@+id/changeNickSettingTextView"
+       android:text="Nickname"
+       android:textColor="@color/colorWhite"
+       android:textSize="20sp"
+       android:layout_marginTop="32dp"
+       app:layout_constraintTop_toTopOf="parent"
+       app:layout_constraintBottom_toTopOf="@id/changeNickSettingEditText"
+       app:layout_constraintStart_toStartOf="parent"
+   />
 
-   >
-      <RelativeLayout
-          android:layout_width="match_parent"
-          android:layout_height="50dp">
-         <TextView
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:text="Settings"
-             android:textColor="@color/colorSignUpButtonText"
-             android:textAlignment="center"
-             android:background="@color/space_transparent"
-             android:layout_centerInParent="true"
-         />
-      </RelativeLayout>
+   <TextView
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:id="@+id/currentNickSettingTextView"
+       android:text="Nickname"
+       android:textColor="@color/colorSignUpButtonText"
+       android:textSize="20sp"
+       app:layout_constraintTop_toTopOf="@id/changeNickSettingTextView"
+       app:layout_constraintBottom_toBottomOf="@id/changeNickSettingTextView"
+       app:layout_constraintEnd_toEndOf="parent"
+   />
 
-   </android.support.v7.widget.CardView>
+   <EditText
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:id="@+id/changeNickSettingEditText"
+       android:textSize="20sp"
+       android:textColor="@color/colorSignUpButtonText"
+       android:inputType="text"
+       android:hint="New Nickname"
+       android:gravity="center"
+       android:textColorHint="@color/colorWhite"
+       android:backgroundTint="@color/colorWhite"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintTop_toBottomOf="@id/changeNickSettingTextView"
+       app:layout_constraintBottom_toTopOf="@id/changePasswordSettingsTextView"
+       app:layout_constraintHorizontal_bias="1"
+   />
+
+   <TextView
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:id="@+id/changePasswordSettingsTextView"
+       android:text="Password"
+       android:textColor="@color/colorWhite"
+       android:textSize="20sp"
+       android:layout_marginTop="32dp"
+       app:layout_constraintTop_toBottomOf="@id/changeNickSettingEditText"
+       app:layout_constraintBottom_toTopOf="@+id/changePasswordSettingEditText"
+       app:layout_constraintStart_toStartOf="parent"
+   />
+
+   <EditText
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:id="@+id/changePasswordSettingEditText"
+       android:textSize="20sp"
+       android:textColor="@color/colorSignUpButtonText"
+       android:inputType="textPassword"
+       android:hint="New Password"
+       android:textColorHint="@color/colorWhite"
+       android:gravity="center"
+       android:backgroundTint="@color/colorWhite"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintTop_toBottomOf="@id/changePasswordSettingsTextView"
+       app:layout_constraintBottom_toTopOf="@id/changeMailSettingsTextView"
+   />
 
 
-</FrameLayout>
+   <TextView
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:id="@+id/changeMailSettingsTextView"
+       android:text="E-Mail"
+       android:textColor="@color/colorWhite"
+       android:textSize="20sp"
+       android:layout_marginTop="32dp"
+       app:layout_constraintTop_toBottomOf="@id/changePasswordSettingEditText"
+       app:layout_constraintStart_toStartOf="parent"
+   />
+
+   <TextView
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:id="@+id/currentMailSettingsTextView"
+       android:text="E-Mail"
+       android:textColor="@color/colorSignUpButtonText"
+       android:textSize="20sp"
+       app:layout_constraintTop_toTopOf="@id/changeMailSettingsTextView"
+       app:layout_constraintBottom_toBottomOf="@id/changeMailSettingsTextView"
+       app:layout_constraintEnd_toEndOf="parent"
+   />
+
+   <EditText
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:id="@+id/changeMailSettingsEditText"
+       android:textSize="20sp"
+       android:textColor="@color/colorSignUpButtonText"
+       android:inputType="text"
+       android:hint="New E-Mail"
+       android:gravity="center"
+       android:textColorHint="@color/colorWhite"
+       android:backgroundTint="@color/colorWhite"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintTop_toBottomOf="@id/changeMailSettingsTextView"
+       app:layout_constraintBottom_toTopOf="@id/changePictureSettingsTextView"
+       app:layout_constraintHorizontal_bias="1"
+   />
+
+   <TextView
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:id="@+id/changePictureSettingsTextView"
+       android:text="Profile Picture"
+       android:textColor="@color/colorWhite"
+       android:textSize="20sp"
+       android:layout_marginTop="32dp"
+       app:layout_constraintTop_toBottomOf="@id/changeMailSettingsEditText"
+       app:layout_constraintStart_toStartOf="parent"
+   />
+
+   <de.hdodenhof.circleimageview.CircleImageView
+       android:layout_width="64dp"
+       android:layout_height="64dp"
+       android:id="@+id/currentPictureSettingsImageView"
+       android:src="@drawable/profile_picture_preview"
+       app:civ_border_width="2dp"
+       app:civ_border_color="@color/colorWhite"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintTop_toTopOf="@id/changePictureSettingsTextView"
+       app:layout_constraintBottom_toBottomOf="@id/changePictureSettingsTextView"
+       app:layout_constraintHorizontal_bias="0.8"
+   />
+
+   <Button
+       android:layout_width="160dp"
+       android:layout_height="55dp"
+       android:id="@+id/saveChangesButton"
+       android:text="Save changes"
+       android:textAllCaps="false"
+       android:textSize="20sp"
+       android:textColor="@color/colorSignUpButtonText"
+       android:background="@drawable/round_button"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintEnd_toStartOf="@id/logoutSettingsButton"
+       app:layout_constraintTop_toBottomOf="@id/currentPictureSettingsImageView"
+       app:layout_constraintBottom_toBottomOf="parent"
+       app:layout_constraintVertical_bias="0.35"
+   />
+
+   <Button
+       android:layout_width="160dp"
+       android:layout_height="55dp"
+       android:id="@+id/logoutSettingsButton"
+       android:text="@string/logout"
+       android:textAllCaps="false"
+       android:textSize="24sp"
+       android:textColor="@color/colorSignUpButtonText"
+       android:background="@drawable/round_button"
+       app:layout_constraintStart_toEndOf="@id/saveChangesButton"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintTop_toTopOf="@id/saveChangesButton"
+       app:layout_constraintBottom_toBottomOf="@id/saveChangesButton"
+   />
+
+</android.support.constraint.ConstraintLayout>
