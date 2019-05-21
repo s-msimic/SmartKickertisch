@@ -72,8 +72,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             errorMessage.append("Type in your nickname!\n");
         if (eMailString.equals("") || !eMailString.contains("@"))
             errorMessage.append("Type in a valid e-mail address\n");
-        if (!eMailString.contains("@haw-landshut.de"))
-            errorMessage.append("You need a \"@haw-landshut.de\" e-mail address!\n");
         if (passwordString.equals(""))
             errorMessage.append("Type in your password!\n");
         if (repeatPasswordString.equals("") || !passwordString.equals(repeatPasswordString))

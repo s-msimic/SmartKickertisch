@@ -149,18 +149,31 @@
        app:layout_constraintHorizontal_bias="0.8"
    />
 
+   <TextView
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:id="@+id/errorSettingsTextView"
+       android:text="hasdl"
+       android:textColor="@color/colorSignUpError"
+       app:layout_constraintTop_toBottomOf="@id/currentPictureSettingsImageView"
+       app:layout_constraintBottom_toTopOf="@id/saveChangesButton"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintVertical_bias="0.2"
+   />
+
    <Button
        android:layout_width="160dp"
        android:layout_height="55dp"
        android:id="@+id/saveChangesButton"
-       android:text="Save changes"
+       android:text="@string/save_changes"
        android:textAllCaps="false"
        android:textSize="20sp"
        android:textColor="@color/colorSignUpButtonText"
        android:background="@drawable/round_button"
        app:layout_constraintStart_toStartOf="parent"
        app:layout_constraintEnd_toStartOf="@id/logoutSettingsButton"
-       app:layout_constraintTop_toBottomOf="@id/currentPictureSettingsImageView"
+       app:layout_constraintTop_toBottomOf="@id/errorSettingsTextView"
        app:layout_constraintBottom_toBottomOf="parent"
        app:layout_constraintVertical_bias="0.35"
    />
