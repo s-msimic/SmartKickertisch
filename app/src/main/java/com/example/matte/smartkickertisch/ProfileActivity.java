@@ -61,7 +61,7 @@ public class ProfileActivity extends AppCompatActivity {
         SpaceNavigationView menuBottomNavigationView = findViewById(R.id.statisticsBottomNavigationView);
         menuBottomNavigationView.initWithSaveInstanceState(savedInstanceState);
         menuBottomNavigationView.addSpaceItem(new SpaceItem("RANKING", R.drawable.ic_leaderboard_icon));
-        menuBottomNavigationView.addSpaceItem(new SpaceItem("PROFILE", R.drawable.ic_menu_stats_icon));
+        menuBottomNavigationView.addSpaceItem(new SpaceItem("PROFILE", R.drawable.ic_profile_icon));
         menuBottomNavigationView.changeCurrentItem(1);
 
         menuBottomNavigationView.setSpaceOnClickListener(new SpaceOnClickListener() {

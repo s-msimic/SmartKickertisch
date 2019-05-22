@@ -39,7 +39,7 @@ public class LeaderboardActivity extends Activity {
     private RecyclerView.LayoutManager layoutManager;
     private TextView spinnerTextView;
     private Spinner dropdown;
-    private int countBestPlayers = 15;
+    private int countBestPlayers = 16;
     private HashMap<Integer, User> userList = new HashMap<>();
     private ProgressBar progressBar;
     private SpaceNavigationView menuBottomNavigationView;
@@ -124,7 +124,7 @@ public class LeaderboardActivity extends Activity {
         dropdown.setOnItemSelectedListener(itemClickListener);
         menuBottomNavigationView.initWithSaveInstanceState(savedInstanceState);
         menuBottomNavigationView.addSpaceItem(new SpaceItem("RANKING", R.drawable.ic_leaderboard_icon));
-        menuBottomNavigationView.addSpaceItem(new SpaceItem("PROFILE", R.drawable.ic_menu_stats_icon));
+        menuBottomNavigationView.addSpaceItem(new SpaceItem("PROFILE", R.drawable.ic_profile_icon));
 
         menuBottomNavigationView.setSpaceOnClickListener(new SpaceOnClickListener() {
 
