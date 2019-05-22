@@ -57,7 +57,7 @@
        android:text="Password"
        android:textColor="@color/colorWhite"
        android:textSize="18sp"
-       android:layout_marginTop="32dp"
+       android:layout_marginTop="16dp"
        app:layout_constraintTop_toBottomOf="@id/changeNickSettingEditText"
        app:layout_constraintBottom_toTopOf="@+id/changePasswordSettingEditText"
        app:layout_constraintStart_toStartOf="parent"
@@ -88,7 +88,7 @@
        android:text="E-Mail"
        android:textColor="@color/colorWhite"
        android:textSize="18sp"
-       android:layout_marginTop="32dp"
+       android:layout_marginTop="16dp"
        app:layout_constraintTop_toBottomOf="@id/changePasswordSettingEditText"
        app:layout_constraintStart_toStartOf="parent"
    />
@@ -162,23 +162,23 @@
 
    <Button
        android:layout_width="140dp"
-       android:layout_height="45dp"
+       android:layout_height="50dp"
        android:id="@+id/saveChangesButton"
        android:text="@string/save_changes"
        android:textAllCaps="false"
-       android:textSize="18sp"
+       android:textSize="16sp"
        android:textColor="@color/colorSignUpButtonText"
        android:background="@drawable/round_button"
        app:layout_constraintStart_toStartOf="parent"
        app:layout_constraintEnd_toStartOf="@id/logoutSettingsButton"
-       app:layout_constraintTop_toBottomOf="@id/errorSettingsTextView"
+       app:layout_constraintTop_toBottomOf="@id/settingsProgressBar"
        app:layout_constraintBottom_toBottomOf="parent"
        app:layout_constraintVertical_bias="0.25"
    />
 
    <Button
        android:layout_width="140dp"
-       android:layout_height="45dp"
+       android:layout_height="50dp"
        android:id="@+id/logoutSettingsButton"
        android:text="@string/logout"
        android:textAllCaps="false"
@@ -190,5 +190,16 @@
        app:layout_constraintTop_toTopOf="@id/saveChangesButton"
        app:layout_constraintBottom_toBottomOf="@id/saveChangesButton"
    />
+
+   <ProgressBar
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:id="@+id/settingsProgressBar"
+       android:visibility="gone"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintTop_toBottomOf="@id/errorSettingsTextView"
+       app:layout_constraintBottom_toTopOf="@id/saveChangesButton"
+       />
 
 </android.support.constraint.ConstraintLayout>

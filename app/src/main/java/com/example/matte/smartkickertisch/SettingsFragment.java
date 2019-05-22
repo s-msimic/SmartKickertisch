@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,6 +41,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -63,6 +65,7 @@ public class SettingsFragment extends Fragment {
     Button saveChangesButton;
     private Uri profilePictureUri;
     private Bitmap profilePictureBitmap;
+    private ProgressBar progressBar;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -95,22 +98,20 @@ public class SettingsFragment extends Fragment {
         newPassword = view.findViewById(R.id.changePasswordSettingEditText);
         newEMail = view.findViewById(R.id.changeMailSettingsEditText);
         errorMessageTextView = view.findViewById(R.id.errorSettingsTextView);
+        progressBar = view.findViewById(R.id.settingsProgressBar);
         currentNickname.setText(mAuth.getCurrentUser().getDisplayName());
         currentEMailAddress.setText(mAuth.getCurrentUser().getEmail());
-        currentProfilePictureCirecleImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-                    } else {
-                        Log.d(TAG, "addImage: read storage permission = " + Manifest.permission.READ_EXTERNAL_STORAGE);
-                        pickImage();
-                    }
-                }
-                else
+        currentProfilePictureCirecleImageView.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+                } else {
+                    Log.d(TAG, "addImage: read storage permission = " + Manifest.permission.READ_EXTERNAL_STORAGE);
                     pickImage();
+                }
             }
+            else
+                pickImage();
         });
         Log.i(TAG, "onCreateView: photoUrl = " + mAuth.getCurrentUser().getPhotoUrl());
         if (mAuth.getCurrentUser().getPhotoUrl() != null) {
@@ -148,6 +149,8 @@ public class SettingsFragment extends Fragment {
     View.OnClickListener saveChangesListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            progressBar.setVisibility(View.VISIBLE);
+            AtomicInteger tasksRunning = new AtomicInteger(0);
             Log.i(TAG, "onClick: nickname string = " + newNickname);
             final StringBuilder errorMessage = new StringBuilder();
             String nickname = newNickname.getText().toString();
@@ -163,9 +166,9 @@ public class SettingsFragment extends Fragment {
             }
 
             if (!nickname.equals("") && !nickname.equals(currentNickname.getText().toString()) && errorMessage.toString().equals("")) {
+                tasksRunning.addAndGet(1);
                 Log.d(TAG, "onClick: editText nickname = " + newNickname.getText());
                 Log.d(TAG, "onClick: nickname " + nickname);
-
 
                 database.getReference("users/").child(mAuth.getCurrentUser().getUid()).child("nickName").setValue(nickname);
                 currentNickname.setText(nickname);
@@ -181,11 +184,16 @@ public class SettingsFragment extends Fragment {
                             Log.e(TAG, "onFailure: unvalid nickname = ", e);
                             errorMessage.append(e.getMessage());
                             errorMessageTextView.setText(errorMessage);
+                        })
+                        .addOnCompleteListener(voidTask -> {
+                            if (tasksRunning.decrementAndGet() == 0)
+                                progressBar.setVisibility(View.GONE);
                         });
                 newNickname.setText("");
             }
 
             if (!eMail.equals("")) {
+                tasksRunning.addAndGet(1);
                 Log.d(TAG, "onClick: email " + eMail);
 
                 mAuth.getCurrentUser().updateEmail(eMail)
@@ -193,16 +201,22 @@ public class SettingsFragment extends Fragment {
                             Log.i(TAG, "onSuccess: new mail = " + eMail);
                             currentEMailAddress.setText(eMail);
                             Toast.makeText(getContext(), "E-Mail Address updated!", Toast.LENGTH_SHORT).show();
+                            Log.i(TAG, "onClick: new mail = " + mAuth.getCurrentUser().getEmail());
                         })
                         .addOnFailureListener(e -> {
                             Log.e(TAG, "onFailure: unvalid eMail ",e);
                             errorMessage.append(e.getMessage()).append("\n");
                             errorMessageTextView.setText(errorMessage);
+                        })
+                        .addOnCompleteListener(voidTask -> {
+                            if (tasksRunning.decrementAndGet() == 0) {
+                                progressBar.setVisibility(View.GONE);
+                            }
                         });
-                Log.i(TAG, "onClick: new mail = " + mAuth.getCurrentUser().getEmail());
             }
 
             if (!password.equals("")) {
+                tasksRunning.addAndGet(1);
                 Log.i(TAG, "onClick: password " + password);
 
                 mAuth.getCurrentUser().updatePassword(password)
@@ -214,39 +228,51 @@ public class SettingsFragment extends Fragment {
                             Log.e(TAG, "onFailure: ",e);
                             errorMessage.append(e.getMessage()).append("\n");
                             errorMessageTextView.setText(errorMessage);
+                        })
+                        .addOnCompleteListener(voidTask -> {
+                            if (tasksRunning.decrementAndGet() == 0)
+                                progressBar.setVisibility(View.GONE);
                         });
             }
             if (profilePictureUri != null) {
-                    // Get the data from an ImageView as bytes
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    profilePictureBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                    byte[] data = baos.toByteArray();
+                tasksRunning.addAndGet(1);
+                // Get the data from an ImageView as bytes
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                profilePictureBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] data = baos.toByteArray();
 
-                    UploadTask uploadTask = mStorageRef.child("users/" + mAuth.getCurrentUser().getUid() + "/profileImage.jpg").putBytes(data);
-                    uploadTask.addOnFailureListener(exception -> Log.d("Storage", exception.getMessage()))
-                            .addOnSuccessListener(taskSnapshot -> {
-                                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                                // ...
-                                String picUid = "users/" + mAuth.getCurrentUser().getUid() + "/profileImage.jpg";
-                                mStorageRef.child(picUid).getDownloadUrl()
-                                        .addOnSuccessListener(uri -> {
-                                            Log.i(TAG, "onSuccess: uri successfully retrieved = " + uri);
-                                            UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
-                                                    .setPhotoUri(uri)
-                                                    .build();
+                UploadTask uploadTask = mStorageRef.child("users/" + mAuth.getCurrentUser().getUid() + "/profileImage.jpg").putBytes(data);
+                uploadTask
+                        .addOnFailureListener(exception -> Log.d("Storage", exception.getMessage()))
+                        .addOnSuccessListener(taskSnapshot -> {
+                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                            // ...
+                            String picUid = "users/" + mAuth.getCurrentUser().getUid() + "/profileImage.jpg";
+                            mStorageRef.child(picUid).getDownloadUrl()
+                                    .addOnSuccessListener(uri -> {
+                                        Log.i(TAG, "onSuccess: uri successfully retrieved = " + uri);
+                                        UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
+                                                .setPhotoUri(uri)
+                                                .build();
 
-                                            mAuth.getCurrentUser().updateProfile(profileUpdate)
-                                                    .addOnCompleteListener(task -> {
-                                                        if (task.isSuccessful()) {
-                                                            Toast.makeText(getContext(), "Profile Picture updated!", Toast.LENGTH_SHORT).show();
-                                                            Log.i(TAG, "onComplete: name = " + mAuth.getCurrentUser().getDisplayName());
-                                                            Log.i(TAG, "onComplete: mail = " + mAuth.getCurrentUser().getEmail());
-                                                            Log.i(TAG, "onComplete: photoURL = " + mAuth.getCurrentUser().getPhotoUrl());
-                                                        }
-                                                    });
-                                        });
-                            });
+                                        mAuth.getCurrentUser().updateProfile(profileUpdate)
+                                                .addOnCompleteListener(task -> {
+                                                    if (task.isSuccessful()) {
+                                                        Toast.makeText(getContext(), "Profile Picture updated!", Toast.LENGTH_SHORT).show();
+                                                        Log.i(TAG, "onComplete: name = " + mAuth.getCurrentUser().getDisplayName());
+                                                        Log.i(TAG, "onComplete: mail = " + mAuth.getCurrentUser().getEmail());
+                                                        Log.i(TAG, "onComplete: photoURL = " + mAuth.getCurrentUser().getPhotoUrl());
+                                                    }
+                                                });
+                                    });
+                        })
+                        .addOnCompleteListener(voidTask -> {
+                            if (tasksRunning.decrementAndGet() == 0)
+                                progressBar.setVisibility(View.GONE);
+                        });
             }
+            if (tasksRunning.get() == 0)
+                progressBar.setVisibility(View.GONE);
             errorMessageTextView.setText(errorMessage);
         }
     };

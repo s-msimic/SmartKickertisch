@@ -107,21 +107,14 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                         byte[] data = baos.toByteArray();
 
                         UploadTask uploadTask = mStorageRef.child("users/" + mAuth.getCurrentUser().getUid() + "/profileImage.jpg").putBytes(data);
-                        uploadTask.addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception exception) {
-                                Log.d("Storage", exception.getMessage());
-                            }
-                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                                // ...
-                                String picUid = "users/" + mAuth.getCurrentUser().getUid() + "/profileImage.jpg";
-                                mStorageRef.child(picUid).getDownloadUrl()
-                                        .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                            @Override
-                                            public void onSuccess(Uri uri) {
+                        uploadTask
+                                .addOnFailureListener(exception -> Log.d("Storage", exception.getMessage()))
+                                .addOnSuccessListener(taskSnapshot -> {
+                                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                                    // ...
+                                    String picUid = "users/" + mAuth.getCurrentUser().getUid() + "/profileImage.jpg";
+                                    mStorageRef.child(picUid).getDownloadUrl()
+                                            .addOnSuccessListener(uri -> {
                                                 Log.i(TAG, "onSuccess: uri successfully retrieved = " + uri);
                                                 UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
                                                         .setDisplayName(nicknameEditText.getText().toString())
@@ -129,23 +122,18 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                                                         .build();
 
                                                 mAuth.getCurrentUser().updateProfile(profileUpdate)
-                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                            @Override
-                                                            public void onComplete(@NonNull Task<Void> task) {
-                                                                if (task.isSuccessful()) {
-                                                                    Log.i(TAG, "onComplete: name = " + mAuth.getCurrentUser().getDisplayName());
-                                                                    Log.i(TAG, "onComplete: mail = " + mAuth.getCurrentUser().getEmail());
-                                                                    Log.i(TAG, "onComplete: photoURL = " + mAuth.getCurrentUser().getPhotoUrl());
-                                                                }
+                                                        .addOnCompleteListener(task1 -> {
+                                                            if (task1.isSuccessful()) {
+                                                                Log.i(TAG, "onComplete: name = " + mAuth.getCurrentUser().getDisplayName());
+                                                                Log.i(TAG, "onComplete: mail = " + mAuth.getCurrentUser().getEmail());
+                                                                Log.i(TAG, "onComplete: photoURL = " + mAuth.getCurrentUser().getPhotoUrl());
                                                             }
                                                         });
-                                            }
-                                        });
-                                Intent i = new Intent(SignUpActivity.this, LeaderboardActivity.class);
-                                signUpProgressBar.setVisibility(View.GONE);
-                                startActivity(i);
-                            }
-                        });
+                                            });
+                                    Intent i = new Intent(SignUpActivity.this, LeaderboardActivity.class);
+                                    signUpProgressBar.setVisibility(View.GONE);
+                                    startActivity(i);
+                                });
 
                         // if there is no picture selected don't upload anything
                     } else {
@@ -154,14 +142,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                                 .build();
 
                         mAuth.getCurrentUser().updateProfile(profileUpdate)
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            Log.i(TAG, "onComplete: name = " + mAuth.getCurrentUser().getDisplayName());
-                                            Log.i(TAG, "onComplete: mail = " + mAuth.getCurrentUser().getEmail());
-                                            Log.i(TAG, "onComplete: photoURL = " + mAuth.getCurrentUser().getPhotoUrl());
-                                        }
+                                .addOnCompleteListener(task12 -> {
+                                    if (task12.isSuccessful()) {
+                                        Log.i(TAG, "onComplete: name = " + mAuth.getCurrentUser().getDisplayName());
+                                        Log.i(TAG, "onComplete: mail = " + mAuth.getCurrentUser().getEmail());
+                                        Log.i(TAG, "onComplete: photoURL = " + mAuth.getCurrentUser().getPhotoUrl());
                                     }
                                 });
 
@@ -177,8 +162,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                     } catch (FirebaseAuthWeakPasswordException e) {
                         errorTextEditText.setText(getString(R.string.sign_up_error_password_short));
                     } catch (FirebaseAuthUserCollisionException e) {
-                        //mTxtEmail.setError(getString(R.string.error_user_exists));
-                        //mTxtEmail.requestFocus();
                         errorTextEditText.setText(getString(R.string.sign_up_error_email_taken));
                     } catch (FirebaseAuthInvalidCredentialsException e) {
                         errorTextEditText.setText(e.getMessage());

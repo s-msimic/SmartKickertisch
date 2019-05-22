@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -19,39 +20,6 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
 public class ProfileActivity extends AppCompatActivity {
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if(result != null){
-            if(result.getContents() == null){
-                Toast.makeText(this, "You cancelled the scan", Toast.LENGTH_LONG).show();
-            }
-            else{
-                if(result.getContents().matches("(sk[0-9]+)\\/((tb)|(tr))\\/((o)|(d))")) {
-                    // go to new window from here after scan was successful
-
-                    DatabaseReference ref;
-                    ref = FirebaseDatabase.getInstance().getReference();
-
-
-                    ref.child("lobby").child(result.getContents()).setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
-
-                    Intent i = new Intent(ProfileActivity.this, LobbyActivity.class);
-                    i.putExtra("lobbyPath", result.getContents());
-                    startActivity(i);
-                }
-                else{
-                    // QR Code is none of HAW - Landshut
-                    Toast.makeText(this, "Scanned QR Code is not viable", Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-        else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,10 +67,61 @@ public class ProfileActivity extends AppCompatActivity {
 
         ViewPager viewPager = findViewById(R.id.statisticsViewPager);
         viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {
+                if (v != 0) {
+                    ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE))
+                            .hideSoftInputFromWindow(viewPager.getWindowToken(), 0);
+                }
+            }
 
+            @Override
+            public void onPageSelected(int i) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
         SmartTabLayout viewPagerTab = findViewById(R.id.statisticsSmartTabLayout);
         viewPagerTab.setViewPager(viewPager);
 
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if(result != null){
+            if(result.getContents() == null){
+                Toast.makeText(this, "You cancelled the scan", Toast.LENGTH_LONG).show();
+            }
+            else{
+                if(result.getContents().matches("(sk[0-9]+)\\/((tb)|(tr))\\/((o)|(d))")) {
+                    // go to new window from here after scan was successful
+
+                    DatabaseReference ref;
+                    ref = FirebaseDatabase.getInstance().getReference();
+
+
+                    ref.child("lobby").child(result.getContents()).setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+                    Intent i = new Intent(ProfileActivity.this, LobbyActivity.class);
+                    i.putExtra("lobbyPath", result.getContents());
+                    startActivity(i);
+                }
+                else{
+                    // QR Code is none of HAW - Landshut
+                    Toast.makeText(this, "Scanned QR Code is not viable", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+        else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
 
     }
 }
