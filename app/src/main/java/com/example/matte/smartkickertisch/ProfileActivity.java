@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -58,12 +59,12 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         FragmentPagerItems pages = new FragmentPagerItems(this);
-        pages.add(FragmentPagerItem.of(getString(R.string.all_time_stats),AllTimeFragment.class));
+        pages.add(FragmentPagerItem.of(getString(R.string.all_time_stats), AllTimeFragment.class));
         pages.add(FragmentPagerItem.of(getString(R.string.match_history), MatchHistoryFragment.class));
         pages.add(FragmentPagerItem.of(getString(R.string.settings), SettingsFragment.class));
 
         FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
-                getSupportFragmentManager(),pages);
+                getSupportFragmentManager(), pages);
 
         ViewPager viewPager = findViewById(R.id.statisticsViewPager);
         viewPager.setAdapter(adapter);
@@ -71,7 +72,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onPageScrolled(int i, float v, int i1) {
                 if (v != 0) {
-                    ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE))
+                    ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
                             .hideSoftInputFromWindow(viewPager.getWindowToken(), 0);
                 }
             }
@@ -93,14 +94,13 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if(result != null){
-            if(result.getContents() == null){
+        if (result != null) {
+            if (result.getContents() == null) {
                 Toast.makeText(this, "You cancelled the scan", Toast.LENGTH_LONG).show();
-            }
-            else{
-                if(result.getContents().matches("(sk[0-9]+)\\/((tb)|(tr))\\/((o)|(d))")) {
+            } else {
+                if (result.getContents().matches("(sk[0-9]+)\\/((tb)|(tr))\\/((o)|(d))")) {
                     // go to new window from here after scan was successful
 
                     DatabaseReference ref;
@@ -112,14 +112,12 @@ public class ProfileActivity extends AppCompatActivity {
                     Intent i = new Intent(ProfileActivity.this, LobbyActivity.class);
                     i.putExtra("lobbyPath", result.getContents());
                     startActivity(i);
-                }
-                else{
+                } else {
                     // QR Code is none of HAW - Landshut
                     Toast.makeText(this, "Scanned QR Code is not viable", Toast.LENGTH_LONG).show();
                 }
             }
-        }
-        else {
+        } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
 

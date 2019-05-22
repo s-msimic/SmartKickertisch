@@ -80,7 +80,7 @@
         android:layout_height="60dp"
         android:background="@drawable/round_button"
         android:onClick="onClickCommitResult"
-        android:text="Commit "
+        android:text="Commit"
         android:textSize="17sp"
         android:textAllCaps="false"
         android:textColor="@color/colorSignUpButtonText"

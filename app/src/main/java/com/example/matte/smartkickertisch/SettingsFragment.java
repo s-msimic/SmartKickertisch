@@ -15,17 +15,20 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
@@ -36,14 +39,17 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.INPUT_METHOD_SERVICE;
 
 
 /**
@@ -66,6 +72,7 @@ public class SettingsFragment extends Fragment {
     private Uri profilePictureUri;
     private Bitmap profilePictureBitmap;
     private ProgressBar progressBar;
+    private ConstraintLayout constraintLayout;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -99,6 +106,8 @@ public class SettingsFragment extends Fragment {
         newEMail = view.findViewById(R.id.changeMailSettingsEditText);
         errorMessageTextView = view.findViewById(R.id.errorSettingsTextView);
         progressBar = view.findViewById(R.id.settingsProgressBar);
+        constraintLayout = view.findViewById(R.id.settingsConstraintLayout);
+        constraintLayout.setOnClickListener(hideKeyboardListener);
         currentNickname.setText(mAuth.getCurrentUser().getDisplayName());
         currentEMailAddress.setText(mAuth.getCurrentUser().getEmail());
         currentProfilePictureCirecleImageView.setOnClickListener(v -> {
@@ -109,8 +118,7 @@ public class SettingsFragment extends Fragment {
                     Log.d(TAG, "addImage: read storage permission = " + Manifest.permission.READ_EXTERNAL_STORAGE);
                     pickImage();
                 }
-            }
-            else
+            } else
                 pickImage();
         });
         Log.i(TAG, "onCreateView: photoUrl = " + mAuth.getCurrentUser().getPhotoUrl());
@@ -120,6 +128,15 @@ public class SettingsFragment extends Fragment {
         saveChangesButton.setOnClickListener(saveChangesListener);
         return view;
     }
+
+    View.OnClickListener hideKeyboardListener = v -> {
+        if (v.getId() == R.id.settingsConstraintLayout) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+            Log.d(TAG, "hideKeyboardListener : " + getActivity().getSystemService(INPUT_METHOD_SERVICE));
+            if (getActivity().getCurrentFocus() != null)
+                inputMethodManager.hideSoftInputFromWindow(Objects.requireNonNull(getActivity().getCurrentFocus()).getWindowToken(), 0);
+        }
+    };
 
     View.OnClickListener logoutListener = new View.OnClickListener() {
         @Override
@@ -204,7 +221,7 @@ public class SettingsFragment extends Fragment {
                             Log.i(TAG, "onClick: new mail = " + mAuth.getCurrentUser().getEmail());
                         })
                         .addOnFailureListener(e -> {
-                            Log.e(TAG, "onFailure: unvalid eMail ",e);
+                            Log.e(TAG, "onFailure: unvalid eMail ", e);
                             errorMessage.append(e.getMessage()).append("\n");
                             errorMessageTextView.setText(errorMessage);
                         })
@@ -225,7 +242,7 @@ public class SettingsFragment extends Fragment {
                             Toast.makeText(getContext(), "Password updated!", Toast.LENGTH_SHORT).show();
                         })
                         .addOnFailureListener(e -> {
-                            Log.e(TAG, "onFailure: ",e);
+                            Log.e(TAG, "onFailure: ", e);
                             errorMessage.append(e.getMessage()).append("\n");
                             errorMessageTextView.setText(errorMessage);
                         })
@@ -297,14 +314,14 @@ public class SettingsFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(data == null)
+        if (data == null)
             return;
         Uri selectedImage = data.getData();
 
         if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
             try {
                 profilePictureUri = selectedImage;
-                profilePictureBitmap = scaleDown(getCorrectlyOrientedImage(getContext(), profilePictureUri),512,true);
+                profilePictureBitmap = scaleDown(getCorrectlyOrientedImage(getContext(), profilePictureUri), 512, true);
                 currentProfilePictureCirecleImageView.setImageBitmap(profilePictureBitmap);
                 Log.i("WIDTH:", currentProfilePictureCirecleImageView.getWidth() + "");
                 Log.i("HEIGHT:", currentProfilePictureCirecleImageView.getHeight() + "");
@@ -383,7 +400,7 @@ public class SettingsFragment extends Fragment {
     public static int getOrientation(Context context, Uri photoUri) {
         /* it's on the external media. */
         Cursor cursor = context.getContentResolver().query(photoUri,
-                new String[] { MediaStore.Images.ImageColumns.ORIENTATION }, null, null, null);
+                new String[]{MediaStore.Images.ImageColumns.ORIENTATION}, null, null, null);
 
         if (cursor.getCount() != 1) {
             return -1;

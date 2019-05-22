@@ -1,205 +1,199 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:background="@drawable/app_background"
-                                             android:padding="16dp"
-             tools:context=".SettingsFragment">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/app_background"
+    android:fillViewport="true"
+    android:padding="16dp"
+    tools:context=".SettingsFragment">
 
-   <TextView
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:id="@+id/changeNickSettingTextView"
-       android:text="Nickname"
-       android:textColor="@color/colorWhite"
-       android:textSize="18sp"
-       app:layout_constraintTop_toTopOf="parent"
-       app:layout_constraintBottom_toBottomOf="parent"
-       app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintVertical_bias="0.01"
-   />
-
-   <TextView
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:id="@+id/currentNickSettingTextView"
-       android:text="Nickname"
-       android:textColor="@color/colorSignUpButtonText"
-       android:textSize="18sp"
-       app:layout_constraintTop_toTopOf="@id/changeNickSettingTextView"
-       app:layout_constraintBottom_toBottomOf="@id/changeNickSettingTextView"
-       app:layout_constraintEnd_toEndOf="parent"
-   />
-
-   <EditText
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:id="@+id/changeNickSettingEditText"
-       android:textSize="18sp"
-       android:textColor="@color/colorSignUpButtonText"
-       android:inputType="text"
-       android:hint="New Nickname"
-       android:gravity="center"
-       android:textColorHint="@color/colorWhite"
-       android:backgroundTint="@color/colorWhite"
-       app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintTop_toBottomOf="@id/changeNickSettingTextView"
-       app:layout_constraintBottom_toTopOf="@id/changePasswordSettingsTextView"
-       app:layout_constraintHorizontal_bias="1"
-   />
-
-   <TextView
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:id="@+id/changePasswordSettingsTextView"
-       android:text="Password"
-       android:textColor="@color/colorWhite"
-       android:textSize="18sp"
-       android:layout_marginTop="16dp"
-       app:layout_constraintTop_toBottomOf="@id/changeNickSettingEditText"
-       app:layout_constraintBottom_toTopOf="@+id/changePasswordSettingEditText"
-       app:layout_constraintStart_toStartOf="parent"
-   />
-
-   <EditText
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:id="@+id/changePasswordSettingEditText"
-       android:textSize="18sp"
-       android:textColor="@color/colorSignUpButtonText"
-       android:inputType="textPassword"
-       android:hint="New Password"
-       android:textColorHint="@color/colorWhite"
-       android:gravity="center"
-       android:backgroundTint="@color/colorWhite"
-       app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintTop_toBottomOf="@id/changePasswordSettingsTextView"
-       app:layout_constraintBottom_toTopOf="@id/changeMailSettingsTextView"
-   />
-
-
-   <TextView
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:id="@+id/changeMailSettingsTextView"
-       android:text="E-Mail"
-       android:textColor="@color/colorWhite"
-       android:textSize="18sp"
-       android:layout_marginTop="16dp"
-       app:layout_constraintTop_toBottomOf="@id/changePasswordSettingEditText"
-       app:layout_constraintStart_toStartOf="parent"
-   />
-
-   <TextView
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:id="@+id/currentMailSettingsTextView"
-       android:text="E-Mail"
-       android:textColor="@color/colorSignUpButtonText"
-       android:textSize="18sp"
-       app:layout_constraintTop_toTopOf="@id/changeMailSettingsTextView"
-       app:layout_constraintBottom_toBottomOf="@id/changeMailSettingsTextView"
-       app:layout_constraintEnd_toEndOf="parent"
-   />
-
-   <EditText
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:id="@+id/changeMailSettingsEditText"
-       android:textSize="18sp"
-       android:textColor="@color/colorSignUpButtonText"
-       android:inputType="text"
-       android:hint="New E-Mail"
-       android:gravity="center"
-       android:textColorHint="@color/colorWhite"
-       android:backgroundTint="@color/colorWhite"
-       app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintTop_toBottomOf="@id/changeMailSettingsTextView"
-       app:layout_constraintBottom_toTopOf="@id/changePictureSettingsTextView"
-       app:layout_constraintHorizontal_bias="1"
-   />
-
-   <TextView
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:id="@+id/changePictureSettingsTextView"
-       android:text="Profile Picture"
-       android:textColor="@color/colorWhite"
-       android:textSize="18sp"
-       android:layout_marginTop="32dp"
-       app:layout_constraintTop_toBottomOf="@id/changeMailSettingsEditText"
-       app:layout_constraintStart_toStartOf="parent"
-   />
-
-   <de.hdodenhof.circleimageview.CircleImageView
-       android:layout_width="64dp"
-       android:layout_height="64dp"
-       android:id="@+id/currentPictureSettingsImageView"
-       android:src="@drawable/profile_picture_preview"
-       app:civ_border_width="2dp"
-       app:civ_border_color="@color/colorWhite"
-       app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintTop_toTopOf="@id/changePictureSettingsTextView"
-       app:layout_constraintBottom_toBottomOf="@id/changePictureSettingsTextView"
-       app:layout_constraintHorizontal_bias="0.8"
-   />
-
-    <TextView
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/settingsConstraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/errorSettingsTextView"
-        android:textColor="@color/colorSignUpError"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/currentPictureSettingsImageView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-    />
+        android:layout_height="wrap_content">
 
-   <Button
-       android:layout_width="140dp"
-       android:layout_height="50dp"
-       android:id="@+id/saveChangesButton"
-       android:text="@string/save_changes"
-       android:textAllCaps="false"
-       android:textSize="16sp"
-       android:textColor="@color/colorSignUpButtonText"
-       android:background="@drawable/round_button"
-       app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintEnd_toStartOf="@id/logoutSettingsButton"
-       app:layout_constraintTop_toBottomOf="@id/settingsProgressBar"
-       app:layout_constraintBottom_toBottomOf="parent"
-       app:layout_constraintVertical_bias="0.25"
-   />
+        <TextView
+            android:id="@+id/changeNickSettingTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sign_up_nickname_hint"
+            android:textColor="@color/colorWhite"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.01" />
 
-   <Button
-       android:layout_width="140dp"
-       android:layout_height="50dp"
-       android:id="@+id/logoutSettingsButton"
-       android:text="@string/logout"
-       android:textAllCaps="false"
-       android:textSize="18sp"
-       android:textColor="@color/colorSignUpButtonText"
-       android:background="@drawable/round_button"
-       app:layout_constraintStart_toEndOf="@id/saveChangesButton"
-       app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintTop_toTopOf="@id/saveChangesButton"
-       app:layout_constraintBottom_toBottomOf="@id/saveChangesButton"
-   />
+        <TextView
+            android:id="@+id/currentNickSettingTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorSignUpButtonText"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@id/changeNickSettingTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/changeNickSettingTextView" />
 
-   <ProgressBar
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:id="@+id/settingsProgressBar"
-       android:visibility="gone"
-       app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintTop_toBottomOf="@id/errorSettingsTextView"
-       app:layout_constraintBottom_toTopOf="@id/saveChangesButton"
-       />
+        <EditText
+            android:id="@+id/changeNickSettingEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorWhite"
+            android:gravity="center"
+            android:hint="New Nickname"
+            android:inputType="text"
+            android:textColor="@color/colorSignUpButtonText"
+            android:textColorHint="@color/colorWhite"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@id/changePasswordSettingsTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/changeNickSettingTextView" />
 
-</android.support.constraint.ConstraintLayout>
+        <TextView
+            android:id="@+id/changePasswordSettingsTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/sign_up_password_hint"
+            android:textColor="@color/colorWhite"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@+id/changePasswordSettingEditText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/changeNickSettingEditText" />
+
+        <EditText
+            android:id="@+id/changePasswordSettingEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorWhite"
+            android:gravity="center"
+            android:hint="New Password"
+            android:inputType="textPassword"
+            android:textColor="@color/colorSignUpButtonText"
+            android:textColorHint="@color/colorWhite"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@id/changeMailSettingsTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/changePasswordSettingsTextView" />
+
+
+        <TextView
+            android:id="@+id/changeMailSettingsTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/sign_up_email_hint"
+            android:textColor="@color/colorWhite"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/changePasswordSettingEditText" />
+
+        <TextView
+            android:id="@+id/currentMailSettingsTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorSignUpButtonText"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@id/changeMailSettingsTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/changeMailSettingsTextView" />
+
+        <EditText
+            android:id="@+id/changeMailSettingsEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorWhite"
+            android:gravity="center"
+            android:hint="New E-Mail"
+            android:inputType="text"
+            android:textColor="@color/colorSignUpButtonText"
+            android:textColorHint="@color/colorWhite"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@id/changePictureSettingsTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/changeMailSettingsTextView" />
+
+        <TextView
+            android:id="@+id/changePictureSettingsTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/profile_picture"
+            android:textColor="@color/colorWhite"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/changeMailSettingsEditText" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/currentPictureSettingsImageView"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/profile_picture_preview"
+            app:civ_border_color="@color/colorWhite"
+            app:civ_border_width="2dp"
+            app:layout_constraintBottom_toBottomOf="@id/changePictureSettingsTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.8"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/changePictureSettingsTextView" />
+
+        <TextView
+            android:id="@+id/errorSettingsTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/colorSignUpError"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/currentPictureSettingsImageView" />
+
+        <Button
+            android:id="@+id/saveChangesButton"
+            android:layout_width="140dp"
+            android:layout_height="50dp"
+            android:background="@drawable/round_button"
+            android:text="@string/save_changes"
+            android:textAllCaps="false"
+            android:textColor="@color/colorSignUpButtonText"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/logoutSettingsButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/settingsProgressBar"
+            app:layout_constraintVertical_bias="0.25" />
+
+        <Button
+            android:id="@+id/logoutSettingsButton"
+            android:layout_width="140dp"
+            android:layout_height="50dp"
+            android:background="@drawable/round_button"
+            android:text="@string/logout"
+            android:textAllCaps="false"
+            android:textColor="@color/colorSignUpButtonText"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@id/saveChangesButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/saveChangesButton"
+            app:layout_constraintTop_toTopOf="@id/saveChangesButton" />
+
+        <ProgressBar
+            android:id="@+id/settingsProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/saveChangesButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/errorSettingsTextView" />
+    </android.support.constraint.ConstraintLayout>
+
+</ScrollView>
+
+
