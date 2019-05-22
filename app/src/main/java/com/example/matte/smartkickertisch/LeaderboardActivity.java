@@ -53,58 +53,8 @@ public class LeaderboardActivity extends Activity {
     private String autoID;
 
 
-    public void checkForRecentGame(){
-//        getSharedPreferences("MyPreferences", 0).edit().clear().apply();
-        Log.i(TAG, "checkForRecentGame: run into checkForRecentGame");
-        SharedPreferences preferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.apply();
-        if(getSharedPreferences("MyPreferences", 0).contains("var1")) {
-//            if(getSharedPreferences("MyPreferences", 0) == null)
-                Log.i(TAG, "checkForRecentGame: nullcheck true");
-            Log.i(TAG, "checkForRecentGame: " + getSharedPreferences("MyPreferences", 0).getString("var1", null));
-            if ((getSharedPreferences("MyPreferences", 0).getString("var1", null).contains("sk"))) {
-                Log.i(TAG, "checkForRecentGame: ran into else checkForRecentGame");
-                Log.i(TAG, "checkForRecentGame: " + getSharedPreferences("MyPreferences", 0).toString());
-                Log.i(TAG, "checkForRecentGame: " + getSharedPreferences("MyPreferences", 0).getString("var1", "nothing there"));
-                lobbyPathForRecentGameCheck = getSharedPreferences("MyPreferences", 0).getString("var1", null);
-                playerR1 = getSharedPreferences("MyPreferences", 0).getString("varPlayerR1", null);
-                playerR2 = getSharedPreferences("MyPreferences",0).getString("varPlayerR2", null);
-                playerB3 = getSharedPreferences("MyPreferences",0).getString("varPlayerB3", null);
-                playerB4 = getSharedPreferences("MyPreferences",0).getString("varPlayerB4", null);
-                autoID = getSharedPreferences("MyPreferences", 0).getString("autoID", null);
-
-            } else {
-                lobbyPathForRecentGameCheck = null;
-
-            }
-        }
-
-    }
-    @Override
-    protected void onStart(){
-
-        checkForRecentGame();
-        Log.i(TAG, "onCreate: "+ lobbyPathForRecentGameCheck);
-        if(!(lobbyPathForRecentGameCheck == null)){
-            fullLobyPath = getSharedPreferences("MyPreferences",0).getString("var2", null);
-            Log.i(TAG, "onStart: " + fullLobyPath +" is the full lobby path");
-            Intent i;
-            i = new Intent(LeaderboardActivity.this, ResultActivity.class);
-            i.putExtra("lobbyPath", fullLobyPath);
-            i.putExtra("autoID", autoID);
-            startActivity(i);
-
-        }
-
-        super.onStart();
-    }
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        getSharedPreferences("MyPreferences", 0).edit().clear().apply();
         mAuth = FirebaseAuth.getInstance();
         storageRef = FirebaseStorage.getInstance().getReference();
         super.onCreate(savedInstanceState);
@@ -165,6 +115,52 @@ public class LeaderboardActivity extends Activity {
         });
     }
 
+    public void checkForRecentGame(){
+        Log.i(TAG, "checkForRecentGame: run into checkForRecentGame");
+        SharedPreferences preferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.apply();
+        if(getSharedPreferences("MyPreferences", 0).contains("var1")) {
+            Log.i(TAG, "checkForRecentGame: nullcheck true");
+            Log.i(TAG, "checkForRecentGame: " + getSharedPreferences("MyPreferences", 0).getString("var1", null));
+            if ((getSharedPreferences("MyPreferences", 0).getString("var1", null).contains("sk"))) {
+                Log.i(TAG, "checkForRecentGame: ran into else checkForRecentGame");
+                Log.i(TAG, "checkForRecentGame: " + getSharedPreferences("MyPreferences", 0).toString());
+                Log.i(TAG, "checkForRecentGame: " + getSharedPreferences("MyPreferences", 0).getString("var1", "nothing there"));
+                lobbyPathForRecentGameCheck = getSharedPreferences("MyPreferences", 0).getString("var1", null);
+                playerR1 = getSharedPreferences("MyPreferences", 0).getString("varPlayerR1", null);
+                playerR2 = getSharedPreferences("MyPreferences",0).getString("varPlayerR2", null);
+                playerB3 = getSharedPreferences("MyPreferences",0).getString("varPlayerB3", null);
+                playerB4 = getSharedPreferences("MyPreferences",0).getString("varPlayerB4", null);
+                autoID = getSharedPreferences("MyPreferences", 0).getString("autoID", null);
+
+            } else {
+                lobbyPathForRecentGameCheck = null;
+
+            }
+        }
+
+    }
+
+    @Override
+    protected void onStart(){
+
+        checkForRecentGame();
+        Log.i(TAG, "onCreate: "+ lobbyPathForRecentGameCheck);
+        if(!(lobbyPathForRecentGameCheck == null)){
+            fullLobyPath = getSharedPreferences("MyPreferences",0).getString("var2", null);
+            Log.i(TAG, "onStart: " + fullLobyPath +" is the full lobby path");
+            Intent i;
+            i = new Intent(LeaderboardActivity.this, ResultActivity.class);
+            i.putExtra("lobbyPath", fullLobyPath);
+            i.putExtra("autoID", autoID);
+            startActivity(i);
+
+        }
+
+        super.onStart();
+    }
+
     AdapterView.OnItemSelectedListener itemClickListener = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -194,7 +190,6 @@ public class LeaderboardActivity extends Activity {
         }
     };
 
-
     ValueEventListener vel = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -207,36 +202,31 @@ public class LeaderboardActivity extends Activity {
 //                Log.i(TAG, "onDataChange: playerCount = " + database.getReference("players").count);
                 Log.i(TAG, "onDataChange: child: Key = " + snap.getKey() + " Value = " + snap.getValue());
                 uid = "users/" + snap.getKey() + "/profileImage.jpg";
-                userList.put(posi, new User(snap.getKey(), snap.child("nickName").getValue().toString(),
-                        posi--, snap.child(WINS).getValue().toString(), snap.child(GAMES).getValue().toString()));
+                if (snap.child("nickName").getValue() != null && snap.child(WINS).getValue() != null && snap.child(GAMES).getValue() != null) {
+                    Log.d(TAG, "onDataChange: values are not null");
+                    userList.put(posi, new User(snap.getKey(), snap.child("nickName").getValue().toString(),
+                            posi--, snap.child(WINS).getValue().toString(), snap.child(GAMES).getValue().toString()));
+                }
                 storageRef.child(uid).getDownloadUrl()
-                        .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                Log.i(TAG, "onSuccess: uri successfully retrieved = " + uri.getPath());
-                            }
-                        })
-                        .addOnCompleteListener(new OnCompleteListener<Uri>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Uri> task) {
-                                if (task.getException() == null) {
+                        .addOnFailureListener(e -> Log.e(TAG, "onDataChange: getDownloadUrl failed for user ", e))
+                        .addOnSuccessListener(uri -> Log.i(TAG, "onSuccess: uri successfully retrieved = " + uri.getPath()))
+                        .addOnCompleteListener(task -> {
+                            if (task.getException() == null) {
 
-                                    for (User el : userList.values()) {
-                                        if (task.getResult().getPath().contains(el.getUid())) {
-                                            el.setProfilePicture(task.getResult());
-                                            Log.i(TAG, "onComplete: added uri to user = " + el.toString());
-                                        }
+                                for (User el : userList.values()) {
+                                    if (task.getResult().getPath().contains(el.getUid())) {
+                                        el.setProfilePicture(task.getResult());
+                                        Log.i(TAG, "onComplete: added uri to user = " + el.toString());
                                     }
                                 }
-
-                                if (userList.size() == countBestPlayers) {
-                                    adapter = new RecyclerViewAdapter(userList, countBestPlayers, dropdown.getSelectedItemPosition());
-                                    recyclerView.setAdapter(adapter);
-                                    adapter.notifyDataSetChanged();
-                                    progressBar.setVisibility(View.GONE);
-                                }
                             }
 
+                            if (userList.size() == countBestPlayers) {
+                                adapter = new RecyclerViewAdapter(userList, countBestPlayers, dropdown.getSelectedItemPosition());
+                                recyclerView.setAdapter(adapter);
+                                adapter.notifyDataSetChanged();
+                                progressBar.setVisibility(View.GONE);
+                            }
                         });
             }
         }
@@ -280,5 +270,4 @@ public class LeaderboardActivity extends Activity {
         }
 
     }
-
 }

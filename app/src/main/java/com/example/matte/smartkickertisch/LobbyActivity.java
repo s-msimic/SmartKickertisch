@@ -686,31 +686,6 @@ public class LobbyActivity extends AppCompatActivity {
     public String getLobbyID(){
         return this.lobbyPath.split("/")[0];
     }
-//
-//   @Override
-//    protected void onResume() {
-//        if(getSharedPreferences("MyPreferences", 0).contains("var1")){
-//            topLeftButton.playerUID = getSharedPreferences("MyPreferences", 0).getString("varPlayerR1", null);
-//            topRightButton.playerUID = getSharedPreferences("MyPreferences",0).getString("varPlayerR2", null);
-//            bottomLeftButton.playerUID = getSharedPreferences("MyPreferences",0).getString("varPlayerB3", null);
-//            bottomRightButton.playerUID = getSharedPreferences("MyPreferences",0).getString("varPlayerB4", null);
-//            automatedID = getSharedPreferences("MyPreferences", 0).getString("autoID", null);
-//            lobbyPath = getSharedPreferences("MyPreferences", 0).getString("var1", null);
-//
-//            Intent i = new Intent(LobbyActivity.this, ResultActivity.class);
-//            i.putExtra("lobbyPath", lobbyPath);
-//            i.putExtra("autoID", automatedID);
-//            i.putExtra("teamRedPlayerOne", this.topLeftButton.playerUID);
-//            i.putExtra("teamRedPlayerTwo", this.topRightButton.playerUID);
-//            i.putExtra("teamBluePlayerThree", this.bottomLeftButton.playerUID);
-//            i.putExtra("teamBluePlayerFour", this.bottomRightButton.playerUID);
-//            Log.i(TAG, "onRestart: is called");
-//            Log.i(TAG, "onRestart: start Activity should be called");
-//            startActivity(i);
-//
-//        }
-//        super.onResume();
-//    }
 
     public void visibilityCommitButton(){
         Log.i(TAG, "visibilityCommitButton: button = " + buttonStartGame.getVisibility());

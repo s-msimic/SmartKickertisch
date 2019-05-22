@@ -25,10 +25,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
@@ -137,6 +133,7 @@ public class SettingsFragment extends Fragment {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             Log.i(TAG, "onDataChange: key = " + dataSnapshot.getKey() + " / value = " + dataSnapshot.getValue());
+            Log.d(TAG, "onDataChange: wins = " + dataSnapshot.child("data").child("winCounter").getValue());
             Log.i(TAG, "onDataChange: user name = " + mAuth.getCurrentUser().getDisplayName());
             Log.i(TAG, "onDataChange: user mail = " + mAuth.getCurrentUser().getEmail());
             Log.i(TAG, "onDataChange: user photo = " + mAuth.getCurrentUser().getPhotoUrl());
