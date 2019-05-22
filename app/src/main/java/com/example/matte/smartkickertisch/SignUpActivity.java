@@ -166,8 +166,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                                 });
 
                         Intent i = new Intent(SignUpActivity.this, LeaderboardActivity.class);
-                        startActivity(i);
                         signUpProgressBar.setVisibility(View.GONE);
+                        startActivity(i);
                     }
 
                 } else {
@@ -180,8 +180,12 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                         //mTxtEmail.setError(getString(R.string.error_user_exists));
                         //mTxtEmail.requestFocus();
                         errorTextEditText.setText(getString(R.string.sign_up_error_email_taken));
+                    } catch (FirebaseAuthInvalidCredentialsException e) {
+                        errorTextEditText.setText(e.getMessage());
                     } catch (Exception e) {
                         Log.e(TAG, "onComplete: sign up error = " + e.getMessage() ,e);
+                    } finally {
+                        signUpProgressBar.setVisibility(View.GONE);
                     }
                 }
             }

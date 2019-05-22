@@ -13,11 +13,11 @@
        android:id="@+id/changeNickSettingTextView"
        android:text="Nickname"
        android:textColor="@color/colorWhite"
-       android:textSize="20sp"
-       android:layout_marginTop="32dp"
+       android:textSize="18sp"
        app:layout_constraintTop_toTopOf="parent"
-       app:layout_constraintBottom_toTopOf="@id/changeNickSettingEditText"
+       app:layout_constraintBottom_toBottomOf="parent"
        app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintVertical_bias="0.01"
    />
 
    <TextView
@@ -26,7 +26,7 @@
        android:id="@+id/currentNickSettingTextView"
        android:text="Nickname"
        android:textColor="@color/colorSignUpButtonText"
-       android:textSize="20sp"
+       android:textSize="18sp"
        app:layout_constraintTop_toTopOf="@id/changeNickSettingTextView"
        app:layout_constraintBottom_toBottomOf="@id/changeNickSettingTextView"
        app:layout_constraintEnd_toEndOf="parent"
@@ -36,7 +36,7 @@
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
        android:id="@+id/changeNickSettingEditText"
-       android:textSize="20sp"
+       android:textSize="18sp"
        android:textColor="@color/colorSignUpButtonText"
        android:inputType="text"
        android:hint="New Nickname"
@@ -56,7 +56,7 @@
        android:id="@+id/changePasswordSettingsTextView"
        android:text="Password"
        android:textColor="@color/colorWhite"
-       android:textSize="20sp"
+       android:textSize="18sp"
        android:layout_marginTop="32dp"
        app:layout_constraintTop_toBottomOf="@id/changeNickSettingEditText"
        app:layout_constraintBottom_toTopOf="@+id/changePasswordSettingEditText"
@@ -67,7 +67,7 @@
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
        android:id="@+id/changePasswordSettingEditText"
-       android:textSize="20sp"
+       android:textSize="18sp"
        android:textColor="@color/colorSignUpButtonText"
        android:inputType="textPassword"
        android:hint="New Password"
@@ -87,7 +87,7 @@
        android:id="@+id/changeMailSettingsTextView"
        android:text="E-Mail"
        android:textColor="@color/colorWhite"
-       android:textSize="20sp"
+       android:textSize="18sp"
        android:layout_marginTop="32dp"
        app:layout_constraintTop_toBottomOf="@id/changePasswordSettingEditText"
        app:layout_constraintStart_toStartOf="parent"
@@ -99,7 +99,7 @@
        android:id="@+id/currentMailSettingsTextView"
        android:text="E-Mail"
        android:textColor="@color/colorSignUpButtonText"
-       android:textSize="20sp"
+       android:textSize="18sp"
        app:layout_constraintTop_toTopOf="@id/changeMailSettingsTextView"
        app:layout_constraintBottom_toBottomOf="@id/changeMailSettingsTextView"
        app:layout_constraintEnd_toEndOf="parent"
@@ -109,7 +109,7 @@
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
        android:id="@+id/changeMailSettingsEditText"
-       android:textSize="20sp"
+       android:textSize="18sp"
        android:textColor="@color/colorSignUpButtonText"
        android:inputType="text"
        android:hint="New E-Mail"
@@ -129,7 +129,7 @@
        android:id="@+id/changePictureSettingsTextView"
        android:text="Profile Picture"
        android:textColor="@color/colorWhite"
-       android:textSize="20sp"
+       android:textSize="18sp"
        android:layout_marginTop="32dp"
        app:layout_constraintTop_toBottomOf="@id/changeMailSettingsEditText"
        app:layout_constraintStart_toStartOf="parent"
@@ -149,18 +149,16 @@
        app:layout_constraintHorizontal_bias="0.8"
    />
 
-   <TextView
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:id="@+id/errorSettingsTextView"
-       android:text="hasdl"
-       android:textColor="@color/colorSignUpError"
-       app:layout_constraintTop_toBottomOf="@id/currentPictureSettingsImageView"
-       app:layout_constraintBottom_toTopOf="@id/saveChangesButton"
-       app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintVertical_bias="0.2"
-   />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/errorSettingsTextView"
+        android:textColor="@color/colorSignUpError"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/currentPictureSettingsImageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+    />
 
    <Button
        android:layout_width="160dp"
@@ -175,7 +173,7 @@
        app:layout_constraintEnd_toStartOf="@id/logoutSettingsButton"
        app:layout_constraintTop_toBottomOf="@id/errorSettingsTextView"
        app:layout_constraintBottom_toBottomOf="parent"
-       app:layout_constraintVertical_bias="0.35"
+       app:layout_constraintVertical_bias="0.25"
    />
 
    <Button
