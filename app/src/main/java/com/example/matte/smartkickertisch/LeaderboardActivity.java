@@ -104,7 +104,7 @@ public class LeaderboardActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+//        getSharedPreferences("MyPreferences", 0).edit().clear().apply();
         mAuth = FirebaseAuth.getInstance();
         storageRef = FirebaseStorage.getInstance().getReference();
         super.onCreate(savedInstanceState);
