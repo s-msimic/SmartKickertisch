@@ -161,12 +161,12 @@
     />
 
    <Button
-       android:layout_width="160dp"
-       android:layout_height="55dp"
+       android:layout_width="140dp"
+       android:layout_height="45dp"
        android:id="@+id/saveChangesButton"
        android:text="@string/save_changes"
        android:textAllCaps="false"
-       android:textSize="20sp"
+       android:textSize="18sp"
        android:textColor="@color/colorSignUpButtonText"
        android:background="@drawable/round_button"
        app:layout_constraintStart_toStartOf="parent"
@@ -177,12 +177,12 @@
    />
 
    <Button
-       android:layout_width="160dp"
-       android:layout_height="55dp"
+       android:layout_width="140dp"
+       android:layout_height="45dp"
        android:id="@+id/logoutSettingsButton"
        android:text="@string/logout"
        android:textAllCaps="false"
-       android:textSize="24sp"
+       android:textSize="18sp"
        android:textColor="@color/colorSignUpButtonText"
        android:background="@drawable/round_button"
        app:layout_constraintStart_toEndOf="@id/saveChangesButton"

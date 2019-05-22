@@ -156,17 +156,19 @@ public class SettingsFragment extends Fragment {
             String nickname = newNickname.getText().toString();
             final String eMail = newEMail.getText().toString();
             String password = newPassword.getText().toString();
-            if (!nickname.equals("") && !nickname.equals(currentNickname.getText().toString())) {
+
+            if (nickname.contains(" ")) {
+                errorMessage.append("Your Nickname shouldn't contain any spaces!\n");
+            }
+
+            if (nickname.length() > 15) {
+                errorMessage.append("Your Nickname can't be longer than 15 characters!\n");
+            }
+
+            if (!nickname.equals("") && !nickname.equals(currentNickname.getText().toString()) && errorMessage.toString().equals("")) {
                 Log.d(TAG, "onClick: editText nickname = " + newNickname.getText());
                 Log.d(TAG, "onClick: nickname " + nickname);
 
-                if (nickname.contains(" ")) {
-                    errorMessage.append("Your Nickname shouldn't contain any spaces!\n");
-                }
-
-                if (nickname.length() > 15) {
-                    errorMessage.append("Your Nickname can't be longer than 15 characters!\n");
-                }
 
                 database.getReference("users/").child(mAuth.getCurrentUser().getUid()).child("nickName").setValue(nickname);
                 currentNickname.setText(nickname);
@@ -196,9 +198,9 @@ public class SettingsFragment extends Fragment {
                             Toast.makeText(getContext(), "E-Mail Address updated!", Toast.LENGTH_SHORT).show();
                         })
                         .addOnFailureListener(e -> {
-                            Log.e(TAG, "onFailure: unvalid eMail ",e);;
-                            errorMessage.append(e.getMessage());
-                            errorMessageTextView.setText(errorMessage);;
+                            Log.e(TAG, "onFailure: unvalid eMail ",e);
+                            errorMessage.append(e.getMessage()).append("\n");
+                            errorMessageTextView.setText(errorMessage);
                         });
                 Log.i(TAG, "onClick: new mail = " + mAuth.getCurrentUser().getEmail());
             }
@@ -213,7 +215,7 @@ public class SettingsFragment extends Fragment {
                         })
                         .addOnFailureListener(e -> {
                             Log.e(TAG, "onFailure: ",e);
-                            errorMessage.append(e.getMessage());
+                            errorMessage.append(e.getMessage()).append("\n");
                             errorMessageTextView.setText(errorMessage);
                         });
             }
