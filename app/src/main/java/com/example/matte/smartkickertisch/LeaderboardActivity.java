@@ -3,7 +3,6 @@ package com.example.matte.smartkickertisch;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,9 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
 import com.google.firebase.storage.FirebaseStorage;
@@ -43,7 +40,6 @@ public class LeaderboardActivity extends Activity {
     private HashMap<Integer, User> userList = new HashMap<>();
     private ProgressBar progressBar;
     private SpaceNavigationView menuBottomNavigationView;
-    private TextView scoreTextView;
     private String lobbyPathForRecentGameCheck;
     private String fullLobyPath;
     private String playerR1;
@@ -62,7 +58,7 @@ public class LeaderboardActivity extends Activity {
 
         progressBar = findViewById(R.id.leaderboardProgressBar);
         progressBar.setVisibility(View.VISIBLE);
-        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.leaderBoardRecyclerView);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         spinnerTextView = findViewById(R.id.spinnerTextView);

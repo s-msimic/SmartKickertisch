@@ -19,7 +19,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
     private int spinnerPosition;
     private HashMap<Integer, User> userList;
 
-
     RecyclerViewAdapter(HashMap<Integer, User> myUsers, int playerCount, int spinnerPos) {
         userList = myUsers;
         countBestPlayers = playerCount;

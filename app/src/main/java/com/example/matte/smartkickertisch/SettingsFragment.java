@@ -169,15 +169,14 @@ public class SettingsFragment extends Fragment {
             progressBar.setVisibility(View.VISIBLE);
             AtomicInteger tasksRunning = new AtomicInteger(0);
             Log.i(TAG, "onClick: nickname string = " + newNickname);
-            final StringBuilder errorMessage = new StringBuilder();
-            String nickname = newNickname.getText().toString();
+            StringBuilder errorMessage = new StringBuilder();
+            final String nickname = newNickname.getText().toString();
             final String eMail = newEMail.getText().toString();
-            String password = newPassword.getText().toString();
+            final String password = newPassword.getText().toString();
 
             if (nickname.contains(" ")) {
                 errorMessage.append("Your Nickname shouldn't contain any spaces!\n");
             }
-
             if (nickname.length() > 15) {
                 errorMessage.append("Your Nickname can't be longer than 15 characters!\n");
             }
@@ -205,11 +204,11 @@ public class SettingsFragment extends Fragment {
                         .addOnCompleteListener(voidTask -> {
                             if (tasksRunning.decrementAndGet() == 0)
                                 progressBar.setVisibility(View.GONE);
+                            newNickname.setText("");
                         });
-                newNickname.setText("");
             }
 
-            if (!eMail.equals("")) {
+            if (!eMail.equals("") && !eMail.equals(mAuth.getCurrentUser().getEmail())) {
                 tasksRunning.addAndGet(1);
                 Log.d(TAG, "onClick: email " + eMail);
 
@@ -228,6 +227,8 @@ public class SettingsFragment extends Fragment {
                         .addOnCompleteListener(voidTask -> {
                             if (tasksRunning.decrementAndGet() == 0) {
                                 progressBar.setVisibility(View.GONE);
+                                Log.d(TAG, "onClick: progressBar visibility = gone");
+                                newEMail.setText("");
                             }
                         });
             }
@@ -249,6 +250,7 @@ public class SettingsFragment extends Fragment {
                         .addOnCompleteListener(voidTask -> {
                             if (tasksRunning.decrementAndGet() == 0)
                                 progressBar.setVisibility(View.GONE);
+                            newPassword.setText("");
                         });
             }
             if (profilePictureUri != null) {

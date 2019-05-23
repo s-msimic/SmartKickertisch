@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/app_background"
     tools:context=".MatchHistoryFragment">
 
-    <TextView
+    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/match_history"
-        android:textSize="30sp"
-        android:gravity="center"
-        android:textColor="@color/colorWhite"
-        />
+        android:layout_height="wrap_content"
+        android:id="@+id/matchHistoryRecyclerView"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+    </android.support.v7.widget.RecyclerView>
 
-</FrameLayout>
+</android.support.constraint.ConstraintLayout>
