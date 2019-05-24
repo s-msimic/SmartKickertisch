@@ -7,11 +7,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -24,6 +26,7 @@ import com.google.firebase.database.ValueEventListener;
  */
 public class MatchHistoryFragment extends Fragment {
 
+    FirebaseAuth mAuth;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     RecyclerView.Adapter recyclerViewAdapter;
@@ -36,27 +39,15 @@ public class MatchHistoryFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        long l = System.currentTimeMillis();
         Log.i(TAG, "onCreate: called");
+        mAuth = FirebaseAuth.getInstance();
         Query games = FirebaseDatabase.getInstance().getReference("users")
-                .orderByChild("finishedGames")
-                .limitToLast(4);
+                .child(mAuth.getCurrentUser().getUid())
+                .orderByChild("finishedGames");
 
-        games.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.i(TAG, "onDataChange: Key = " + dataSnapshot.getKey());
-                Log.i(TAG, "onDataChange: Value = " + dataSnapshot.getValue());
-
-                for (DataSnapshot el : dataSnapshot.getChildren()) {
-                    Log.i(TAG, "onDataChange: child = " + el.toString());
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        games.addValueEventListener(lastGamesListener);
+        Log.i(TAG, "onCreate: finished");
     }
 
     @Override
@@ -70,5 +61,27 @@ public class MatchHistoryFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         return view;
     }
+
+    ValueEventListener lastGamesListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            Log.i(TAG, "onDataChange: Key = " + dataSnapshot.getKey());
+            Log.i(TAG, "onDataChange: Value = " + dataSnapshot.getValue());
+
+            for (DataSnapshot game : dataSnapshot.child("finishedGames").getChildren()) {
+                Log.i(TAG, "onDataChange: gameKey = " + game.getKey());
+                Log.i(TAG, "onDataChange: gameValue = " + game.getValue());
+            }
+            Log.i(TAG, "onDataChange: finished");
+            Log.i(TAG, "onDataChange: timeAgoString1 = " + DateUtils.getRelativeTimeSpanString(1551687968L * 1000, 1558688968 , DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE));
+            Log.i(TAG, "onDataChange: timeAgoString2 = " + DateUtils.getRelativeTimeSpanString(1558340968L * 1000, 1558688968 , DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE));
+            Log.i(TAG, "onDataChange: timeAgoString3 = " + DateUtils.getRelativeTimeSpanString(1558310400L * 1000, System.currentTimeMillis(), DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE));
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
 
 }
