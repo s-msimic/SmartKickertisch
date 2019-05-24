@@ -207,8 +207,10 @@ public class LeaderboardActivity extends Activity {
 //                Log.i(TAG, "onDataChange: playerCount = " + database.getReference("players").count);
                 Log.i(TAG, "onDataChange: child: Key = " + snap.getKey() + " Value = " + snap.getValue());
                 uid = "users/" + snap.getKey() + "/profileImage.jpg";
-                userList.put(posi, new User(snap.getKey(), snap.child("nickName").getValue().toString(),
-                        posi--, snap.child(WINS).getValue().toString(), snap.child(GAMES).getValue().toString()));
+                if (snap.child("nickName").getValue() != null && snap.child(WINS).getValue() != null && snap.child(GAMES).getValue() != null) {
+                    userList.put(posi, new User(snap.getKey(), snap.child("nickName").getValue().toString(),
+                            posi--, snap.child(WINS).getValue().toString(), snap.child(GAMES).getValue().toString()));
+                }
                 storageRef.child(uid).getDownloadUrl()
                         .addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
