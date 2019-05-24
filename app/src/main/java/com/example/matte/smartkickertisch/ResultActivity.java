@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,12 +12,24 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
+import com.google.firebase.database.Transaction.Result;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.*;
 
+import java.security.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class ResultActivity extends AppCompatActivity {
     DatabaseReference ref;
+    FirebaseDatabase database;
     private EditText editTextResultRed;
     private EditText editTextResultBlue;
     private String lobbyPath;
@@ -32,6 +45,7 @@ public class ResultActivity extends AppCompatActivity {
     public boolean hostActivity = true;
     private static final String TAG = "ResultActivity";
     private boolean onStopCalled = true;
+    private long unixTime;
 
 
     public boolean getHostActivity(){
@@ -66,16 +80,141 @@ public class ResultActivity extends AppCompatActivity {
         ref.child("games").child(autoID).child("teamBlue").child("score").setValue(editTextNumberResultBlue);
         ref.child("games").child(autoID).child("teamRed").child("score").setValue(editTextNumberResultRed);
         if(teamRedPlayerOne != null) {
-            ref.child("users").child(teamRedPlayerOne).child("finishedGames").child(autoID).setValue(autoID);
+            database.getReference("users").child(teamRedPlayerOne).child("data").child("playedGames").runTransaction(new Transaction.Handler() {
+                @NonNull
+                @Override
+                public Result doTransaction(@NonNull MutableData mutableData) {
+                    Long value = mutableData.getValue(Long.class);
+                    mutableData.setValue(value +1);
+                    return Transaction.success(mutableData);
+                }
+
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                    Log.d(TAG, "onComplete: "+ databaseError);
+                }
+            });
+            if(editTextNumberResultRed == 10){
+                database.getReference("users").child(teamRedPlayerOne).child("data").child("winCounter").runTransaction(new Transaction.Handler() {
+                    @NonNull
+                    @Override
+                    public Result doTransaction(@NonNull MutableData mutableData) {
+                        Long value = mutableData.getValue(Long.class);
+                        mutableData.setValue(value +1);
+                        return Transaction.success(mutableData);
+                    }
+
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                        Log.d(TAG, "onComplete: " + databaseError);
+                    }
+                });
+            }
+            ref.child("users").child(teamRedPlayerOne).child("finishedGames").child(autoID).setValue(unixTime);
         }
         if(teamRedPlayerTwo != null) {
-            ref.child("users").child(teamRedPlayerTwo).child("finishedGames").child(autoID).setValue(autoID);
+            database.getReference("users").child(teamRedPlayerTwo).child("data").child("playedGames").runTransaction(new Transaction.Handler() {
+                @NonNull
+                @Override
+                public Result doTransaction(@NonNull MutableData mutableData) {
+                    Long value = mutableData.getValue(Long.class);
+                    mutableData.setValue(value + 1);
+                    return Transaction.success(mutableData);
+                }
+
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                    Log.d(TAG, "onComplete: "+ databaseError);
+                }
+            });
+
+            if(editTextNumberResultRed == 10){
+                database.getReference("users").child(teamRedPlayerTwo).child("data").child("winCounter").runTransaction(new Transaction.Handler() {
+                    @NonNull
+                    @Override
+                    public Result doTransaction(@NonNull MutableData mutableData) {
+                        Long value = mutableData.getValue(Long.class);
+                        mutableData.setValue(value +1);
+                        return Transaction.success(mutableData);
+                    }
+
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                        Log.d(TAG, "onComplete: "+databaseError);
+                    }
+                });
+            }
+            ref.child("users").child(teamRedPlayerTwo).child("finishedGames").child(autoID).setValue(unixTime);
+            Log.d(TAG, "onClickCommitResult: uid = " + teamRedPlayerTwo);
+
         }
         if(teamBluePlayerThree != null) {
-            ref.child("users").child(teamBluePlayerThree).child("finishedGames").child(autoID).setValue(autoID);
+            database.getReference("users").child(teamBluePlayerThree).child("data").child("playedGames").runTransaction(new Transaction.Handler() {
+                @NonNull
+                @Override
+                public Result doTransaction(@NonNull MutableData mutableData) {
+                    Long value = mutableData.getValue(Long.class);
+                    mutableData.setValue(value +1);
+                    return Transaction.success(mutableData);
+                }
+
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                    Log.d(TAG, "onComplete: "+databaseError);
+                }
+            });
+            if(editTextNumberResultBlue == 10){
+                database.getReference("users").child(teamBluePlayerThree).child("data").child("winCounter").runTransaction(new Transaction.Handler() {
+                    @NonNull
+                    @Override
+                    public Result doTransaction(@NonNull MutableData mutableData) {
+                        Long value = mutableData.getValue(Long.class);
+                        mutableData.setValue(value +1);
+                        return Transaction.success(mutableData);
+                    }
+
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                        Log.d(TAG, "onComplete: "+databaseError);
+                    }
+                });
+            }
+            ref.child("users").child(teamBluePlayerThree).child("finishedGames").child(autoID).setValue(unixTime);
         }
         if(teamBluePlayerFour != null) {
-            ref.child("users").child(teamBluePlayerFour).child("finishedGames").child(autoID).setValue(autoID);
+            database.getReference("users").child(teamBluePlayerFour).child("data").child("playedGames").runTransaction(new Transaction.Handler() {
+                @NonNull
+                @Override
+                public Result doTransaction(@NonNull MutableData mutableData) {
+                    Long value = mutableData.getValue(Long.class);
+                    mutableData.setValue(value + 1);
+                    return Transaction.success(mutableData);
+                }
+
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                    Log.d(TAG, "onComplete: " + databaseError);
+                }
+            });
+            ref.child("users").child(teamBluePlayerFour).child("finishedGames").child(autoID).setValue(unixTime);
+
+            if(editTextNumberResultBlue == 10){
+                database.getReference("users").child(teamBluePlayerFour).child("data").child("winCounter").runTransaction(new Transaction.Handler() {
+                    @NonNull
+                    @Override
+                    public Result doTransaction(@NonNull MutableData mutableData) {
+                        Long value = mutableData.getValue(Long.class);
+                        mutableData.setValue(value + 1);
+                        return Transaction.success(mutableData);
+                    }
+
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                        Log.d(TAG, "onComplete: " + databaseError);
+                    }
+                });
+            }
+
         }
         
         //ref.child("lobby").child(lobbyPath).removeValue();
@@ -103,9 +242,11 @@ public class ResultActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        unixTime = System.currentTimeMillis() / 1000L;
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate: is called");
         setContentView(R.layout.activity_result);
+        database = FirebaseDatabase.getInstance();
         editTextResultBlue = findViewById(R.id.editTextResultBlue);
         editTextResultRed = findViewById(R.id.editTextResultRed);
         lobbyPath = this.getIntent().getExtras().getString("lobbyPath");
@@ -114,6 +255,7 @@ public class ResultActivity extends AppCompatActivity {
         teamRedPlayerTwo = (String)this.getIntent().getExtras().get("teamRedPlayerTwo");
         teamBluePlayerThree = (String)this.getIntent().getExtras().get("teamBluePlayerThree");
         teamBluePlayerFour = (String)this.getIntent().getExtras().get("teamBluePlayerFour");
+
 
         Log.i(TAG, "onCreate: " + lobbyPath);
         ref = FirebaseDatabase.getInstance().getReference();

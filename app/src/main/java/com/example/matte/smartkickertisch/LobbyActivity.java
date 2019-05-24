@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LobbyActivity extends AppCompatActivity {
 
@@ -48,7 +49,7 @@ public class LobbyActivity extends AppCompatActivity {
     List<PlayerButtonTag> players = new ArrayList<>();
     Button deleteButton;
     Button buttonStartGame;
-    boolean buttonIsPressed = false;
+    AtomicBoolean buttonIsPressed;
     private static final String TAG = "LobbyActivity";
     private String automatedID;
 
@@ -56,7 +57,7 @@ public class LobbyActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         Log.i(TAG, "onDestroy: is called");
-        if(buttonIsPressed == false){
+        if(buttonIsPressed.get() == false){
             super.onDestroy();
             return;
         }
@@ -74,7 +75,7 @@ public class LobbyActivity extends AppCompatActivity {
     @Override
     public void onStop(){
         Log.i(TAG, "onStop: is called");
-        if(isStopped == false && buttonIsPressed == false) {
+        if(isStopped == false && buttonIsPressed.get() == false) {
             Log.i(TAG, "onStop: if true");
             ref.child("lobby").child(lobbyPath).removeValue();
             finish();
@@ -90,6 +91,7 @@ public class LobbyActivity extends AppCompatActivity {
         Log.i(TAG, "onClickReturn: return button was clicked");
         ref.child("lobby").child(lobbyPath).removeValue();
         Intent i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
+        Log.i(TAG, "onClickReturn: leaderboard activity called line 93");
         startActivity(i);
     }
 
@@ -99,8 +101,8 @@ public class LobbyActivity extends AppCompatActivity {
             Toast.makeText(LobbyActivity.this, "At both teams must be atleast one player", Toast.LENGTH_SHORT).show();
             return;
         }
-        buttonIsPressed = true;
-
+        buttonIsPressed.set(true);
+        Log.d(TAG, "onClickStartGame: buttonIsPressed =" + buttonIsPressed);
 
 
         Map<String, Object> valueMap = new HashMap<>();
@@ -144,7 +146,7 @@ public class LobbyActivity extends AppCompatActivity {
         ref.removeEventListener(myOwnStatusEventListener);
         Log.i(TAG, "onClickStartGame: " + i);
         Log.i(TAG, "onClickStartGame: players deleted");
-
+        Log.d(TAG, "onClickStartGame: buttonIsPressed =" + buttonIsPressed);
         startActivity(i);
     }
 
@@ -181,6 +183,7 @@ public class LobbyActivity extends AppCompatActivity {
             if(topLeftButton.playerUID.equals(myUID())) {
                 ref.child("lobby").child(getLobbyID()).child("tr").child("o").removeValue();
                 Intent i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
+                Log.i(TAG, "onClickPlayerR1: leaderboard activity called line 185");
                 startActivity(i);
             }
             ref.child("lobby").child(getLobbyID()).child("tr").child("o").removeValue();
@@ -193,6 +196,7 @@ public class LobbyActivity extends AppCompatActivity {
             if(topRightButton.playerUID.equals(myUID())) {
                 ref.child("lobby").child(getLobbyID()).child("tr").child("d").removeValue();
                 Intent i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
+                Log.i(TAG, "onClickPlayerR2: leaderboard activity called line 198");
                 startActivity(i);
             }
             ref.child("lobby").child(getLobbyID()).child("tr").child("d").removeValue();
@@ -204,6 +208,7 @@ public class LobbyActivity extends AppCompatActivity {
             if(bottomLeftButton.playerUID.equals(myUID())) {
                 ref.child("lobby").child(getLobbyID()).child("tb").child("d").removeValue();
                 Intent i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
+                Log.i(TAG, "onClickPlayerB1: leaderboard activity called line 210");
                 startActivity(i);
             }
             ref.child("lobby").child(getLobbyID()).child("tb").child("d").removeValue();
@@ -215,6 +220,7 @@ public class LobbyActivity extends AppCompatActivity {
             if(bottomRightButton.playerUID.equals(myUID())) {
                 ref.child("lobby").child(getLobbyID()).child("tb").child("o").removeValue();
                 Intent i = new Intent(LobbyActivity.this,LeaderboardActivity.class);
+                Log.i(TAG, "onClickPlayerB2: leaderboard activity called line 222");
                 startActivity(i);
             }
             ref.child("lobby").child(getLobbyID()).child("tb").child("o").removeValue();
@@ -433,10 +439,11 @@ public class LobbyActivity extends AppCompatActivity {
 
                 @Override
                 public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                    if(buttonIsPressed == false) {
+                    if(buttonIsPressed.get() == false && topLeftButton.isHost != true) {
                         if (dataSnapshot.getKey().equals(lobbyPath.split("/")[2])) {
                             Intent i;
                             i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
+                            Log.i(TAG, "onChildRemoved: startActivity pressed from on childRemoved line 440"); 
                             startActivity(i);
                         }
                     }
@@ -496,11 +503,12 @@ public class LobbyActivity extends AppCompatActivity {
 
                             @Override
                             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                                if(buttonIsPressed == false) {
+                                if(buttonIsPressed.get() == false && topRightButton.isHost != true) {
                                     Log.i(TAG, "onChildRemoved: buttonIsPressed false start activity (leaderboard)");
                                     if (dataSnapshot.getKey().equals(lobbyPath.split("/")[2])) {
                                         Intent i;
                                         i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
+                                        Log.i(TAG, "onChildRemoved: leaderboard activity called line 505");
                                         startActivity(i);
                                     }
                                 }
@@ -585,10 +593,11 @@ public class LobbyActivity extends AppCompatActivity {
 
                 @Override
                 public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                    if(buttonIsPressed == false) {
+                    if(buttonIsPressed.get() == false) {
                         if (dataSnapshot.getKey().equals(lobbyPath.split("/")[2])) {
                             Intent i;
                             i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
+                            Log.i(TAG, "onChildRemoved: leaderboard activity called line 594");
                             startActivity(i);
                         }
                     }
@@ -651,10 +660,11 @@ public class LobbyActivity extends AppCompatActivity {
 
                 @Override
                 public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                    if(buttonIsPressed == false) {
+                    if(buttonIsPressed.get() == false) {
                         if (dataSnapshot.getKey().equals(lobbyPath.split("/")[2])) {
                             Intent i;
                             i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
+                            Log.i(TAG, "onChildRemoved: leaderboard activity called line 661");
                             startActivity(i);
                         }
                     }
@@ -708,7 +718,7 @@ public class LobbyActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        buttonIsPressed = false;
+        buttonIsPressed = new AtomicBoolean(false);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
         ref = FirebaseDatabase.getInstance().getReference();
