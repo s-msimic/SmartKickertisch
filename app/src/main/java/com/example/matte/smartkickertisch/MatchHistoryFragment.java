@@ -9,9 +9,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -19,6 +21,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.TreeMap;
 
 
 /**
@@ -29,7 +35,7 @@ public class MatchHistoryFragment extends Fragment {
     FirebaseAuth mAuth;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
-    RecyclerView.Adapter recyclerViewAdapter;
+    MatchHistoryRecyclerViewAdapter recyclerViewAdapter;
     private static final String TAG = "MatchHistoryFragment";
 
     public MatchHistoryFragment() {
@@ -39,7 +45,6 @@ public class MatchHistoryFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        long l = System.currentTimeMillis();
         Log.i(TAG, "onCreate: called");
         mAuth = FirebaseAuth.getInstance();
         Query games = FirebaseDatabase.getInstance().getReference("users")
@@ -65,17 +70,26 @@ public class MatchHistoryFragment extends Fragment {
     ValueEventListener lastGamesListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            HashMap<Integer, String> gamesMap = new HashMap<>();
+            int position = (int) dataSnapshot.child("finishedGames").getChildrenCount() - 1;
             Log.i(TAG, "onDataChange: Key = " + dataSnapshot.getKey());
             Log.i(TAG, "onDataChange: Value = " + dataSnapshot.getValue());
 
             for (DataSnapshot game : dataSnapshot.child("finishedGames").getChildren()) {
                 Log.i(TAG, "onDataChange: gameKey = " + game.getKey());
                 Log.i(TAG, "onDataChange: gameValue = " + game.getValue());
+                gamesMap.put(position--, game.getKey());
             }
+            Log.i(TAG, "onDataChange: gamesMap = " + gamesMap.toString());
+            recyclerViewAdapter = new MatchHistoryRecyclerViewAdapter(gamesMap);
+            recyclerView.setAdapter(recyclerViewAdapter);
+            recyclerViewAdapter.setOnItemClickListener(position1 -> {
+                Toast.makeText(getContext(), "Game Nr. " + position1, Toast.LENGTH_SHORT).show();
+                Log.i(TAG, "onItemClick: " + recyclerViewAdapter.dataMap.get(position1).getBlueTeamScore() + ":" + recyclerViewAdapter.dataMap.get(position1).getRedTeamScore());
+            });
+
             Log.i(TAG, "onDataChange: finished");
-            Log.i(TAG, "onDataChange: timeAgoString1 = " + DateUtils.getRelativeTimeSpanString(1551687968L * 1000, 1558688968 , DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE));
-            Log.i(TAG, "onDataChange: timeAgoString2 = " + DateUtils.getRelativeTimeSpanString(1558340968L * 1000, 1558688968 , DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE));
-            Log.i(TAG, "onDataChange: timeAgoString3 = " + DateUtils.getRelativeTimeSpanString(1558310400L * 1000, System.currentTimeMillis(), DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE));
         }
 
         @Override

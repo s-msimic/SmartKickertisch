@@ -111,7 +111,7 @@ public class LobbyActivity extends AppCompatActivity {
         Map<String, Object> playerBlueMap = new HashMap<>();
 
 
-        dataMap.put("date",System.currentTimeMillis()/1000L);
+        dataMap.put("date",System.currentTimeMillis());
         valueMap.put("data", dataMap);
         playerRedMap.put("player1", this.topLeftButton.playerUID);
         playerRedMap.put("player2", this.topRightButton.playerUID);
@@ -258,7 +258,7 @@ public class LobbyActivity extends AppCompatActivity {
                     topLeftButton.isHost = true;
                 }
                 if(player.isHost == true){
-                    player.setText(player.playerNickName + " Host");
+                    player.setText("Host\n" + player.playerNickName);
                 }
                 if(player.isHost == true && myUID().equals(player.playerUID)){
                     buttonStartGame.setVisibility(View.VISIBLE);

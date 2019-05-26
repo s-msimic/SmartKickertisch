@@ -7,8 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.squareup.picasso.Picasso;
+
 import de.hdodenhof.circleimageview.CircleImageView;
+
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -36,19 +39,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
-        if (userList.size() == countBestPlayers) {
-            viewHolder.positionTextView.setText(userList.get(i + 1).getPosition() + ".");
-            viewHolder.nicknameTextView.setText("Nickname: " + userList.get(i + 1).getNickname());
-            if (spinnerPosition == 0) {
-                viewHolder.scoreTextView.setText("Wins: " + userList.get(i + 1).getWins());
-            } else if (spinnerPosition == 1){
-                viewHolder.scoreTextView.setText("Games: " + userList.get(i + 1).getGames());
-            }
-            if (userList.get(i + 1).getProfilePicture() != null){
-                Log.i(TAG, "onBindViewHolder: user nr." + (i + 1) + " " + Objects.requireNonNull(userList.get(i + 1)).getProfilePicture().toString());
-                // TODO: 24.05.2019 after .load().networkPolicy(NetworkPolicy.OFFLINE) should look for cached pictures and Override onError() method if pictures aren't in cache
-                Picasso.get().load(userList.get(i + 1).getProfilePicture()).placeholder(R.drawable.profile_picture_preview).into(viewHolder.profilePictureImageView);
-            }
+        viewHolder.positionTextView.setText(userList.get(i + 1).getPosition() + ".");
+        viewHolder.nicknameTextView.setText("Nickname: " + userList.get(i + 1).getNickname());
+
+        if (spinnerPosition == 0) {
+            viewHolder.scoreTextView.setText("Wins: " + userList.get(i + 1).getWins());
+        } else if (spinnerPosition == 1) {
+            viewHolder.scoreTextView.setText("Games: " + userList.get(i + 1).getGames());
+        }
+
+        if (userList.get(i + 1).getProfilePicture() != null) {
+            Log.i(TAG, "onBindViewHolder: user nr." + (i + 1) + " " + Objects.requireNonNull(userList.get(i + 1)).getProfilePicture().toString());
+            // TODO: 24.05.2019 after .load().networkPolicy(NetworkPolicy.OFFLINE) should look for cached pictures and Override onError() method if pictures aren't in cache
+            Picasso.get().load(userList.get(i + 1).getProfilePicture()).placeholder(R.drawable.profile_picture_preview).into(viewHolder.profilePictureImageView);
         }
     }
 

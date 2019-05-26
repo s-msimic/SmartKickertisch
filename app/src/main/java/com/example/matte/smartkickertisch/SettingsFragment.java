@@ -18,6 +18,8 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,10 +33,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -87,7 +86,6 @@ public class SettingsFragment extends Fragment {
         Log.i(TAG, "onCreate: key = " + database.getReference("users").getKey());
         Log.i(TAG, "onCreate: child = " + database.getReference("users").child(mAuth.getCurrentUser().getUid()).child("nickName"));
         Log.i(TAG, "onCreate: keyChild = " + database.getReference("users").child(mAuth.getCurrentUser().getUid()).child("nickName").getKey());
-        database.getReference("users").child(mAuth.getCurrentUser().getUid()).addValueEventListener(vel);
     }
 
     @Override
@@ -110,24 +108,29 @@ public class SettingsFragment extends Fragment {
         constraintLayout.setOnClickListener(hideKeyboardListener);
         currentNickname.setText(mAuth.getCurrentUser().getDisplayName());
         currentEMailAddress.setText(mAuth.getCurrentUser().getEmail());
-        currentProfilePictureCirecleImageView.setOnClickListener(v -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-                } else {
-                    Log.d(TAG, "addImage: read storage permission = " + Manifest.permission.READ_EXTERNAL_STORAGE);
-                    pickImage();
-                }
-            } else
-                pickImage();
-        });
+        currentProfilePictureCirecleImageView.setOnClickListener(addPictureOnClickListener);
+
         Log.i(TAG, "onCreateView: photoUrl = " + mAuth.getCurrentUser().getPhotoUrl());
         if (mAuth.getCurrentUser().getPhotoUrl() != null) {
             Picasso.get().load(mAuth.getCurrentUser().getPhotoUrl()).placeholder(R.drawable.profile_picture_preview).into(currentProfilePictureCirecleImageView);
         }
-        saveChangesButton.setOnClickListener(saveChangesListener);
+        newNickname.addTextChangedListener(saveChangesTextWatcher);
+        newPassword.addTextChangedListener(saveChangesTextWatcher);
+        newEMail.addTextChangedListener(saveChangesTextWatcher);
         return view;
     }
+
+    View.OnClickListener addPictureOnClickListener = v -> {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            } else {
+                Log.d(TAG, "addImage: read storage permission = " + Manifest.permission.READ_EXTERNAL_STORAGE);
+                pickImage();
+            }
+        } else
+            pickImage();
+    };
 
     View.OnClickListener hideKeyboardListener = v -> {
         if (v.getId() == R.id.settingsConstraintLayout) {
@@ -147,18 +150,33 @@ public class SettingsFragment extends Fragment {
         }
     };
 
-    ValueEventListener vel = new ValueEventListener() {
+    TextWatcher saveChangesTextWatcher = new TextWatcher() {
         @Override
-        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            Log.i(TAG, "onDataChange: key = " + dataSnapshot.getKey() + " / value = " + dataSnapshot.getValue());
-            Log.d(TAG, "onDataChange: wins = " + dataSnapshot.child("data").child("winCounter").getValue());
-            Log.i(TAG, "onDataChange: user name = " + mAuth.getCurrentUser().getDisplayName());
-            Log.i(TAG, "onDataChange: user mail = " + mAuth.getCurrentUser().getEmail());
-            Log.i(TAG, "onDataChange: user photo = " + mAuth.getCurrentUser().getPhotoUrl());
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
         }
 
         @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            Log.d(TAG, "onTextChanged: charseq = " + s + " start = " + start);
+            String nickname = newNickname.getText().toString().trim();
+            String email = newEMail.getText().toString().trim();
+            String password = newPassword.getText().toString().trim();
+
+            if (!nickname.isEmpty() || !email.isEmpty() || !password.isEmpty()) {
+                Log.d(TAG, "onTextChanged: nick = " + nickname + " email = " + email + " password = " + password);
+                saveChangesButton.setEnabled(true);
+                saveChangesButton.setAlpha(1);
+                saveChangesButton.setOnClickListener(saveChangesListener);
+            } else {
+                saveChangesButton.setEnabled(false);
+                saveChangesButton.setAlpha(0.7f);
+                saveChangesButton.setOnClickListener(null);
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
 
         }
     };
@@ -167,6 +185,7 @@ public class SettingsFragment extends Fragment {
         @Override
         public void onClick(View v) {
             progressBar.setVisibility(View.VISIBLE);
+            newNickname.setText(newNickname.getText().toString().trim());
             AtomicInteger tasksRunning = new AtomicInteger(0);
             Log.i(TAG, "onClick: nickname string = " + newNickname);
             StringBuilder errorMessage = new StringBuilder();
@@ -175,10 +194,13 @@ public class SettingsFragment extends Fragment {
             final String password = newPassword.getText().toString();
 
             if (nickname.contains(" ")) {
-                errorMessage.append("Your Nickname shouldn't contain any spaces!\n");
+                errorMessage.append("Your Nickname can't contain any spaces!\n");
             }
             if (nickname.length() > 15) {
                 errorMessage.append("Your Nickname can't be longer than 15 characters!\n");
+            }
+            if (eMail.length() > 29) {
+                errorMessage.append("Your E-Mail can't be longer than 30 characters");
             }
 
             if (!nickname.equals("") && !nickname.equals(currentNickname.getText().toString()) && errorMessage.toString().equals("")) {
@@ -208,7 +230,7 @@ public class SettingsFragment extends Fragment {
                         });
             }
 
-            if (!eMail.equals("") && !eMail.equals(mAuth.getCurrentUser().getEmail())) {
+            if (!eMail.equals("") && !eMail.equals(mAuth.getCurrentUser().getEmail()) && eMail.length() < 30) {
                 tasksRunning.addAndGet(1);
                 Log.d(TAG, "onClick: email " + eMail);
 
@@ -327,7 +349,9 @@ public class SettingsFragment extends Fragment {
                 currentProfilePictureCirecleImageView.setImageBitmap(profilePictureBitmap);
                 Log.i("WIDTH:", currentProfilePictureCirecleImageView.getWidth() + "");
                 Log.i("HEIGHT:", currentProfilePictureCirecleImageView.getHeight() + "");
-
+                saveChangesButton.setAlpha(1);
+                saveChangesButton.setEnabled(true);
+                saveChangesButton.setOnClickListener(saveChangesListener);
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -242,7 +242,7 @@ public class ResultActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        unixTime = System.currentTimeMillis() / 1000L;
+        unixTime = System.currentTimeMillis();
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate: is called");
         setContentView(R.layout.activity_result);

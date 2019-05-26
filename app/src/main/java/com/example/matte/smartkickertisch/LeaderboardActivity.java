@@ -221,7 +221,6 @@ public class LeaderboardActivity extends Activity {
                             if (userList.size() == countBestPlayers) {
                                 adapter = new RecyclerViewAdapter(userList, countBestPlayers, dropdown.getSelectedItemPosition());
                                 recyclerView.setAdapter(adapter);
-                                adapter.notifyDataSetChanged();
                                 progressBar.setVisibility(View.GONE);
                             }
                         });
