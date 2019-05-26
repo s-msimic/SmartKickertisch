@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/matchHistoryGameDialog"
+    android:padding="16dp"
+    android:background="@drawable/match_history_dialog_background">
+
+    <com.example.matte.smartkickertisch.PlayerButtonTag
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/gameDialogRedDefensePlayerButtonTag"
+        android:background="@drawable/border_button_red"
+        android:textSize="12sp"
+        android:textColor="@color/colorWhite"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toStartOf="@id/gameDialogSoccerFieldImageView"
+        app:layout_constraintEnd_toStartOf="@id/gameDialogRedOffensePlayerButtonTag"
+        app:layout_constraintBottom_toTopOf="@id/gameDialogSoccerFieldImageView"
+        />
+
+    <com.example.matte.smartkickertisch.PlayerButtonTag
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/gameDialogRedOffensePlayerButtonTag"
+        android:background="@drawable/border_button_red"
+        android:textSize="12sp"
+        android:textColor="@color/colorWhite"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toEndOf="@id/gameDialogRedDefensePlayerButtonTag"
+        app:layout_constraintEnd_toEndOf="@id/gameDialogSoccerFieldImageView"
+        app:layout_constraintBottom_toTopOf="@id/gameDialogSoccerFieldImageView"
+        />
+
+    <ImageView
+        android:layout_width="324dp"
+        android:layout_height="191dp"
+        android:id="@+id/gameDialogSoccerFieldImageView"
+        app:srcCompat="@drawable/soccerfield"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gameDialogBlueTeamScoreTextView"
+        android:text="10"
+        android:textSize="28sp"
+        android:textColor="@color/colorSwitchSignUpAndLogin"
+        app:layout_constraintTop_toTopOf="@id/gameDialogSoccerFieldImageView"
+        app:layout_constraintBottom_toBottomOf="@id/gameDialogSoccerFieldImageView"
+        app:layout_constraintStart_toStartOf="@id/gameDialogSoccerFieldImageView"
+        app:layout_constraintEnd_toEndOf="@id/gameDialogSoccerFieldImageView"
+        app:layout_constraintHorizontal_bias="0.75"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gameDialogRedTeamScoreTextView"
+        android:text="10"
+        android:textSize="28sp"
+        android:textColor="@color/colorSignUpError"
+        app:layout_constraintTop_toTopOf="@id/gameDialogSoccerFieldImageView"
+        app:layout_constraintBottom_toBottomOf="@id/gameDialogSoccerFieldImageView"
+        app:layout_constraintStart_toStartOf="@id/gameDialogSoccerFieldImageView"
+        app:layout_constraintEnd_toEndOf="@id/gameDialogSoccerFieldImageView"
+        app:layout_constraintHorizontal_bias="0.25"
+        />
+
+    <com.example.matte.smartkickertisch.PlayerButtonTag
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/gameDialogBlueDefenseBlayerButtonTag"
+        android:background="@drawable/border_button_blue"
+        android:textSize="12sp"
+        android:textColor="@color/colorWhite"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toStartOf="@id/gameDialogSoccerFieldImageView"
+        app:layout_constraintEnd_toStartOf="@id/gameDialogBlueOffensePlayerButtonTag"
+        app:layout_constraintTop_toBottomOf="@id/gameDialogSoccerFieldImageView"
+        />
+
+    <com.example.matte.smartkickertisch.PlayerButtonTag
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/gameDialogBlueOffensePlayerButtonTag"
+        android:background="@drawable/border_button_blue"
+        android:textSize="12sp"
+        android:textColor="@color/colorWhite"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toEndOf="@id/gameDialogBlueDefenseBlayerButtonTag"
+        app:layout_constraintEnd_toEndOf="@id/gameDialogSoccerFieldImageView"
+        app:layout_constraintTop_toBottomOf="@id/gameDialogSoccerFieldImageView"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/gameDialogDateTextView"
+        android:text="This will be the Date of the Game"
+        android:textColor="@color/colorWhite"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="@id/gameDialogSoccerFieldImageView"
+        app:layout_constraintEnd_toEndOf="@id/gameDialogSoccerFieldImageView"
+        app:layout_constraintTop_toBottomOf="@id/gameDialogBlueDefenseBlayerButtonTag"
+        />
+
+
+</android.support.constraint.ConstraintLayout>
