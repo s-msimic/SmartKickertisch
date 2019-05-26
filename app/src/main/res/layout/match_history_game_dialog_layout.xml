@@ -56,7 +56,7 @@
         app:layout_constraintBottom_toBottomOf="@id/gameDialogSoccerFieldImageView"
         app:layout_constraintStart_toStartOf="@id/gameDialogSoccerFieldImageView"
         app:layout_constraintEnd_toEndOf="@id/gameDialogSoccerFieldImageView"
-        app:layout_constraintHorizontal_bias="0.75"
+        app:layout_constraintHorizontal_bias="0.25"
         />
 
     <TextView
@@ -70,7 +70,7 @@
         app:layout_constraintBottom_toBottomOf="@id/gameDialogSoccerFieldImageView"
         app:layout_constraintStart_toStartOf="@id/gameDialogSoccerFieldImageView"
         app:layout_constraintEnd_toEndOf="@id/gameDialogSoccerFieldImageView"
-        app:layout_constraintHorizontal_bias="0.25"
+        app:layout_constraintHorizontal_bias="0.75"
         />
 
     <com.example.matte.smartkickertisch.PlayerButtonTag

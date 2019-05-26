@@ -466,7 +466,6 @@ public class LobbyActivity extends AppCompatActivity {
             playerArrangement();
         }
 
-        // -----------------------------------------------------------------------------------------
         if (topRightEventListener != null) {
             ref.removeEventListener(topRightEventListener);
         }
@@ -553,7 +552,6 @@ public class LobbyActivity extends AppCompatActivity {
             playerArrangement();
         }
 
-        // -----------------------------------------------------------------------------------------
         if (bottomLeftEventListener != null) {
             ref.removeEventListener(bottomLeftEventListener);
         }
@@ -620,7 +618,6 @@ public class LobbyActivity extends AppCompatActivity {
             playerArrangement();
         }
 
-        // -----------------------------------------------------------------------------------------
         if (bottomRightEventListener != null) {
             ref.removeEventListener(bottomRightEventListener);
         }
@@ -687,11 +684,7 @@ public class LobbyActivity extends AppCompatActivity {
             playerArrangement();
         }
 
-
     }
-
-
-
 
     public String getLobbyID(){
         return this.lobbyPath.split("/")[0];
@@ -733,7 +726,6 @@ public class LobbyActivity extends AppCompatActivity {
         bottomRightButton = findViewById(R.id.buttonB2);
         buttonStartGame = findViewById(R.id.buttonStartGame);
 
-
         players.add(topLeftButton);
         players.add(topRightButton);
         players.add(bottomLeftButton);
@@ -743,8 +735,6 @@ public class LobbyActivity extends AppCompatActivity {
         String lobbyPathSplit = lobbyPath;
         deletePath = lobbyPathSplit.split("/")[0];
         visibilityCommitButton();
-
-
 
     }
 }

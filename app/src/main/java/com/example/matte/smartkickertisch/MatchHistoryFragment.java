@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -35,7 +34,7 @@ public class MatchHistoryFragment extends Fragment {
     private static final String TAG = "MatchHistoryFragment";
 
     public MatchHistoryFragment() {
-        // Required empty public constructor
+
     }
 
     @Override
@@ -81,8 +80,19 @@ public class MatchHistoryFragment extends Fragment {
             recyclerViewAdapter = new MatchHistoryRecyclerViewAdapter(gamesMap);
             recyclerView.setAdapter(recyclerViewAdapter);
             recyclerViewAdapter.setOnItemClickListener(position1 -> {
+                Bundle args = new Bundle();
+                try {
+                    args.putInt("blueScore", recyclerViewAdapter.dataMap.get(position1).getBlueTeamScore());
+                    args.putInt("redScore", recyclerViewAdapter.dataMap.get(position1).getRedTeamScore());
+                    args.putLong("date", recyclerViewAdapter.dataMap.get(position1).getGameDate());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 Log.i(TAG, "onItemClick: " + recyclerViewAdapter.dataMap.get(position1).getBlueTeamScore() + ":" + recyclerViewAdapter.dataMap.get(position1).getRedTeamScore());
+                MatchHistoryFragment.this.setArguments(args);
                 MatchHistoryGameDialog dialog = new MatchHistoryGameDialog();
+                dialog.setArguments(args);
                 dialog.show(requireActivity().getSupportFragmentManager(), position1 + "");
             });
 
