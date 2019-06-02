@@ -5,10 +5,13 @@ import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -34,7 +37,34 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
     private EditText passwordEditText;
     private ConstraintLayout loginConstraintLayout;
     private ProgressBar progressBar;
+    private Button loginButton;
     private static final String TAG = "LoginActivity";
+
+    public TextWatcher loginTextWatch = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            String email = eMailEditText.getText().toString().trim();
+            String password = passwordEditText.getText().toString().trim();
+
+            if (!email.isEmpty() && !password.isEmpty()) {
+                loginButton.setEnabled(true);
+                loginButton.setAlpha(1);
+            } else {
+                loginButton.setEnabled(false);
+                loginButton.setAlpha(0.7f);
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 
     /**
      * While in the "password" text box the "ENTER" button of the keyboard will automatically press the "Login" button and
@@ -147,7 +177,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
         eMailEditText = findViewById(R.id.editTextE_Mail);
         passwordEditText = findViewById(R.id.editTextPassword);
         loginConstraintLayout = findViewById(R.id.loginBackgroundLayout);
-
+        loginButton = findViewById(R.id.buttonLogin);
+        eMailEditText.addTextChangedListener(loginTextWatch);
+        passwordEditText.addTextChangedListener(loginTextWatch);
         FirebaseApp.initializeApp(this);
 
         mAuth = FirebaseAuth.getInstance();

@@ -15,15 +15,16 @@ import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.*;
 import com.google.firebase.database.*;
 import com.google.firebase.storage.FirebaseStorage;
@@ -41,6 +42,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     FirebaseDatabase database;
     DatabaseReference myRef;
     StorageReference mStorageRef;
+    private Button signUpButton;
     private EditText nicknameEditText;
     private EditText eMailEditText;
     private EditText passwordEditText;
@@ -52,6 +54,33 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private ProgressBar signUpProgressBar;
     private static final String TAG = "SignUpActivity";
 
+    public TextWatcher signUpTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            String nickname = nicknameEditText.getText().toString().trim();
+            String email = eMailEditText.getText().toString().trim();
+            String password = passwordEditText.getText().toString().trim();
+            String repeatPassword = repeatPasswordEditText.getText().toString().trim();
+
+            if (!nickname.isEmpty() && !email.isEmpty() && !password.isEmpty() && !repeatPassword.isEmpty()) {
+                signUpButton.setEnabled(true);
+                signUpButton.setAlpha(1);
+            } else {
+                signUpButton.setEnabled(false);
+                signUpButton.setAlpha(0.7f);
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 
     /**
      * Creates account with Nickname, E-Mail and Password. If an error occurs it will be shown in a TextView.
@@ -91,82 +120,79 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
      * picture it will be added under "Storage".
      */
     private void createAccount() {
-        mAuth.createUserWithEmailAndPassword(eMailEditText.getText().toString(), passwordEditText.getText().toString()).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    myRef.child("users").child(mAuth.getCurrentUser().getUid()).child("nickName").setValue(nicknameEditText.getText().toString());
-                    Log.i(TAG, "onComplete: successful UID = " + mAuth.getCurrentUser().getUid());
-                    if (profilePictureUri != null) {
-                        // Get the data from an ImageView as bytes
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        profilePictureBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                        byte[] data = baos.toByteArray();
+        mAuth.createUserWithEmailAndPassword(eMailEditText.getText().toString(), passwordEditText.getText().toString()).addOnCompleteListener(this, task -> {
+            if (task.isSuccessful()) {
+                myRef.child("users").child(mAuth.getCurrentUser().getUid()).child("nickName").setValue(nicknameEditText.getText().toString());
+                Log.i(TAG, "onComplete: successful UID = " + mAuth.getCurrentUser().getUid());
+                if (profilePictureUri != null) {
+                    // Get the data from an ImageView as bytes
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    profilePictureBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    byte[] data = baos.toByteArray();
 
-                        UploadTask uploadTask = mStorageRef.child("users/" + mAuth.getCurrentUser().getUid() + "/profileImage.jpg").putBytes(data);
-                        uploadTask
-                                .addOnFailureListener(exception -> Log.d("Storage", exception.getMessage()))
-                                .addOnSuccessListener(taskSnapshot -> {
-                                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                                    // ...
-                                    String picUid = "users/" + mAuth.getCurrentUser().getUid() + "/profileImage.jpg";
-                                    mStorageRef.child(picUid).getDownloadUrl()
-                                            .addOnSuccessListener(uri -> {
-                                                Log.i(TAG, "onSuccess: uri successfully retrieved = " + uri);
-                                                UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
-                                                        .setDisplayName(nicknameEditText.getText().toString())
-                                                        .setPhotoUri(uri)
-                                                        .build();
+                    UploadTask uploadTask = mStorageRef.child("users/" + mAuth.getCurrentUser().getUid() + "/profileImage.jpg").putBytes(data);
+                    uploadTask
+                            .addOnFailureListener(exception -> Log.d("Storage", exception.getMessage()))
+                            .addOnSuccessListener(taskSnapshot -> {
+                                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                                // ...
+                                String picUid = "users/" + mAuth.getCurrentUser().getUid() + "/profileImage.jpg";
+                                mStorageRef.child(picUid).getDownloadUrl()
+                                        .addOnSuccessListener(uri -> {
+                                            Log.i(TAG, "onSuccess: uri successfully retrieved = " + uri);
+                                            UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
+                                                    .setDisplayName(nicknameEditText.getText().toString())
+                                                    .setPhotoUri(uri)
+                                                    .build();
 
-                                                mAuth.getCurrentUser().updateProfile(profileUpdate)
-                                                        .addOnCompleteListener(task1 -> {
-                                                            if (task1.isSuccessful()) {
-                                                                Log.i(TAG, "onComplete: name = " + mAuth.getCurrentUser().getDisplayName());
-                                                                Log.i(TAG, "onComplete: mail = " + mAuth.getCurrentUser().getEmail());
-                                                                Log.i(TAG, "onComplete: photoURL = " + mAuth.getCurrentUser().getPhotoUrl());
-                                                            }
-                                                        });
-                                            });
-                                    Intent i = new Intent(SignUpActivity.this, LeaderboardActivity.class);
-                                    signUpProgressBar.setVisibility(View.GONE);
-                                    startActivity(i);
-                                });
+                                            mAuth.getCurrentUser().updateProfile(profileUpdate)
+                                                    .addOnCompleteListener(task1 -> {
+                                                        if (task1.isSuccessful()) {
+                                                            Log.i(TAG, "onComplete: name = " + mAuth.getCurrentUser().getDisplayName());
+                                                            Log.i(TAG, "onComplete: mail = " + mAuth.getCurrentUser().getEmail());
+                                                            Log.i(TAG, "onComplete: photoURL = " + mAuth.getCurrentUser().getPhotoUrl());
+                                                        }
+                                                    });
+                                        });
+                                Intent i = new Intent(SignUpActivity.this, LeaderboardActivity.class);
+                                signUpProgressBar.setVisibility(View.GONE);
+                                startActivity(i);
+                            });
 
-                        // if there is no picture selected don't upload anything
-                    } else {
-                        UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
-                                .setDisplayName(nicknameEditText.getText().toString())
-                                .build();
-
-                        mAuth.getCurrentUser().updateProfile(profileUpdate)
-                                .addOnCompleteListener(task12 -> {
-                                    if (task12.isSuccessful()) {
-                                        Log.i(TAG, "onComplete: name = " + mAuth.getCurrentUser().getDisplayName());
-                                        Log.i(TAG, "onComplete: mail = " + mAuth.getCurrentUser().getEmail());
-                                        Log.i(TAG, "onComplete: photoURL = " + mAuth.getCurrentUser().getPhotoUrl());
-                                    }
-                                });
-
-                        Intent i = new Intent(SignUpActivity.this, LeaderboardActivity.class);
-                        signUpProgressBar.setVisibility(View.GONE);
-                        startActivity(i);
-                    }
-
+                    // if there is no picture selected don't upload anything
                 } else {
-                    //error handling
-                    try {
-                        throw task.getException();
-                    } catch (FirebaseAuthWeakPasswordException e) {
-                        errorTextEditText.setText(getString(R.string.sign_up_error_password_short));
-                    } catch (FirebaseAuthUserCollisionException e) {
-                        errorTextEditText.setText(getString(R.string.sign_up_error_email_taken));
-                    } catch (FirebaseAuthInvalidCredentialsException e) {
-                        errorTextEditText.setText(e.getMessage());
-                    } catch (Exception e) {
-                        Log.e(TAG, "onComplete: sign up error = " + e.getMessage() ,e);
-                    } finally {
-                        signUpProgressBar.setVisibility(View.GONE);
-                    }
+                    UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
+                            .setDisplayName(nicknameEditText.getText().toString())
+                            .build();
+
+                    mAuth.getCurrentUser().updateProfile(profileUpdate)
+                            .addOnCompleteListener(task12 -> {
+                                if (task12.isSuccessful()) {
+                                    Log.i(TAG, "onComplete: name = " + mAuth.getCurrentUser().getDisplayName());
+                                    Log.i(TAG, "onComplete: mail = " + mAuth.getCurrentUser().getEmail());
+                                    Log.i(TAG, "onComplete: photoURL = " + mAuth.getCurrentUser().getPhotoUrl());
+                                }
+                            });
+
+                    Intent i = new Intent(SignUpActivity.this, LeaderboardActivity.class);
+                    signUpProgressBar.setVisibility(View.GONE);
+                    startActivity(i);
+                }
+
+            } else {
+                //error handling
+                try {
+                    throw task.getException();
+                } catch (FirebaseAuthWeakPasswordException e) {
+                    errorTextEditText.setText(getString(R.string.sign_up_error_password_short));
+                } catch (FirebaseAuthUserCollisionException e) {
+                    errorTextEditText.setText(getString(R.string.sign_up_error_email_taken));
+                } catch (FirebaseAuthInvalidCredentialsException e) {
+                    errorTextEditText.setText(e.getMessage());
+                } catch (Exception e) {
+                    Log.e(TAG, "onComplete: sign up error = " + e.getMessage() ,e);
+                } finally {
+                    signUpProgressBar.setVisibility(View.GONE);
                 }
             }
         });
@@ -365,6 +391,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         mStorageRef = FirebaseStorage.getInstance().getReference();
 
         myRef = database.getReference();
+        signUpButton = findViewById(R.id.signUpButton);
         nicknameEditText = findViewById(R.id.nicknameEditText);
         eMailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
@@ -373,7 +400,10 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         ConstraintLayout signUpForegroundConstraintLayout = findViewById(R.id.signUpForegroundConstraintLayout);
         imageView = findViewById(R.id.profilePictureImageView);
         signUpProgressBar = findViewById(R.id.signUpLoadingProgressBar);
-
+        nicknameEditText.addTextChangedListener(signUpTextWatcher);
+        eMailEditText.addTextChangedListener(signUpTextWatcher);
+        passwordEditText.addTextChangedListener(signUpTextWatcher);
+        repeatPasswordEditText.addTextChangedListener(signUpTextWatcher);
         signUpForegroundConstraintLayout.setOnClickListener(this);
 
     }

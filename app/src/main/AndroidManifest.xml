@@ -14,7 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ResultActivity">
+        <activity
+            android:name=".ResultActivity"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".ProfileActivity"
@@ -22,7 +24,8 @@
             android:windowSoftInputMode="adjustResize|stateHidden">
         </activity>
         <activity
-            android:name=".LobbyActivity">
+            android:name=".LobbyActivity"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".WelcomeActivity"

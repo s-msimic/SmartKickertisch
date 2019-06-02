@@ -85,6 +85,19 @@ public class MatchHistoryFragment extends Fragment {
                     args.putInt("blueScore", recyclerViewAdapter.dataMap.get(position1).getBlueTeamScore());
                     args.putInt("redScore", recyclerViewAdapter.dataMap.get(position1).getRedTeamScore());
                     args.putLong("date", recyclerViewAdapter.dataMap.get(position1).getGameDate());
+                    if (recyclerViewAdapter.dataMap.get(position1).getBlueTeamDefenseID() != null) {
+                        args.putString("blueDefense", recyclerViewAdapter.dataMap.get(position1).getBlueTeamDefenseID());
+                    }
+                    if (recyclerViewAdapter.dataMap.get(position1).getBlueTeamOffenseID() != null) {
+                        args.putString("blueOffense", recyclerViewAdapter.dataMap.get(position1).getBlueTeamOffenseID());
+                    }
+                    if (recyclerViewAdapter.dataMap.get(position1).getRedTeamDefenseID() != null) {
+                        args.putString("redDefense", recyclerViewAdapter.dataMap.get(position1).getRedTeamDefenseID());
+                    }
+                    if (recyclerViewAdapter.dataMap.get(position1).getRedTeamOffenseID() != null) {
+                        args.putString("redOffense", recyclerViewAdapter.dataMap.get(position1).getRedTeamOffenseID());
+                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

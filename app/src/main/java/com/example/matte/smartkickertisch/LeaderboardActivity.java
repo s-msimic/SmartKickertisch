@@ -168,14 +168,14 @@ public class LeaderboardActivity extends Activity {
                     Query wins = FirebaseDatabase.getInstance().getReference("users")
                             .orderByChild(WINS)
                             .limitToLast(countBestPlayers);
-                    wins.addListenerForSingleValueEvent(vel);
+                    wins.addValueEventListener(vel);
                     spinnerTextView.setText(getString(R.string.sort_by_wins));
                     break;
                 case 1:
                     Query games = FirebaseDatabase.getInstance().getReference("users")
                             .orderByChild(GAMES)
                             .limitToLast(countBestPlayers);
-                    games.addListenerForSingleValueEvent(vel);
+                    games.addValueEventListener(vel);
                     spinnerTextView.setText(getString(R.string.sort_by_games));
                     break;
             }

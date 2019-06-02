@@ -116,8 +116,8 @@ public class LobbyActivity extends AppCompatActivity {
         playerRedMap.put("player1", this.topLeftButton.playerUID);
         playerRedMap.put("player2", this.topRightButton.playerUID);
         playerRedMap.put("score", 0);
-        playerBlueMap.put("player3", this.bottomLeftButton.playerUID);
-        playerBlueMap.put("player4", this.bottomRightButton.playerUID);
+        playerBlueMap.put("player2", this.bottomLeftButton.playerUID);
+        playerBlueMap.put("player1", this.bottomRightButton.playerUID);
         playerBlueMap.put("score", 0);
         valueMap.put("teamRed", playerRedMap);
         valueMap.put("teamBlue", playerBlueMap);
@@ -131,19 +131,19 @@ public class LobbyActivity extends AppCompatActivity {
         i.putExtra("autoID", autoID);
         i.putExtra("teamRedPlayerOne", this.topLeftButton.playerUID);
         i.putExtra("teamRedPlayerTwo", this.topRightButton.playerUID);
-        i.putExtra("teamBluePlayerThree", this.bottomLeftButton.playerUID);
-        i.putExtra("teamBluePlayerFour", this.bottomRightButton.playerUID);
+        i.putExtra("teamBluePlayerTwo", this.bottomLeftButton.playerUID);
+        i.putExtra("teamBluePlayerOne", this.bottomRightButton.playerUID);
         Task t = ref.child("lobby").child(getLobbyID()).removeValue();
         if(topLeftEventListener != null)
-        ref.removeEventListener(topLeftEventListener);
+            ref.removeEventListener(topLeftEventListener);
         if(topRightEventListener != null)
-        ref.removeEventListener(topRightEventListener);
+            ref.removeEventListener(topRightEventListener);
         if(bottomLeftEventListener != null)
-        ref.removeEventListener(bottomLeftEventListener);
+            ref.removeEventListener(bottomLeftEventListener);
         if(bottomRightEventListener != null)
-        ref.removeEventListener(bottomRightEventListener);
+            ref.removeEventListener(bottomRightEventListener);
         if(myOwnStatusEventListener != null)
-        ref.removeEventListener(myOwnStatusEventListener);
+            ref.removeEventListener(myOwnStatusEventListener);
         Log.i(TAG, "onClickStartGame: " + i);
         Log.i(TAG, "onClickStartGame: players deleted");
         Log.d(TAG, "onClickStartGame: buttonIsPressed =" + buttonIsPressed);

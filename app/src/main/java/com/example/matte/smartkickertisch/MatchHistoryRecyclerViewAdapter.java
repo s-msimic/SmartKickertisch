@@ -20,9 +20,6 @@ public class MatchHistoryRecyclerViewAdapter extends RecyclerView.Adapter<MatchH
     HashMap<Integer, Game> dataMap;
     private OnItemClickListener mListener;
 
-    public void getGameData(int position) {
-
-    }
 
     public interface OnItemClickListener{
         void onItemClick(int position);
@@ -64,6 +61,7 @@ class MatchHistoryViewHolder extends RecyclerView.ViewHolder {
     TextView scoreTextView;
     TextView dateTextView;
     MaterialCardView materialCardView;
+    View winMarker;
 
     public MatchHistoryViewHolder(@NonNull View itemView, MatchHistoryRecyclerViewAdapter.OnItemClickListener itemClickListener) {
         super(itemView);
@@ -71,6 +69,7 @@ class MatchHistoryViewHolder extends RecyclerView.ViewHolder {
         scoreTextView = itemView.findViewById(R.id.matchHistoryCardViewScoreTextView);
         dateTextView = itemView.findViewById(R.id.matchHistoryCardViewDateTextView);
         materialCardView = itemView.findViewById(R.id.matchHistoryCardView);
+        winMarker = itemView.findViewById(R.id.matchHistoryCardViewWinMarkerView);
 
         itemView.setOnClickListener(v -> {
             if (itemClickListener != null) {

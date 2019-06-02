@@ -1,5 +1,6 @@
 package com.example.matte.smartkickertisch;
 
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -21,7 +22,7 @@ public class Game {
     private String redTeamDefenseID;
     private String redTeamOffenseID;
     private String thisPlayerID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-    private boolean gameWon;
+    private boolean gameWon = false;
     private static final String TAG = "GameClass";
 
     public Game(String gameID, MatchHistoryViewHolder viewHolder) {
@@ -38,6 +39,9 @@ public class Game {
             Log.i(TAG, "dataListener: Value = " + dataSnapshot.getValue());
 
             gameDate = dataSnapshot.child("data").child("date").getValue(Long.class);
+            if (gameDate < 1000000000000L) {
+                gameDate *= 1000;
+            }
 
             if (dataSnapshot.child("teamBlue").child("score").exists()) {
                 blueTeamScore = dataSnapshot.child("teamBlue").child("score").getValue(int.class);
@@ -46,18 +50,56 @@ public class Game {
             if (dataSnapshot.child("teamRed").child("player1").exists()) {
                 Log.d(TAG, "dataListener: player 1 = " + dataSnapshot.child("teamRed").child("player1").getValue());
                 redTeamOffenseID = dataSnapshot.child("teamRed").child("player1").getValue(String.class);
+
+                if (redTeamOffenseID.equals(thisPlayerID)) {
+                    Log.d(TAG, "onDataChange: redOffense = " + redTeamOffenseID.equals(thisPlayerID));
+                    if (redTeamScore == 10) {
+                        gameWon = true;
+                    }
+                }
             }
 
             if (dataSnapshot.child("teamRed").child("player2").exists()) {
                 Log.d(TAG, "dataListener: player 2 = " + dataSnapshot.child("teamRed").child("player2").getValue());
                 redTeamDefenseID = dataSnapshot.child("teamRed").child("player2").getValue(String.class);
+
+                if (redTeamDefenseID.equals(thisPlayerID)) {
+                    Log.d(TAG, "onDataChange: redDefense = " + redTeamDefenseID.equals(thisPlayerID));
+                    if (redTeamScore == 10) {
+                        gameWon = true;
+                    }
+                }
             }
 
-            if (dataSnapshot.child("teamBlue").child("player3").exists())
-                blueTeamDefenseID = dataSnapshot.child("teamBlue").child("player3").getValue(String.class);
+            if (dataSnapshot.child("teamBlue").child("player2").exists()) {
+                blueTeamDefenseID = dataSnapshot.child("teamBlue").child("player2").getValue(String.class);
 
-            if (dataSnapshot.child("teamBlue").child("player4").exists())
-                blueTeamOffenseID = dataSnapshot.child("teamBlue").child("player4").getValue(String.class);
+                if (blueTeamDefenseID.equals(thisPlayerID)) {
+                    if (blueTeamScore == 10) {
+                        gameWon = true;
+                    }
+                }
+            }
+
+            if (dataSnapshot.child("teamBlue").child("player1").exists()) {
+                blueTeamOffenseID = dataSnapshot.child("teamBlue").child("player1").getValue(String.class);
+
+                if (blueTeamOffenseID.equals(thisPlayerID)) {
+                    if (blueTeamScore == 10) {
+                        gameWon = true;
+                    }
+                }
+            }
+
+            if (gameWon) {
+//                matchHistoryViewHolder.materialCardView.setStrokeColor(Color.parseColor("#008B00"));
+//                matchHistoryViewHolder.resultCircleImageView.setBorderColor(Color.parseColor("#008B00"));
+                matchHistoryViewHolder.winMarker.setBackgroundColor(Color.GREEN);
+            } else {
+//                matchHistoryViewHolder.materialCardView.setStrokeColor(Color.parseColor("#ff0000"));
+//                matchHistoryViewHolder.resultCircleImageView.setBorderColor(Color.parseColor("#ff0000"));
+                matchHistoryViewHolder.winMarker.setBackgroundColor(Color.RED);
+            }
 
             matchHistoryViewHolder.dateTextView.setText(TimeAgo.getTimeAgo(gameDate));
             matchHistoryViewHolder.scoreTextView.setText(blueTeamScore + ":");

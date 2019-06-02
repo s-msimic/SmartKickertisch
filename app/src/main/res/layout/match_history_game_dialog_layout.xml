@@ -11,28 +11,31 @@
     <com.example.matte.smartkickertisch.PlayerButtonTag
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:id="@+id/gameDialogRedDefensePlayerButtonTag"
+        android:id="@+id/gameDialogRedOffensePlayerButtonTag"
         android:background="@drawable/border_button_red"
         android:textSize="12sp"
         android:textColor="@color/colorWhite"
         android:textAllCaps="false"
+        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="@id/gameDialogSoccerFieldImageView"
-        app:layout_constraintEnd_toStartOf="@id/gameDialogRedOffensePlayerButtonTag"
+        app:layout_constraintEnd_toStartOf="@id/gameDialogRedDefensePlayerButtonTag"
         app:layout_constraintBottom_toTopOf="@id/gameDialogSoccerFieldImageView"
         />
 
     <com.example.matte.smartkickertisch.PlayerButtonTag
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:id="@+id/gameDialogRedOffensePlayerButtonTag"
+        android:id="@+id/gameDialogRedDefensePlayerButtonTag"
         android:background="@drawable/border_button_red"
         android:textSize="12sp"
         android:textColor="@color/colorWhite"
         android:textAllCaps="false"
-        app:layout_constraintStart_toEndOf="@id/gameDialogRedDefensePlayerButtonTag"
+        android:visibility="invisible"
+        app:layout_constraintStart_toEndOf="@id/gameDialogRedOffensePlayerButtonTag"
         app:layout_constraintEnd_toEndOf="@id/gameDialogSoccerFieldImageView"
         app:layout_constraintBottom_toTopOf="@id/gameDialogSoccerFieldImageView"
         />
+
 
     <ImageView
         android:layout_width="324dp"
@@ -81,6 +84,7 @@
         android:textSize="12sp"
         android:textColor="@color/colorWhite"
         android:textAllCaps="false"
+        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="@id/gameDialogSoccerFieldImageView"
         app:layout_constraintEnd_toStartOf="@id/gameDialogBlueOffensePlayerButtonTag"
         app:layout_constraintTop_toBottomOf="@id/gameDialogSoccerFieldImageView"
@@ -94,6 +98,7 @@
         android:textSize="12sp"
         android:textColor="@color/colorWhite"
         android:textAllCaps="false"
+        android:visibility="invisible"
         app:layout_constraintStart_toEndOf="@id/gameDialogBlueDefenseBlayerButtonTag"
         app:layout_constraintEnd_toEndOf="@id/gameDialogSoccerFieldImageView"
         app:layout_constraintTop_toBottomOf="@id/gameDialogSoccerFieldImageView"/>

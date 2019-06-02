@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,12 +19,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.Transaction.Result;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.*;
-
-import java.security.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
 
 public class ResultActivity extends AppCompatActivity {
     DatabaseReference ref;
@@ -39,8 +32,8 @@ public class ResultActivity extends AppCompatActivity {
     private int editTextNumberResultBlue;
     private String teamRedPlayerOne;
     private String teamRedPlayerTwo;
-    private String teamBluePlayerThree;
-    private String teamBluePlayerFour;
+    private String teamBluePlayerTwo;
+    private String teamBluePlayerOne;
     private String [] lobbyArray = new String[3];
     public boolean hostActivity = true;
     private static final String TAG = "ResultActivity";
@@ -148,8 +141,8 @@ public class ResultActivity extends AppCompatActivity {
             Log.d(TAG, "onClickCommitResult: uid = " + teamRedPlayerTwo);
 
         }
-        if(teamBluePlayerThree != null) {
-            database.getReference("users").child(teamBluePlayerThree).child("data").child("playedGames").runTransaction(new Transaction.Handler() {
+        if(teamBluePlayerTwo != null) {
+            database.getReference("users").child(teamBluePlayerTwo).child("data").child("playedGames").runTransaction(new Transaction.Handler() {
                 @NonNull
                 @Override
                 public Result doTransaction(@NonNull MutableData mutableData) {
@@ -164,7 +157,7 @@ public class ResultActivity extends AppCompatActivity {
                 }
             });
             if(editTextNumberResultBlue == 10){
-                database.getReference("users").child(teamBluePlayerThree).child("data").child("winCounter").runTransaction(new Transaction.Handler() {
+                database.getReference("users").child(teamBluePlayerTwo).child("data").child("winCounter").runTransaction(new Transaction.Handler() {
                     @NonNull
                     @Override
                     public Result doTransaction(@NonNull MutableData mutableData) {
@@ -179,10 +172,10 @@ public class ResultActivity extends AppCompatActivity {
                     }
                 });
             }
-            ref.child("users").child(teamBluePlayerThree).child("finishedGames").child(autoID).setValue(unixTime);
+            ref.child("users").child(teamBluePlayerTwo).child("finishedGames").child(autoID).setValue(unixTime);
         }
-        if(teamBluePlayerFour != null) {
-            database.getReference("users").child(teamBluePlayerFour).child("data").child("playedGames").runTransaction(new Transaction.Handler() {
+        if(teamBluePlayerOne != null) {
+            database.getReference("users").child(teamBluePlayerOne).child("data").child("playedGames").runTransaction(new Transaction.Handler() {
                 @NonNull
                 @Override
                 public Result doTransaction(@NonNull MutableData mutableData) {
@@ -196,10 +189,10 @@ public class ResultActivity extends AppCompatActivity {
                     Log.d(TAG, "onComplete: " + databaseError);
                 }
             });
-            ref.child("users").child(teamBluePlayerFour).child("finishedGames").child(autoID).setValue(unixTime);
+            ref.child("users").child(teamBluePlayerOne).child("finishedGames").child(autoID).setValue(unixTime);
 
             if(editTextNumberResultBlue == 10){
-                database.getReference("users").child(teamBluePlayerFour).child("data").child("winCounter").runTransaction(new Transaction.Handler() {
+                database.getReference("users").child(teamBluePlayerOne).child("data").child("winCounter").runTransaction(new Transaction.Handler() {
                     @NonNull
                     @Override
                     public Result doTransaction(@NonNull MutableData mutableData) {
@@ -232,8 +225,8 @@ public class ResultActivity extends AppCompatActivity {
         editor.putString("var2", fullLobyPath);
         editor.putString("varPlayerR1", teamRedPlayerOne);
         editor.putString("varPlayerR2", teamRedPlayerTwo);
-        editor.putString("varPlayerB3", teamBluePlayerThree);
-        editor.putString("varPlayerB4", teamBluePlayerFour);
+        editor.putString("varPlayerB3", teamBluePlayerTwo);
+        editor.putString("varPlayerB4", teamBluePlayerOne);
         editor.putString("autoID", autoID);
         editor.apply();
         Log.i(TAG, "onDestroy: " + getSharedPreferences("MyPreferences", 0).getString("var1", null));
@@ -253,8 +246,8 @@ public class ResultActivity extends AppCompatActivity {
         autoID = (String)this.getIntent().getExtras().get("autoID");
         teamRedPlayerOne = (String)this.getIntent().getExtras().get("teamRedPlayerOne");
         teamRedPlayerTwo = (String)this.getIntent().getExtras().get("teamRedPlayerTwo");
-        teamBluePlayerThree = (String)this.getIntent().getExtras().get("teamBluePlayerThree");
-        teamBluePlayerFour = (String)this.getIntent().getExtras().get("teamBluePlayerFour");
+        teamBluePlayerTwo = (String)this.getIntent().getExtras().get("teamBluePlayerTwo");
+        teamBluePlayerOne = (String)this.getIntent().getExtras().get("teamBluePlayerOne");
 
 
         Log.i(TAG, "onCreate: " + lobbyPath);

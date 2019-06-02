@@ -13,6 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -26,6 +31,7 @@ public class MatchHistoryGameDialog extends AppCompatDialogFragment {
     PlayerButtonTag blueOffense;
     PlayerButtonTag redDefense;
     PlayerButtonTag redOffense;
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private static final String TAG = "MatchHistoryGameDialog";
 
     @NonNull
@@ -47,9 +53,70 @@ public class MatchHistoryGameDialog extends AppCompatDialogFragment {
         redOffense = view.findViewById(R.id.gameDialogRedOffensePlayerButtonTag);
 
         Log.d(TAG, "onCreateDialog: setArguments");
+        if (getArguments().containsKey("blueDefense")) {
+            Log.d(TAG, "onCreateDialog: ");
+            database.getReference("users").child(getArguments().getString("blueDefense")).child("nickName")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            blueDefense.setText(dataSnapshot.getValue(String.class));
+                            blueDefense.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+        }
+        if (getArguments().containsKey("blueOffense")) {
+            database.getReference("users").child(getArguments().getString("blueOffense")).child("nickName")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            blueOffense.setText(dataSnapshot.getValue(String.class));
+                            blueOffense.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+        }
+        if (getArguments().containsKey("redDefense")) {
+            database.getReference("users").child(getArguments().getString("redDefense")).child("nickName")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            redDefense.setText(dataSnapshot.getValue(String.class));
+                            redDefense.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+        }
+        if (getArguments().containsKey("redOffense")) {
+            database.getReference("users").child(getArguments().getString("redOffense")).child("nickName")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            redOffense.setText(dataSnapshot.getValue(String.class));
+                            redOffense.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+        }
         blueTeamScore.setText(String.valueOf(getArguments().get("blueScore")));
         redTeamScore.setText(String.valueOf(getArguments().get("redScore")));
-        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.GERMAN);
+        SimpleDateFormat formatter = new SimpleDateFormat("E, dd MMM yyyy HH:mm", Locale.ENGLISH);
         String dateString = formatter.format(new Date((getArguments().getLong("date"))));
         date.setText(dateString);
 
@@ -66,6 +133,5 @@ public class MatchHistoryGameDialog extends AppCompatDialogFragment {
         super.onStart();
         if (getDialog().getWindow() != null)
             getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
     }
 }

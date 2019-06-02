@@ -10,5 +10,7 @@
     <color name="colorSignUpError">#C67070</color>
     <color name="colorSwitchSignUpAndLogin">#99C2DC</color>
     <color name="colorSignUpProfilePictureText">#A9A9A9</color>
+    <color name="colorMatchHistoryLoss">#ff0000</color>
+    <color name="colorMatchHistoryWin">#008B00</color>
     <color name="colorWhite">#ffffffff</color>
 </resources>

@@ -108,6 +108,8 @@
         android:textAllCaps="false"
         android:textColor="@color/colorSignUpButtonText"
         android:textSize="24sp"
+        android:enabled="false"
+        android:alpha="0.7"
         android:layout_marginBottom="80dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
