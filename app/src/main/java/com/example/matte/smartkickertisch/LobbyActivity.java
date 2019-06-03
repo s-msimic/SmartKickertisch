@@ -1,9 +1,6 @@
 package com.example.matte.smartkickertisch;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.service.autofill.FieldClassification;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -15,7 +12,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -39,7 +35,6 @@ public class LobbyActivity extends AppCompatActivity {
     String deletePath;
     DatabaseReference ref;
     private FirebaseAuth mAuth;
-    private boolean hostActivity = true;
     private boolean isStopped = false;
 
     PlayerButtonTag topLeftButton;
@@ -51,31 +46,25 @@ public class LobbyActivity extends AppCompatActivity {
     Button buttonStartGame;
     AtomicBoolean buttonIsPressed;
     private static final String TAG = "LobbyActivity";
-    private String automatedID;
 
 
     @Override
     public void onDestroy() {
         Log.i(TAG, "onDestroy: is called");
-        if(buttonIsPressed.get() == false){
+        if(!buttonIsPressed.get()){
             super.onDestroy();
-            return;
         }
         else{
             ref.child("lobby").child(lobbyPath).removeValue();
-        super.onDestroy();
+            super.onDestroy();
         }
 
-    }
-
-    public void checkHostActivity(ResultActivity caller, boolean leftLobby){
-        hostActivity = caller.getHostActivity();
     }
 
     @Override
     public void onStop(){
         Log.i(TAG, "onStop: is called");
-        if(isStopped == false && buttonIsPressed.get() == false) {
+        if(!isStopped && !buttonIsPressed.get()) {
             Log.i(TAG, "onStop: if true");
             ref.child("lobby").child(lobbyPath).removeValue();
             finish();

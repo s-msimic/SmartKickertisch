@@ -35,15 +35,10 @@ public class ResultActivity extends AppCompatActivity {
     private String teamBluePlayerTwo;
     private String teamBluePlayerOne;
     private String [] lobbyArray = new String[3];
-    public boolean hostActivity = true;
     private static final String TAG = "ResultActivity";
     private boolean onStopCalled = true;
     private long unixTime;
 
-
-    public boolean getHostActivity(){
-        return hostActivity;
-    }
 
     @Override
     public void onBackPressed() {
