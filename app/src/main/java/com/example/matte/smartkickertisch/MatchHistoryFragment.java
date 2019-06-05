@@ -26,7 +26,7 @@ import java.util.HashMap;
  * A simple {@link Fragment} subclass.
  */
 public class MatchHistoryFragment extends Fragment {
-
+    // TODO: 03.06.2019 in Layout player1 & player2 vs player3 & player4 darunter Ergebnis zentriert und links etwas kleiner datum unten links
     FirebaseAuth mAuth;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;

@@ -94,11 +94,12 @@ public class Game {
             if (gameWon) {
 //                matchHistoryViewHolder.materialCardView.setStrokeColor(Color.parseColor("#008B00"));
 //                matchHistoryViewHolder.resultCircleImageView.setBorderColor(Color.parseColor("#008B00"));
-                matchHistoryViewHolder.winMarker.setBackgroundColor(Color.GREEN);
+//                matchHistoryViewHolder.resultCircleImageView.setImageResource(R.drawable.ic_thumps_up);
+                matchHistoryViewHolder.winMarker.setBackgroundResource(R.color.colorMatchHistoryWin);
             } else {
 //                matchHistoryViewHolder.materialCardView.setStrokeColor(Color.parseColor("#ff0000"));
 //                matchHistoryViewHolder.resultCircleImageView.setBorderColor(Color.parseColor("#ff0000"));
-                matchHistoryViewHolder.winMarker.setBackgroundColor(Color.RED);
+                matchHistoryViewHolder.winMarker.setBackgroundResource(R.color.colorMatchHistoryLoss);
             }
 
             matchHistoryViewHolder.dateTextView.setText(TimeAgo.getTimeAgo(gameDate));
@@ -112,16 +113,8 @@ public class Game {
         }
     };
 
-    public String getGameID() {
-        return gameID;
-    }
-
     public long getGameDate() {
         return gameDate;
-    }
-
-    public MatchHistoryViewHolder getMatchHistoryViewHolder() {
-        return matchHistoryViewHolder;
     }
 
     public int getBlueTeamScore() {
@@ -146,14 +139,6 @@ public class Game {
 
     public String getRedTeamOffenseID() {
         return redTeamOffenseID;
-    }
-
-    public String getThisPlayerID() {
-        return thisPlayerID;
-    }
-
-    public boolean isGameWon() {
-        return gameWon;
     }
 
     @NonNull

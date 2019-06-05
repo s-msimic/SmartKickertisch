@@ -36,7 +36,7 @@ public class LeaderboardActivity extends Activity {
     private RecyclerView.LayoutManager layoutManager;
     private TextView spinnerTextView;
     private Spinner dropdown;
-    private int countBestPlayers = 16;
+    private int countBestPlayers = 15;
     private HashMap<Integer, User> userList = new HashMap<>();
     private ProgressBar progressBar;
     private SpaceNavigationView menuBottomNavigationView;
@@ -51,7 +51,6 @@ public class LeaderboardActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        getSharedPreferences("MyPreferences", 0).edit().clear().apply();
         mAuth = FirebaseAuth.getInstance();
         storageRef = FirebaseStorage.getInstance().getReference();
         super.onCreate(savedInstanceState);

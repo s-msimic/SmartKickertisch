@@ -21,6 +21,10 @@ android {
         targetCompatibility = '1.8'
         sourceCompatibility = '1.8'
     }
+
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
 }
 
 dependencies {
@@ -43,4 +47,5 @@ dependencies {
     implementation 'com.ogaclejapan.smarttablayout:library:1.7.0@aar'
     implementation 'com.ogaclejapan.smarttablayout:utils-v4:1.7.0@aar'
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 }
