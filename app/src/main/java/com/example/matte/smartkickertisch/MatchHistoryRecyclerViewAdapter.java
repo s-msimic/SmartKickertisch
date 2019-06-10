@@ -57,19 +57,27 @@ public class MatchHistoryRecyclerViewAdapter extends RecyclerView.Adapter<MatchH
 
 class MatchHistoryViewHolder extends RecyclerView.ViewHolder {
 
-    CircleImageView resultCircleImageView;
+    TextView bluePlayer1TextView;
+    TextView bluePlayer2TextView;
+    TextView redPlayer1TextView;
+    TextView redPlayer2TextView;
     TextView scoreTextView;
     TextView dateTextView;
+    TextView gameSateTextView;
     MaterialCardView materialCardView;
     View winMarker;
 
     public MatchHistoryViewHolder(@NonNull View itemView, MatchHistoryRecyclerViewAdapter.OnItemClickListener itemClickListener) {
         super(itemView);
-        resultCircleImageView = itemView.findViewById(R.id.matchHistoryCardViewResultCircleImageView);
         scoreTextView = itemView.findViewById(R.id.matchHistoryCardViewScoreTextView);
         dateTextView = itemView.findViewById(R.id.matchHistoryCardViewDateTextView);
         materialCardView = itemView.findViewById(R.id.matchHistoryCardView);
         winMarker = itemView.findViewById(R.id.matchHistoryCardViewWinMarkerView);
+        bluePlayer1TextView = itemView.findViewById(R.id.matchHistoryCardViewBlueP1TextView);
+        bluePlayer2TextView = itemView.findViewById(R.id.matchHistoryCardViewBlueP2TextView);
+        redPlayer1TextView = itemView.findViewById(R.id.matchHistoryCardViewRedP1TextView);
+        redPlayer2TextView = itemView.findViewById(R.id.matchHistoryCardViewRedP2TextView);
+        gameSateTextView = itemView.findViewById(R.id.matchHistoryCardViewGameStateTextView);
 
         itemView.setOnClickListener(v -> {
             if (itemClickListener != null) {

@@ -12,5 +12,9 @@
     <color name="colorSignUpProfilePictureText">#A9A9A9</color>
     <color name="colorMatchHistoryLoss">#C52D2D</color>
     <color name="colorMatchHistoryWin">#058105</color>
+    <color name="colorMatchHisoryCardBackground">#EBEBEB</color>
+    <color name="colorMatchHistoryBlueTeamText">#568AAA</color>
+    <color name="colorMatchHistoryDate">#D4A53D</color>
+    <color name="colorMatchHistoryScore">#4A4A4A</color>
     <color name="colorWhite">#ffffffff</color>
 </resources>

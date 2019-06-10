@@ -50,7 +50,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
 
         if (userList.get(i + 1).getProfilePicture() != null) {
             Log.i(TAG, "onBindViewHolder: user nr." + (i + 1) + " " + Objects.requireNonNull(userList.get(i + 1)).getProfilePicture().toString());
-            // TODO: 24.05.2019 after .load().networkPolicy(NetworkPolicy.OFFLINE) should look for cached pictures and Override onError() method if pictures aren't in cache
             Picasso.get().load(userList.get(i + 1).getProfilePicture()).placeholder(R.drawable.profile_picture_preview).into(viewHolder.profilePictureImageView);
         }
     }

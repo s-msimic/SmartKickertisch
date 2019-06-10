@@ -50,6 +50,7 @@ public class Game {
             if (dataSnapshot.child("teamRed").child("player1").exists()) {
                 Log.d(TAG, "dataListener: player 1 = " + dataSnapshot.child("teamRed").child("player1").getValue());
                 redTeamOffenseID = dataSnapshot.child("teamRed").child("player1").getValue(String.class);
+                FirebaseDatabase.getInstance().getReference("users").child(redTeamOffenseID).child("nickName").addListenerForSingleValueEvent(redPlayer1Listener);
 
                 if (redTeamOffenseID.equals(thisPlayerID)) {
                     Log.d(TAG, "onDataChange: redOffense = " + redTeamOffenseID.equals(thisPlayerID));
@@ -62,7 +63,7 @@ public class Game {
             if (dataSnapshot.child("teamRed").child("player2").exists()) {
                 Log.d(TAG, "dataListener: player 2 = " + dataSnapshot.child("teamRed").child("player2").getValue());
                 redTeamDefenseID = dataSnapshot.child("teamRed").child("player2").getValue(String.class);
-
+                FirebaseDatabase.getInstance().getReference("users").child(redTeamDefenseID).child("nickName").addListenerForSingleValueEvent(redPlayer2Listener);
                 if (redTeamDefenseID.equals(thisPlayerID)) {
                     Log.d(TAG, "onDataChange: redDefense = " + redTeamDefenseID.equals(thisPlayerID));
                     if (redTeamScore == 10) {
@@ -72,8 +73,9 @@ public class Game {
             }
 
             if (dataSnapshot.child("teamBlue").child("player2").exists()) {
+                Log.d(TAG, "dataListener: blue player 2 = " + dataSnapshot.child("teamBlue").child("player2").getValue());
                 blueTeamDefenseID = dataSnapshot.child("teamBlue").child("player2").getValue(String.class);
-
+                FirebaseDatabase.getInstance().getReference("users").child(blueTeamDefenseID).child("nickName").addListenerForSingleValueEvent(bluePlayer2Listener);
                 if (blueTeamDefenseID.equals(thisPlayerID)) {
                     if (blueTeamScore == 10) {
                         gameWon = true;
@@ -82,8 +84,9 @@ public class Game {
             }
 
             if (dataSnapshot.child("teamBlue").child("player1").exists()) {
+                Log.d(TAG, "dataListener: blue player 1 = " + dataSnapshot.child("teamBlue").child("player1").getValue());
                 blueTeamOffenseID = dataSnapshot.child("teamBlue").child("player1").getValue(String.class);
-
+                FirebaseDatabase.getInstance().getReference("users").child(blueTeamOffenseID).child("nickName").addListenerForSingleValueEvent(bluePlayer1Listener);
                 if (blueTeamOffenseID.equals(thisPlayerID)) {
                     if (blueTeamScore == 10) {
                         gameWon = true;
@@ -92,15 +95,13 @@ public class Game {
             }
 
             if (gameWon) {
-//                matchHistoryViewHolder.materialCardView.setStrokeColor(Color.parseColor("#008B00"));
-//                matchHistoryViewHolder.resultCircleImageView.setBorderColor(Color.parseColor("#008B00"));
-//                matchHistoryViewHolder.resultCircleImageView.setImageResource(R.drawable.ic_thumps_up);
                 matchHistoryViewHolder.winMarker.setBackgroundResource(R.color.colorMatchHistoryWin);
             } else {
-//                matchHistoryViewHolder.materialCardView.setStrokeColor(Color.parseColor("#ff0000"));
-//                matchHistoryViewHolder.resultCircleImageView.setBorderColor(Color.parseColor("#ff0000"));
                 matchHistoryViewHolder.winMarker.setBackgroundResource(R.color.colorMatchHistoryLoss);
             }
+
+            if (blueTeamScore == 10 ||  redTeamScore == 10)
+                matchHistoryViewHolder.gameSateTextView.setText("FINAL");
 
             matchHistoryViewHolder.dateTextView.setText(TimeAgo.getTimeAgo(gameDate));
             matchHistoryViewHolder.scoreTextView.setText(blueTeamScore + ":");
@@ -112,6 +113,61 @@ public class Game {
 
         }
     };
+
+    ValueEventListener redPlayer1Listener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            Log.d(TAG, "redPlayer1Listener: key = " + dataSnapshot.getKey() + " ; value = " + dataSnapshot.getValue());
+            matchHistoryViewHolder.redPlayer1TextView.setText(dataSnapshot.getValue(String.class));
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
+
+    ValueEventListener redPlayer2Listener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            Log.d(TAG, "redPlayer2Listener: key = " + dataSnapshot.getKey() + " ; value = " + dataSnapshot.getValue());
+            matchHistoryViewHolder.redPlayer2TextView.setText(dataSnapshot.getValue(String.class));
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
+
+
+    ValueEventListener bluePlayer1Listener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            Log.d(TAG, "bluePlayer1Listener: key = " + dataSnapshot.getKey() + " ; value = " + dataSnapshot.getValue());
+            matchHistoryViewHolder.bluePlayer2TextView.setText(dataSnapshot.getValue(String.class));
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
+
+
+    ValueEventListener bluePlayer2Listener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            Log.d(TAG, "bluePlayer2Listener: key = " + dataSnapshot.getKey() + " ; value = " + dataSnapshot.getValue());
+            matchHistoryViewHolder.bluePlayer1TextView.setText(dataSnapshot.getValue(String.class));
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
+
 
     public long getGameDate() {
         return gameDate;

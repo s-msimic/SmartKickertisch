@@ -318,7 +318,6 @@ public class SettingsFragment extends Fragment {
         }
     };
 
-    // TODO: 22.05.2019 duplicate coder in SettingsFragment and in SignUpActivity
     public void pickImage() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, 1);

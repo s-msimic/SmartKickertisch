@@ -2,27 +2,28 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="2dp"
-    android:layout_marginBottom="2dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <android.support.design.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/matchHistoryCardView"
-        app:strokeColor="@color/colorWhite"
-        app:strokeWidth="1dp"
+        app:cardCornerRadius="8dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="150dp"
             android:padding="4dp"
-            android:background="@drawable/app_background">
+            android:background="@color/colorMatchHisoryCardBackground">
 
             <View
-                android:layout_width="2dp"
-                android:layout_height="64dp"
+                android:layout_width="4dp"
+                android:layout_height="128dp"
                 android:id="@+id/matchHistoryCardViewWinMarkerView"
                 android:background="@color/colorWhite"
                 android:layout_marginStart="2dp"
@@ -32,18 +33,44 @@
                 >
             </View>
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:id="@+id/matchHistoryCardViewResultCircleImageView"
-                android:src="@drawable/profile_picture_preview"
-                app:civ_border_color="@color/colorWhite"
-                app:civ_border_width="2dp"
-                android:layout_marginStart="8dp"
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/matchHistoryCardViewBlueP1TextView"
+                android:textColor="@color/colorMatchHistoryBlueTeamText"
+                android:gravity="center"
+                app:layout_constraintStart_toEndOf="@id/matchHistoryCardViewWinMarkerView"
+                app:layout_constraintEnd_toStartOf="@id/matchHistoryCardViewScoreTextView"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.33"
+                />
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/matchHistoryCardViewBlueP2TextView"
+                android:textColor="@color/colorMatchHistoryBlueTeamText"
+                android:gravity="center"
+                app:layout_constraintStart_toEndOf="@id/matchHistoryCardViewWinMarkerView"
+                app:layout_constraintEnd_toStartOf="@id/matchHistoryCardViewScoreTextView"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.66"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/matchHistoryCardViewDateTextView"
+                android:text="date"
+                android:textSize="22sp"
+                android:textColor="@color/colorMatchHistoryDate"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/matchHistoryCardViewScoreTextView"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintVertical_bias="0.2"
                 />
 
             <TextView
@@ -51,25 +78,51 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/matchHistoryCardViewScoreTextView"
                 android:text="10:8"
-                android:textSize="28sp"
-                android:textColor="@color/colorWhite"
-                android:layout_marginStart="8dp"
+                android:textSize="32sp"
+                android:textColor="@color/colorMatchHistoryScore"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/matchHistoryCardViewResultCircleImageView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/matchHistoryCardViewDateTextView"
-                android:text=""
-                android:textSize="22sp"
-                android:textColor="@color/colorWhite"
-                android:layout_marginEnd="8dp"
+                android:id="@+id/matchHistoryCardViewGameStateTextView"
+                android:text="@string/ongoing"
+                android:textColor="@color/colorMatchHistoryScore"
+                app:layout_constraintStart_toStartOf="@id/matchHistoryCardViewScoreTextView"
+                app:layout_constraintEnd_toEndOf="@id/matchHistoryCardViewScoreTextView"
+                app:layout_constraintTop_toBottomOf="@id/matchHistoryCardViewScoreTextView"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.2"
+                />
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/matchHistoryCardViewRedP1TextView"
+                android:textColor="@color/colorSignUpError"
+                android:gravity="center"
+                app:layout_constraintStart_toEndOf="@id/matchHistoryCardViewScoreTextView"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.33"
+                />
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/matchHistoryCardViewRedP2TextView"
+                android:textColor="@color/colorSignUpError"
+                android:gravity="center"
+                app:layout_constraintStart_toEndOf="@id/matchHistoryCardViewScoreTextView"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.66"
                 />
 
         </android.support.constraint.ConstraintLayout>
