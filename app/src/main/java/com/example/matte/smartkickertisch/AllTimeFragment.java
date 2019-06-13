@@ -65,8 +65,13 @@ public class AllTimeFragment extends Fragment {
     ValueEventListener allTimeGetDataListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            int played = dataSnapshot.child("playedGames").getValue(int.class);
-            int won = dataSnapshot.child("winCounter").getValue(int.class);
+            int played = 0;
+            int won = 0;
+            Log.d(TAG, "allTimeGetDataListener: " + dataSnapshot.child("data"));
+            if (dataSnapshot.child("data").exists()) {
+                played = dataSnapshot.child("data").child("playedGames").getValue(int.class);
+                won = dataSnapshot.child("data").child("winCounter").getValue(int.class);
+            }
             Log.d(TAG, "allTimeGetDataListener: played = " + played + " - won = " + won + " - lost = " + (played - won));
             data.clear();
             data.add(new PieEntry((played - won), (played - won) + " Losses"));
@@ -108,7 +113,7 @@ public class AllTimeFragment extends Fragment {
         headlineTextView.setText(auth.getCurrentUser().getDisplayName() + "'s Statistics");
         if (auth.getCurrentUser() != null) {
             Log.d(TAG, "onCreateView: data can be retrieved");
-            database.getReference("users").child(auth.getCurrentUser().getUid()).child("data").addListenerForSingleValueEvent(allTimeGetDataListener);
+            database.getReference("users").child(auth.getCurrentUser().getUid()).addListenerForSingleValueEvent(allTimeGetDataListener);
         }
         return view;
     }

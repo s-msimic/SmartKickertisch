@@ -705,6 +705,7 @@ public class LobbyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lobby);
         ref = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
+        getSharedPreferences("MyPreferences", 0).edit().clear().apply();
 
         this.lobbyPath = getIntent().getExtras().getString("lobbyPath");
         checkForPlayerChanges();
