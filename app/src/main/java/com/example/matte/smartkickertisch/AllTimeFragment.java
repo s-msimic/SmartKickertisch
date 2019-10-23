@@ -65,33 +65,35 @@ public class AllTimeFragment extends Fragment {
     ValueEventListener allTimeGetDataListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            int played = dataSnapshot.child("playedGames").getValue(int.class);
-            int won = dataSnapshot.child("winCounter").getValue(int.class);
-            Log.d(TAG, "allTimeGetDataListener: played = " + played + " - won = " + won + " - lost = " + (played - won));
-            data.clear();
-            data.add(new PieEntry((played - won), (played - won) + " Losses"));
-            data.add(new PieEntry(won, won + " Wins"));
-            allTimeWinLossPieChart.setVisibility(View.VISIBLE);
-            pieDataSet = new PieDataSet(data, "");
-            pieDataSet.setValueTypeface(Typeface.DEFAULT_BOLD);
-            pieDataSet.setValueTextSize(14);
-            pieDataSet.setColors(new int[] {R.color.colorMatchHistoryLoss, R.color.colorMatchHistoryWin}, getContext());
-            allTimeWinLossPieChart.setUsePercentValues(true);
-            allTimeWinLossPieChart.setRotationEnabled(false);
-            allTimeWinLossPieChart.setHoleRadius(0);
-            allTimeWinLossPieChart.setTransparentCircleRadius(0);
-            allTimeWinLossPieChart.animateY(1200, Easing.EaseInOutCirc);
-            pieData = new PieData(pieDataSet);
-            pieData.setValueTextColor(getResources().getColor(R.color.colorWhite));
-            Legend legend = allTimeWinLossPieChart.getLegend();
-            allTimeWinLossPieChart.setEntryLabelTextSize(10);
-            legend.setEnabled(false);
-            legend.setTextColor(Color.WHITE);
-            legend.setForm(Legend.LegendForm.CIRCLE);
-            Description description = allTimeWinLossPieChart.getDescription();
-            description.setEnabled(false);
-            allTimeWinLossPieChart.setData(pieData);
-            allTimeWinLossPieChart.invalidate();
+            if(dataSnapshot.hasChild("playedGames") && dataSnapshot.hasChild("winCounter")) {
+                int played = dataSnapshot.child("playedGames").getValue(int.class);
+                int won = dataSnapshot.child("winCounter").getValue(int.class);
+                Log.d(TAG, "allTimeGetDataListener: played = " + played + " - won = " + won + " - lost = " + (played - won));
+                data.clear();
+                data.add(new PieEntry((played - won), (played - won) + " Losses"));
+                data.add(new PieEntry(won, won + " Wins"));
+                allTimeWinLossPieChart.setVisibility(View.VISIBLE);
+                pieDataSet = new PieDataSet(data, "");
+                pieDataSet.setValueTypeface(Typeface.DEFAULT_BOLD);
+                pieDataSet.setValueTextSize(14);
+                pieDataSet.setColors(new int[]{R.color.colorMatchHistoryLoss, R.color.colorMatchHistoryWin}, getContext());
+                allTimeWinLossPieChart.setUsePercentValues(true);
+                allTimeWinLossPieChart.setRotationEnabled(false);
+                allTimeWinLossPieChart.setHoleRadius(0);
+                allTimeWinLossPieChart.setTransparentCircleRadius(0);
+                allTimeWinLossPieChart.animateY(1200, Easing.EaseInOutCirc);
+                pieData = new PieData(pieDataSet);
+                pieData.setValueTextColor(getResources().getColor(R.color.colorWhite));
+                Legend legend = allTimeWinLossPieChart.getLegend();
+                allTimeWinLossPieChart.setEntryLabelTextSize(10);
+                legend.setEnabled(false);
+                legend.setTextColor(Color.WHITE);
+                legend.setForm(Legend.LegendForm.CIRCLE);
+                Description description = allTimeWinLossPieChart.getDescription();
+                description.setEnabled(false);
+                allTimeWinLossPieChart.setData(pieData);
+                allTimeWinLossPieChart.invalidate();
+            }
         }
 
         @Override

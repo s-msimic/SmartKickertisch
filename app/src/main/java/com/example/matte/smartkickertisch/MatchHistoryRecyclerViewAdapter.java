@@ -39,8 +39,7 @@ public class MatchHistoryRecyclerViewAdapter extends RecyclerView.Adapter<MatchH
     public MatchHistoryViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.match_history_card_layout, viewGroup, false);
-        MatchHistoryViewHolder viewHolder = new MatchHistoryViewHolder(view, mListener);
-        return viewHolder;
+        return new MatchHistoryViewHolder(view, mListener);
     }
 
     @Override

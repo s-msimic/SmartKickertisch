@@ -132,12 +132,14 @@ public class SettingsFragment extends Fragment {
             pickImage();
     };
 
+
     View.OnClickListener hideKeyboardListener = v -> {
         if (v.getId() == R.id.settingsConstraintLayout) {
             InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
             Log.d(TAG, "hideKeyboardListener : " + getActivity().getSystemService(INPUT_METHOD_SERVICE));
-            if (getActivity().getCurrentFocus() != null)
+            if (getActivity().getCurrentFocus() != null) {
                 inputMethodManager.hideSoftInputFromWindow(Objects.requireNonNull(getActivity().getCurrentFocus()).getWindowToken(), 0);
+            }
         }
     };
 
@@ -177,7 +179,6 @@ public class SettingsFragment extends Fragment {
 
         @Override
         public void afterTextChanged(Editable s) {
-
         }
     };
 

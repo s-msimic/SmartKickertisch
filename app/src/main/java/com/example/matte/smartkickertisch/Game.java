@@ -1,6 +1,5 @@
 package com.example.matte.smartkickertisch;
 
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -28,6 +27,12 @@ public class Game {
     public Game(String gameID, MatchHistoryViewHolder viewHolder) {
         this.gameID = gameID;
         this.matchHistoryViewHolder = viewHolder;
+        matchHistoryViewHolder.bluePlayer1TextView.setText("");
+        matchHistoryViewHolder.bluePlayer2TextView.setText("");
+        matchHistoryViewHolder.redPlayer1TextView.setText("");
+        matchHistoryViewHolder.redPlayer2TextView.setText("");
+        matchHistoryViewHolder.dateTextView.setText("");
+        matchHistoryViewHolder.scoreTextView.setText("");
         Query myGame = FirebaseDatabase.getInstance().getReference("games").child(gameID);
         myGame.addListenerForSingleValueEvent(dataListener);
     }
@@ -72,22 +77,22 @@ public class Game {
                 }
             }
 
-            if (dataSnapshot.child("teamBlue").child("player2").exists()) {
-                Log.d(TAG, "dataListener: blue player 2 = " + dataSnapshot.child("teamBlue").child("player2").getValue());
-                blueTeamDefenseID = dataSnapshot.child("teamBlue").child("player2").getValue(String.class);
-                FirebaseDatabase.getInstance().getReference("users").child(blueTeamDefenseID).child("nickName").addListenerForSingleValueEvent(bluePlayer2Listener);
-                if (blueTeamDefenseID.equals(thisPlayerID)) {
+            if (dataSnapshot.child("teamBlue").child("player1").exists()) {
+                Log.d(TAG, "dataListener: blue player 1 = " + dataSnapshot.child("teamBlue").child("player1").getValue());
+                blueTeamOffenseID = dataSnapshot.child("teamBlue").child("player1").getValue(String.class);
+                FirebaseDatabase.getInstance().getReference("users").child(blueTeamOffenseID).child("nickName").addListenerForSingleValueEvent(bluePlayer1Listener);
+                if (blueTeamOffenseID.equals(thisPlayerID)) {
                     if (blueTeamScore == 10) {
                         gameWon = true;
                     }
                 }
             }
 
-            if (dataSnapshot.child("teamBlue").child("player1").exists()) {
-                Log.d(TAG, "dataListener: blue player 1 = " + dataSnapshot.child("teamBlue").child("player1").getValue());
-                blueTeamOffenseID = dataSnapshot.child("teamBlue").child("player1").getValue(String.class);
-                FirebaseDatabase.getInstance().getReference("users").child(blueTeamOffenseID).child("nickName").addListenerForSingleValueEvent(bluePlayer1Listener);
-                if (blueTeamOffenseID.equals(thisPlayerID)) {
+            if (dataSnapshot.child("teamBlue").child("player2").exists()) {
+                Log.d(TAG, "dataListener: blue player 2 = " + dataSnapshot.child("teamBlue").child("player2").getValue());
+                blueTeamDefenseID = dataSnapshot.child("teamBlue").child("player2").getValue(String.class);
+                FirebaseDatabase.getInstance().getReference("users").child(blueTeamDefenseID).child("nickName").addListenerForSingleValueEvent(bluePlayer2Listener);
+                if (blueTeamDefenseID.equals(thisPlayerID)) {
                     if (blueTeamScore == 10) {
                         gameWon = true;
                     }
@@ -144,7 +149,7 @@ public class Game {
     ValueEventListener bluePlayer1Listener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            Log.d(TAG, "bluePlayer1Listener: key = " + dataSnapshot.getKey() + " ; value = " + dataSnapshot.getValue());
+            Log.d(TAG, "bluePlayer1Listener: pos=" + matchHistoryViewHolder.getAdapterPosition() + " /key = " + dataSnapshot.getKey() + " ; value = " + dataSnapshot.getValue());
             matchHistoryViewHolder.bluePlayer2TextView.setText(dataSnapshot.getValue(String.class));
         }
 
@@ -158,7 +163,7 @@ public class Game {
     ValueEventListener bluePlayer2Listener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            Log.d(TAG, "bluePlayer2Listener: key = " + dataSnapshot.getKey() + " ; value = " + dataSnapshot.getValue());
+            Log.d(TAG, "bluePlayer2Listener: pos=" + matchHistoryViewHolder.getAdapterPosition() + " /key = " + dataSnapshot.getKey() + " ; value = " + dataSnapshot.getValue());
             matchHistoryViewHolder.bluePlayer1TextView.setText(dataSnapshot.getValue(String.class));
         }
 
