@@ -65,38 +65,35 @@ public class AllTimeFragment extends Fragment {
     ValueEventListener allTimeGetDataListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            int played = 0;
-            int won = 0;
-            Log.d(TAG, "allTimeGetDataListener: " + dataSnapshot.child("data"));
-            if (dataSnapshot.child("data").exists()) {
-                played = dataSnapshot.child("data").child("playedGames").getValue(int.class);
-                won = dataSnapshot.child("data").child("winCounter").getValue(int.class);
+            if(dataSnapshot.hasChild("playedGames") && dataSnapshot.hasChild("winCounter")) {
+                int played = dataSnapshot.child("playedGames").getValue(int.class);
+                int won = dataSnapshot.child("winCounter").getValue(int.class);
+                Log.d(TAG, "allTimeGetDataListener: played = " + played + " - won = " + won + " - lost = " + (played - won));
+                data.clear();
+                data.add(new PieEntry((played - won), (played - won) + " Losses"));
+                data.add(new PieEntry(won, won + " Wins"));
+                allTimeWinLossPieChart.setVisibility(View.VISIBLE);
+                pieDataSet = new PieDataSet(data, "");
+                pieDataSet.setValueTypeface(Typeface.DEFAULT_BOLD);
+                pieDataSet.setValueTextSize(14);
+                pieDataSet.setColors(new int[]{R.color.colorMatchHistoryLoss, R.color.colorMatchHistoryWin}, getContext());
+                allTimeWinLossPieChart.setUsePercentValues(true);
+                allTimeWinLossPieChart.setRotationEnabled(false);
+                allTimeWinLossPieChart.setHoleRadius(0);
+                allTimeWinLossPieChart.setTransparentCircleRadius(0);
+                allTimeWinLossPieChart.animateY(1200, Easing.EaseInOutCirc);
+                pieData = new PieData(pieDataSet);
+                pieData.setValueTextColor(getResources().getColor(R.color.colorWhite));
+                Legend legend = allTimeWinLossPieChart.getLegend();
+                allTimeWinLossPieChart.setEntryLabelTextSize(10);
+                legend.setEnabled(false);
+                legend.setTextColor(Color.WHITE);
+                legend.setForm(Legend.LegendForm.CIRCLE);
+                Description description = allTimeWinLossPieChart.getDescription();
+                description.setEnabled(false);
+                allTimeWinLossPieChart.setData(pieData);
+                allTimeWinLossPieChart.invalidate();
             }
-            Log.d(TAG, "allTimeGetDataListener: played = " + played + " - won = " + won + " - lost = " + (played - won));
-            data.clear();
-            data.add(new PieEntry((played - won), (played - won) + " Losses"));
-            data.add(new PieEntry(won, won + " Wins"));
-            allTimeWinLossPieChart.setVisibility(View.VISIBLE);
-            pieDataSet = new PieDataSet(data, "");
-            pieDataSet.setValueTypeface(Typeface.DEFAULT_BOLD);
-            pieDataSet.setValueTextSize(14);
-            pieDataSet.setColors(new int[] {R.color.colorMatchHistoryLoss, R.color.colorMatchHistoryWin}, getContext());
-            allTimeWinLossPieChart.setUsePercentValues(true);
-            allTimeWinLossPieChart.setRotationEnabled(false);
-            allTimeWinLossPieChart.setHoleRadius(0);
-            allTimeWinLossPieChart.setTransparentCircleRadius(0);
-            allTimeWinLossPieChart.animateY(1200, Easing.EaseInOutCirc);
-            pieData = new PieData(pieDataSet);
-            pieData.setValueTextColor(getResources().getColor(R.color.colorWhite));
-            Legend legend = allTimeWinLossPieChart.getLegend();
-            allTimeWinLossPieChart.setEntryLabelTextSize(10);
-            legend.setEnabled(false);
-            legend.setTextColor(Color.WHITE);
-            legend.setForm(Legend.LegendForm.CIRCLE);
-            Description description = allTimeWinLossPieChart.getDescription();
-            description.setEnabled(false);
-            allTimeWinLossPieChart.setData(pieData);
-            allTimeWinLossPieChart.invalidate();
         }
 
         @Override
@@ -113,7 +110,7 @@ public class AllTimeFragment extends Fragment {
         headlineTextView.setText(auth.getCurrentUser().getDisplayName() + "'s Statistics");
         if (auth.getCurrentUser() != null) {
             Log.d(TAG, "onCreateView: data can be retrieved");
-            database.getReference("users").child(auth.getCurrentUser().getUid()).addListenerForSingleValueEvent(allTimeGetDataListener);
+            database.getReference("users").child(auth.getCurrentUser().getUid()).child("data").addListenerForSingleValueEvent(allTimeGetDataListener);
         }
         return view;
     }

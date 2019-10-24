@@ -45,7 +45,7 @@ public class MatchHistoryFragment extends Fragment {
                 .child(mAuth.getCurrentUser().getUid())
                 .orderByChild("finishedGames");
 
-        games.addValueEventListener(lastGamesListener);
+        games.addListenerForSingleValueEvent(lastGamesListener);
         Log.i(TAG, "onCreate: finished");
     }
 
