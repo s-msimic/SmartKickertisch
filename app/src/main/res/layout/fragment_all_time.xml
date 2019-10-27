@@ -35,4 +35,36 @@
         >
     </com.github.mikephil.charting.charts.PieChart>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/allTimeFragmentBestWinTextView"
+        android:textColor="@color/colorWhite"
+        android:textSize="22sp"
+        android:text="Best Win: "
+        app:layout_constraintTop_toBottomOf="@+id/allTimeFragmentPieChart"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/allTimeFragmentWorstLossTextView"
+        app:layout_constraintVertical_bias="0.7"
+        app:layout_constraintHorizontal_bias="0.25"
+        >
+    </TextView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/allTimeFragmentWorstLossTextView"
+        android:textColor="@color/colorWhite"
+        android:textSize="22sp"
+        android:text="Worst Loss: "
+        app:layout_constraintTop_toTopOf="@id/allTimeFragmentBestWinTextView"
+        app:layout_constraintBottom_toBottomOf="@id/allTimeFragmentBestWinTextView"
+        app:layout_constraintStart_toEndOf="@id/allTimeFragmentBestWinTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.75"
+        >
+    </TextView>
+
+
 </android.support.constraint.ConstraintLayout>

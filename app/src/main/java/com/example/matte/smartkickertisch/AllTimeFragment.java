@@ -57,6 +57,8 @@ public class AllTimeFragment extends Fragment {
     private List<PieEntry> data = new ArrayList<>();
     private PieDataSet pieDataSet;
     private PieData pieData;
+    private TextView bestWinTextView;
+    private TextView worstLossTextView;
     private static final String TAG = "AllTimeFragment";
 
     public AllTimeFragment() {
@@ -93,6 +95,8 @@ public class AllTimeFragment extends Fragment {
                 description.setEnabled(false);
                 allTimeWinLossPieChart.setData(pieData);
                 allTimeWinLossPieChart.invalidate();
+                bestWinTextView.append(dataSnapshot.child("bestWin").child("score").getValue(String.class));
+                worstLossTextView.append(dataSnapshot.child("worstLoss").child("score").getValue(String.class));
             }
         }
 
@@ -107,7 +111,10 @@ public class AllTimeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_all_time, container, false);
         allTimeWinLossPieChart = view.findViewById(R.id.allTimeFragmentPieChart);
         headlineTextView = view.findViewById(R.id.allTimeHeadlineTextView);
-        headlineTextView.setText(auth.getCurrentUser().getDisplayName() + "'s Statistics");
+        bestWinTextView = view.findViewById(R.id.allTimeFragmentBestWinTextView);
+        worstLossTextView = view.findViewById(R.id.allTimeFragmentWorstLossTextView);
+        if (auth.getCurrentUser() != null && auth.getCurrentUser().getDisplayName() != null)
+            headlineTextView.setText(auth.getCurrentUser().getDisplayName() + "'s Statistics");
         if (auth.getCurrentUser() != null) {
             Log.d(TAG, "onCreateView: data can be retrieved");
             database.getReference("users").child(auth.getCurrentUser().getUid()).child("data").addListenerForSingleValueEvent(allTimeGetDataListener);

@@ -47,6 +47,7 @@ public class LeaderboardActivity extends Activity {
     private String playerB3;
     private String playerB4;
     private String autoID;
+    private Query bestPlayers;
 
 
     @Override
@@ -112,6 +113,7 @@ public class LeaderboardActivity extends Activity {
     }
 
     public void checkForRecentGame(){
+        getSharedPreferences("MyPreferences", 0).edit().clear().apply();
         Log.i(TAG, "checkForRecentGame: run into checkForRecentGame");
         SharedPreferences preferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
@@ -140,7 +142,6 @@ public class LeaderboardActivity extends Activity {
 
     @Override
     protected void onStart(){
-
         checkForRecentGame();
         Log.i(TAG, "onCreate: "+ lobbyPathForRecentGameCheck);
         if(!(lobbyPathForRecentGameCheck == null)){
@@ -151,10 +152,14 @@ public class LeaderboardActivity extends Activity {
             i.putExtra("lobbyPath", fullLobyPath);
             i.putExtra("autoID", autoID);
             startActivity(i);
-
         }
-
         super.onStart();
+    }
+
+    @Override
+    protected void onDestroy() {
+        bestPlayers.removeEventListener(vel);
+        super.onDestroy();
     }
 
     AdapterView.OnItemSelectedListener itemClickListener = new AdapterView.OnItemSelectedListener() {
@@ -164,20 +169,26 @@ public class LeaderboardActivity extends Activity {
 
             switch (position) {
                 case 0:
-                    Query wins = FirebaseDatabase.getInstance().getReference("users")
-                            .orderByChild(WINS)
-                            .limitToLast(countBestPlayers);
-                    wins.addValueEventListener(vel);
+                    bestPlayers = getLeaderboardPlayers(WINS);
                     spinnerTextView.setText(getString(R.string.sort_by_wins));
                     break;
                 case 1:
-                    Query games = FirebaseDatabase.getInstance().getReference("users")
-                            .orderByChild(GAMES)
-                            .limitToLast(countBestPlayers);
-                    games.addValueEventListener(vel);
+                    bestPlayers = getLeaderboardPlayers(GAMES);
                     spinnerTextView.setText(getString(R.string.sort_by_games));
                     break;
             }
+            bestPlayers.addValueEventListener(vel);
+        }
+
+        /**
+         * Get first @countBestPlayers, which are best in selected category
+         * @param sortingIdentifier specifies according to which criteria leaderboard is sorted
+         * @return Query of best players
+         */
+        private Query getLeaderboardPlayers(String sortingIdentifier) {
+            return FirebaseDatabase.getInstance().getReference("users")
+                    .orderByChild(sortingIdentifier)
+                    .limitToLast(countBestPlayers);
         }
 
         @Override
@@ -189,6 +200,7 @@ public class LeaderboardActivity extends Activity {
     ValueEventListener vel = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            Log.d(TAG, "vel-onDataChange-203: userList: " + userList.size());
             userList.clear();
             int posi = countBestPlayers;
             String uid;
@@ -196,23 +208,22 @@ public class LeaderboardActivity extends Activity {
             for (DataSnapshot snap : dataSnapshot.getChildren()) {
 //                Log.i(TAG, "onDataChange: playerCount = " + snap.getChildrenCount());
 //                Log.i(TAG, "onDataChange: playerCount = " + database.getReference("players").count);
-                Log.i(TAG, "onDataChange: child: Key = " + snap.getKey() + " Value = " + snap.getValue());
+                Log.i(TAG, "vel-onDataChange: child: Key = " + snap.getKey() + " Value = " + snap.getValue());
                 uid = "users/" + snap.getKey() + "/profileImage.jpg";
                 if (snap.child("nickName").getValue() != null && snap.child(WINS).getValue() != null && snap.child(GAMES).getValue() != null) {
-                    Log.d(TAG, "onDataChange: values are not null");
+                    Log.d(TAG, "vel-onDataChange: values are not null");
                     userList.put(posi, new User(snap.getKey(), snap.child("nickName").getValue().toString(),
                             posi--, snap.child(WINS).getValue().toString(), snap.child(GAMES).getValue().toString()));
                 }
                 storageRef.child(uid).getDownloadUrl()
-                        .addOnFailureListener(e -> Log.e(TAG, "onDataChange: getDownloadUrl failed for user ", e))
-                        .addOnSuccessListener(uri -> Log.i(TAG, "onSuccess: uri successfully retrieved = " + uri.getPath()))
+                        .addOnFailureListener(e -> Log.e(TAG, "vel-onDataChange-onFailure: getDownloadUrl failed for user ", e))
+                        .addOnSuccessListener(uri -> Log.i(TAG, "vel-onDataChange-onSuccess: uri successfully retrieved = " + uri.getPath()))
                         .addOnCompleteListener(task -> {
                             if (task.getException() == null) {
-
                                 for (User el : userList.values()) {
                                     if (task.getResult().getPath().contains(el.getUid())) {
                                         el.setProfilePicture(task.getResult());
-                                        Log.i(TAG, "onComplete: added uri to user = " + el.toString());
+                                        Log.i(TAG, "vel-onDataChange-onComplete: added uri to user = " + el.toString());
                                     }
                                 }
                             }
@@ -263,6 +274,5 @@ public class LeaderboardActivity extends Activity {
         else {
             super.onActivityResult(requestCode, resultCode, data);
         }
-
     }
 }

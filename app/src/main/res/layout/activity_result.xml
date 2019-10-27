@@ -12,6 +12,7 @@
         android:layout_height="60dp"
         android:id="@+id/discardGameButton"
         android:text="Discard Game"
+        android:onClick="onClickDiscardGame"
         android:textSize="16sp"
         android:textColor="@color/colorSignUpButtonText"
         android:textAllCaps="false"

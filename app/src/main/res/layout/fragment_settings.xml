@@ -164,7 +164,6 @@
             android:textColor="@color/colorSignUpButtonText"
             android:textSize="16sp"
             android:enabled="false"
-
             android:alpha="0.7"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/logoutSettingsButton"
