@@ -45,6 +45,8 @@ public class LobbyActivity extends AppCompatActivity {
     ChildEventListener allLobbyChildListener;
     ValueEventListener myLobbyValueListener;
 
+    ValueEventListener testListener;
+
     PlayerButtonTag topLeftButton;
     PlayerButtonTag topRightButton;
     PlayerButtonTag bottomLeftButton;
@@ -127,12 +129,12 @@ public class LobbyActivity extends AppCompatActivity {
         valueMap.put("teamRed", playerRedMap);
         valueMap.put("teamBlue", playerBlueMap);
 
-        String autoID = ref.child("games").push().getKey();
-        ref.child("games").child(autoID).updateChildren(valueMap);
+        String gameID = ref.child("games").push().getKey();
+        ref.child("games").child(gameID).updateChildren(valueMap);
 //        ref.child("lobby").child(lobbyPath).removeValue();
         final Intent i = new Intent(LobbyActivity.this, ResultActivity.class);
         i.putExtra("lobbyPath", lobbyPath);
-        i.putExtra("autoID", autoID);
+        i.putExtra("autoID", gameID);
         i.putExtra("teamRedPlayerOne", this.topLeftButton.playerUID);
         i.putExtra("teamRedPlayerTwo", this.topRightButton.playerUID);
         i.putExtra("teamBluePlayerTwo", this.bottomLeftButton.playerUID);
@@ -233,7 +235,6 @@ public class LobbyActivity extends AppCompatActivity {
     }
 
     public String myUID(){
-        Log.i(TAG, "myUID: " + mAuth.getCurrentUser());
         return mAuth.getCurrentUser().getUid();
     }
 
@@ -297,22 +298,7 @@ public class LobbyActivity extends AppCompatActivity {
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "checkForPlayerChanges-onChildRemoved-293: ");
-//                DatabaseReference dbRefr1 = ref.child("lobby").child("tr").child("o");
-//                DatabaseReference dbRefr2 = ref.child("lobby").child("tr").child("d");
-//                DatabaseReference dbRefb3 = ref.child("lobby").child("tb").child("d");
-//                DatabaseReference dbRefb4 = ref.child("lobby").child("tb").child("o");
-//                Log.i(TAG, "onChildRemoved: " + dbRefr1);
-//
-//                FirebaseDatabase newDatabase = FirebaseDatabase.getInstance();
-//
-//                Log.i(TAG, "onChildRemoved: " + dataSnapshot.child(getLobbyID()));
                 playerNameQuery(dataSnapshot);
-//                Log.i(TAG, "onChildRemoved: child was removed " + ref.child("lobby").child("tr").child("o"));
-//                if(dbRefr1.equals(ref.child("lobby").child("tr").child("o")) || dbRefr2.equals(ref.child("lobby").child("tr").child("d"))
-//                || dbRefb3.equals(ref.child("lobby").child("tb").child("d")) || dbRefb4.equals(ref.child("lobby").child("tb").child("d"))) {
-//                    Intent i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
-//                    startActivity(i);
-//                }
             }
 
             @Override
@@ -371,6 +357,19 @@ public class LobbyActivity extends AppCompatActivity {
                 Log.i(TAG, "onCancelled: called");
             }
         });
+
+        // TODO: 30.10.2019 get rid of all but one lobbyListeners
+        testListener = ref.child("lobby").child(getLobbyID()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void playerNameQuery(final DataSnapshot snapshot) {
@@ -426,7 +425,7 @@ public class LobbyActivity extends AppCompatActivity {
 
                 @Override
                 public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                    if(buttonIsPressed.get() == false && topLeftButton.isHost != true) {
+                    if(!buttonIsPressed.get() && !topLeftButton.isHost) {
                         if (dataSnapshot.getKey().equals(lobbyPath.split("/")[2])) {
                             Intent i;
                             i = new Intent(LobbyActivity.this, LeaderboardActivity.class);

@@ -2,7 +2,11 @@
   <dictionary name="matte">
     <words>
       <w>bugfixes</w>
+      <w>firebase</w>
       <w>leaderboard</w>
+      <w>reauth</w>
+      <w>reauthenticate</w>
+      <w>reauthentication</w>
     </words>
   </dictionary>
 </component>

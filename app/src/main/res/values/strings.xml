@@ -28,5 +28,6 @@
     <string name="settings">Settings</string>
     <string name="save_changes">Save changes</string>
     <string name="profile_picture">Profile Picture</string>
-    <string name="ongoing">ONGOING</string>/>
+    <string name="ongoing">ONGOING</string>
+    <string name="delete_account">Delete Account</string>/>
 </resources>

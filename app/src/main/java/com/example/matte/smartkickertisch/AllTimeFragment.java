@@ -95,8 +95,10 @@ public class AllTimeFragment extends Fragment {
                 description.setEnabled(false);
                 allTimeWinLossPieChart.setData(pieData);
                 allTimeWinLossPieChart.invalidate();
-                bestWinTextView.append(dataSnapshot.child("bestWin").child("score").getValue(String.class));
-                worstLossTextView.append(dataSnapshot.child("worstLoss").child("score").getValue(String.class));
+                if (dataSnapshot.child("bestWin").child("score").exists())
+                    bestWinTextView.append(dataSnapshot.child("bestWin").child("score").getValue(String.class));
+                if (dataSnapshot.child("worstLoss").child("score").exists())
+                    worstLossTextView.append(dataSnapshot.child("worstLoss").child("score").getValue(String.class));
             }
         }
 

@@ -44,6 +44,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -54,7 +55,7 @@ import static android.content.Context.INPUT_METHOD_SERVICE;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SettingsFragment extends Fragment {
+public class SettingsFragment extends Fragment implements SettingsReauthenticationDialog.ReauthenticateListener {
     Button logoutButton;
     FirebaseAuth mAuth;
     FirebaseDatabase database;
@@ -66,16 +67,17 @@ public class SettingsFragment extends Fragment {
     EditText newNickname;
     EditText newPassword;
     EditText newEMail;
-    CircleImageView currentProfilePictureCirecleImageView;
+    CircleImageView currentProfilePictureCircleImageView;
     Button saveChangesButton;
+    Button deleteAccountButton;
+    AtomicInteger tasksRunning = new AtomicInteger(0);
+    ConstraintLayout constraintLayout;
     private Uri profilePictureUri;
     private Bitmap profilePictureBitmap;
     private ProgressBar progressBar;
-    private ConstraintLayout constraintLayout;
+    private SettingsFragment settingsFragment;
 
-    public SettingsFragment() {
-        // Required empty public constructor
-    }
+    public SettingsFragment() { }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -83,9 +85,7 @@ public class SettingsFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         database = FirebaseDatabase.getInstance();
-        Log.i(TAG, "onCreate: key = " + database.getReference("users").getKey());
-        Log.i(TAG, "onCreate: child = " + database.getReference("users").child(mAuth.getCurrentUser().getUid()).child("nickName"));
-        Log.i(TAG, "onCreate: keyChild = " + database.getReference("users").child(mAuth.getCurrentUser().getUid()).child("nickName").getKey());
+        settingsFragment = this;
     }
 
     @Override
@@ -94,10 +94,12 @@ public class SettingsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         logoutButton = view.findViewById(R.id.logoutSettingsButton);
         logoutButton.setOnClickListener(logoutListener);
+        deleteAccountButton = view.findViewById(R.id.deleteAccountSettingsButton);
+        deleteAccountButton.setOnClickListener(deleteAccountListener);
 
         currentNickname = view.findViewById(R.id.currentNickSettingTextView);
         currentEMailAddress = view.findViewById(R.id.currentMailSettingsTextView);
-        currentProfilePictureCirecleImageView = view.findViewById(R.id.currentPictureSettingsImageView);
+        currentProfilePictureCircleImageView = view.findViewById(R.id.currentPictureSettingsImageView);
         saveChangesButton = view.findViewById(R.id.saveChangesButton);
         newNickname = view.findViewById(R.id.changeNickSettingEditText);
         newPassword = view.findViewById(R.id.changePasswordSettingEditText);
@@ -108,11 +110,12 @@ public class SettingsFragment extends Fragment {
         constraintLayout.setOnClickListener(hideKeyboardListener);
         currentNickname.setText(mAuth.getCurrentUser().getDisplayName());
         currentEMailAddress.setText(mAuth.getCurrentUser().getEmail());
-        currentProfilePictureCirecleImageView.setOnClickListener(addPictureOnClickListener);
+        currentProfilePictureCircleImageView.setOnClickListener(addPictureOnClickListener);
 
         Log.i(TAG, "onCreateView: photoUrl = " + mAuth.getCurrentUser().getPhotoUrl());
         if (mAuth.getCurrentUser().getPhotoUrl() != null) {
-            Picasso.get().load(mAuth.getCurrentUser().getPhotoUrl()).placeholder(R.drawable.profile_picture_preview).into(currentProfilePictureCirecleImageView);
+            Picasso.get().load(mAuth.getCurrentUser().getPhotoUrl())
+                    .placeholder(R.drawable.profile_picture_preview).into(currentProfilePictureCircleImageView);
         }
         newNickname.addTextChangedListener(saveChangesTextWatcher);
         newPassword.addTextChangedListener(saveChangesTextWatcher);
@@ -122,7 +125,8 @@ public class SettingsFragment extends Fragment {
 
     View.OnClickListener addPictureOnClickListener = v -> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
             } else {
                 Log.d(TAG, "addImage: read storage permission = " + Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -134,11 +138,14 @@ public class SettingsFragment extends Fragment {
 
 
     View.OnClickListener hideKeyboardListener = v -> {
+        Log.d(TAG, "hideKeyboardListener-138: focus= " + getActivity().getCurrentFocus());
         if (v.getId() == R.id.settingsConstraintLayout) {
-            InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+            InputMethodManager inputMethodManager =
+                    (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
             Log.d(TAG, "hideKeyboardListener : " + getActivity().getSystemService(INPUT_METHOD_SERVICE));
             if (getActivity().getCurrentFocus() != null) {
-                inputMethodManager.hideSoftInputFromWindow(Objects.requireNonNull(getActivity().getCurrentFocus()).getWindowToken(), 0);
+                inputMethodManager.hideSoftInputFromWindow(Objects.requireNonNull
+                        (getActivity().getCurrentFocus()).getWindowToken(), 0);
             }
         }
     };
@@ -187,9 +194,8 @@ public class SettingsFragment extends Fragment {
         public void onClick(View v) {
             progressBar.setVisibility(View.VISIBLE);
             newNickname.setText(newNickname.getText().toString().trim());
-            AtomicInteger tasksRunning = new AtomicInteger(0);
-            Log.i(TAG, "onClick: nickname string = " + newNickname);
             StringBuilder errorMessage = new StringBuilder();
+            final String oldNickname = currentNickname.getText().toString();
             final String nickname = newNickname.getText().toString();
             final String eMail = newEMail.getText().toString();
             final String password = newPassword.getText().toString();
@@ -203,79 +209,66 @@ public class SettingsFragment extends Fragment {
             if (eMail.length() > 29) {
                 errorMessage.append("Your E-Mail can't be longer than 30 characters");
             }
+            if (mAuth.getCurrentUser() == null) {
+                errorMessage.append("You have to log in again!");
+                errorMessageTextView.setText(errorMessage);
+                return;
+            }
 
+            // TODO: 30.10.2019 if nickname changes fails, write it in sharedpref and check next time
             if (!nickname.equals("") && !nickname.equals(currentNickname.getText().toString()) && errorMessage.toString().equals("")) {
                 tasksRunning.addAndGet(1);
                 Log.d(TAG, "onClick: editText nickname = " + newNickname.getText());
                 Log.d(TAG, "onClick: nickname " + nickname);
 
-                database.getReference("users/").child(mAuth.getCurrentUser().getUid()).child("nickName").setValue(nickname);
-                currentNickname.setText(nickname);
                 UserProfileChangeRequest updateNickname = new UserProfileChangeRequest.Builder()
                         .setDisplayName(nickname)
                         .build();
                 mAuth.getCurrentUser().updateProfile(updateNickname)
                         .addOnSuccessListener(aVoid -> {
-                            Log.d(TAG, "onSuccess: new nickname = " + mAuth.getCurrentUser().getDisplayName());
-                            Toast.makeText(getContext(), "Nickname updated!", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "saveChanges-onClick-onSuccess: new nickname = " + mAuth.getCurrentUser().getDisplayName());
+                            database.getReference("users/").child(mAuth.getCurrentUser().getUid()).child("nickName").setValue(nickname)
+                                    .addOnSuccessListener(command -> Toast.makeText(getContext(), "Nickname updated!", Toast.LENGTH_SHORT).show())
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(getContext(), "Couldn't update nickname.\nPlease check your internet connection!", Toast.LENGTH_SHORT).show();
+                                        Log.d(TAG, "saveChangesListener-updateNickname-onClick-238: couldn't update database= " + e.getMessage());
+                                    })
+                                    .addOnCompleteListener(command -> {
+                                        currentNickname.setText(nickname);
+                                        newNickname.setText("");
+                                        if (tasksRunning.decrementAndGet() == 0)
+                                            progressBar.setVisibility(View.GONE);
+
+                                    });
                         })
                         .addOnFailureListener(e -> {
-                            Log.e(TAG, "onFailure: unvalid nickname = ", e);
+                            Log.e(TAG, "saveChanges-onClick-onFailure: unvalid nickname = ", e);
                             errorMessage.append(e.getMessage());
                             errorMessageTextView.setText(errorMessage);
-                        })
-                        .addOnCompleteListener(voidTask -> {
-                            if (tasksRunning.decrementAndGet() == 0)
-                                progressBar.setVisibility(View.GONE);
                             newNickname.setText("");
-                        });
-            }
-
-            if (!eMail.equals("") && !eMail.equals(mAuth.getCurrentUser().getEmail()) && eMail.length() < 30) {
-                tasksRunning.addAndGet(1);
-                Log.d(TAG, "onClick: email " + eMail);
-
-                mAuth.getCurrentUser().updateEmail(eMail)
-                        .addOnSuccessListener(aVoid -> {
-                            Log.i(TAG, "onSuccess: new mail = " + eMail);
-                            currentEMailAddress.setText(eMail);
-                            Toast.makeText(getContext(), "E-Mail Address updated!", Toast.LENGTH_SHORT).show();
-                            Log.i(TAG, "onClick: new mail = " + mAuth.getCurrentUser().getEmail());
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e(TAG, "onFailure: unvalid eMail ", e);
-                            errorMessage.append(e.getMessage()).append("\n");
-                            errorMessageTextView.setText(errorMessage);
-                        })
-                        .addOnCompleteListener(voidTask -> {
-                            if (tasksRunning.decrementAndGet() == 0) {
-                                progressBar.setVisibility(View.GONE);
-                                Log.d(TAG, "onClick: progressBar visibility = gone");
-                                newEMail.setText("");
-                            }
-                        });
-            }
-
-            if (!password.equals("")) {
-                tasksRunning.addAndGet(1);
-                Log.i(TAG, "onClick: password " + password);
-
-                mAuth.getCurrentUser().updatePassword(password)
-                        .addOnSuccessListener((Void) -> {
-                            Log.d(TAG, "onSuccess: password updated");
-                            Toast.makeText(getContext(), "Password updated!", Toast.LENGTH_SHORT).show();
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e(TAG, "onFailure: ", e);
-                            errorMessage.append(e.getMessage()).append("\n");
-                            errorMessageTextView.setText(errorMessage);
-                        })
-                        .addOnCompleteListener(voidTask -> {
                             if (tasksRunning.decrementAndGet() == 0)
                                 progressBar.setVisibility(View.GONE);
-                            newPassword.setText("");
                         });
             }
+
+            if (!eMail.equals("") &&
+                    !eMail.equals(mAuth.getCurrentUser().getEmail()) && eMail.length() < 30) {
+                tasksRunning.addAndGet(1);
+                if (!password.equals("")) {
+                    tasksRunning.addAndGet(1);
+
+                    SettingsReauthenticationDialog reauthenticationDialog = SettingsReauthenticationDialog.newInstance("changeMailAndPass", eMail, password);
+                    createDialog(reauthenticationDialog, "changeMailAndPass");
+                } else {
+                    SettingsReauthenticationDialog reauthenticationDialog = SettingsReauthenticationDialog.newInstance("changeEMail", eMail);
+                    createDialog(reauthenticationDialog, "changeEMail");
+                }
+            } else if (!password.equals("")) {
+                tasksRunning.addAndGet(1);
+                SettingsReauthenticationDialog reauthenticationDialog = SettingsReauthenticationDialog.newInstance("changePassword", password);
+                createDialog(reauthenticationDialog, "changePassword");
+            }
+
             if (profilePictureUri != null) {
                 tasksRunning.addAndGet(1);
                 // Get the data from an ImageView as bytes
@@ -313,11 +306,116 @@ public class SettingsFragment extends Fragment {
                                 progressBar.setVisibility(View.GONE);
                         });
             }
-            if (tasksRunning.get() == 0)
+
+            if (tasksRunning.get() == 0) {
                 progressBar.setVisibility(View.GONE);
+            }
+
             errorMessageTextView.setText(errorMessage);
         }
     };
+
+    private void createDialog(SettingsReauthenticationDialog dialog, String tag) {
+        dialog.setTargetFragment(settingsFragment, 0);
+        dialog.show(requireActivity().getSupportFragmentManager(), tag);
+    }
+
+    public void changeEMail(String eMail) {
+        assert  mAuth.getCurrentUser() != null;
+        mAuth.getCurrentUser().updateEmail(eMail)
+                .addOnSuccessListener(aVoid -> {
+                    Log.i(TAG, "onSuccess: new mail = " + eMail);
+                    currentEMailAddress.setText(eMail);
+                    Toast.makeText(getContext(), "E-Mail Address updated!", Toast.LENGTH_SHORT).show();
+                    Log.i(TAG, "onClick: new mail = " + mAuth.getCurrentUser().getEmail());
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "onFailure: unvalid eMail ", e);
+                    errorMessageTextView.append(e.getMessage() + "\n");
+                })
+                .addOnCompleteListener(voidTask -> {
+                    if (tasksRunning.decrementAndGet() == 0) {
+                        progressBar.setVisibility(View.GONE);
+                    }
+                    Log.d(TAG, "changeEMail-onComplete-340: tasksRunning= " + tasksRunning.get());
+                    newEMail.setText("");
+                });
+    }
+
+    public void changePassword(String password) {
+        assert  mAuth.getCurrentUser() != null;
+        mAuth.getCurrentUser().updatePassword(password)
+                .addOnSuccessListener((Void) -> {
+                    Log.d(TAG, "onSuccess: password updated");
+                    Toast.makeText(getContext(), "Password updated!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "onFailure: ", e);
+                    errorMessageTextView.append(e.getMessage() + "\n");
+                })
+                .addOnCompleteListener(voidTask -> {
+                    if (tasksRunning.decrementAndGet() == 0)
+                        progressBar.setVisibility(View.GONE);
+                    newPassword.setText("");
+                });
+    }
+
+    View.OnClickListener deleteAccountListener = v -> {
+        SettingsReauthenticationDialog reauthenticationDialog = new SettingsReauthenticationDialog();
+        createDialog(reauthenticationDialog, "deleteAccount");
+    };
+
+    public void deleteUser() {
+        assert mAuth.getCurrentUser() != null;
+        Log.d(TAG, "deleteUser-UID-364: " + mAuth.getCurrentUser().getUid());
+        String uid = mAuth.getCurrentUser().getUid();
+        mAuth.getCurrentUser().delete()
+                .addOnSuccessListener(deleteTask -> {
+                    database.getReference("users").child(uid).child("data").removeValue()
+                            .addOnFailureListener(e -> Log.d(TAG, "deleteUser-onComplete-onFailure-database-374: " + e.getMessage()));
+                    database.getReference("users").child(uid).child("finishedGames").removeValue();
+                    database.getReference("users").child(uid).child("nickName").setValue("[deleted]");
+
+                    mStorageRef.child("users").child(uid).delete()
+                            .addOnCompleteListener(command -> {
+                                progressBar.setVisibility(View.GONE);
+                                Intent toWelcome = new Intent(getActivity(), WelcomeActivity.class);
+                                startActivity(toWelcome);
+                            })
+                            .addOnFailureListener(e -> Log.d(TAG, "deleteUser-onComplete-onFailure-storage-200: " + e.getMessage()));
+                })
+                .addOnFailureListener(e -> {
+                    Log.d(TAG, "deleteUser-onFailure-497: " + e.getMessage());
+                    progressBar.setVisibility(View.GONE);
+                });
+    }
+
+    @Override
+    public void reauthenticationSuccessful(boolean successful, String tag, String... data) {
+        Log.d(TAG, "reauthenticationSuccessful-423: successful= " + successful + "-" + Arrays.toString(data));
+        if (successful) {
+            switch (tag) {
+                case "deleteAccount":
+                    deleteUser();
+                    break;
+                case "changeEMail":
+                    changeEMail(data[0]);
+                    break;
+                case "changePassword":
+                    changePassword(data[1]);
+                    break;
+                case "changeMailAndPass":
+                    changeEMail(data[0]);
+                    changePassword(data[1]);
+                    break;
+            }
+        } else {
+            Toast.makeText(getContext(), "Reauthentication unsuccessful! Wrong password!", Toast.LENGTH_SHORT).show();
+            newPassword.setText("");
+            newEMail.setText("");
+            progressBar.setVisibility(View.GONE);
+        }
+    }
 
     public void pickImage() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -346,9 +444,9 @@ public class SettingsFragment extends Fragment {
             try {
                 profilePictureUri = selectedImage;
                 profilePictureBitmap = scaleDown(getCorrectlyOrientedImage(getContext(), profilePictureUri), 512, true);
-                currentProfilePictureCirecleImageView.setImageBitmap(profilePictureBitmap);
-                Log.i("WIDTH:", currentProfilePictureCirecleImageView.getWidth() + "");
-                Log.i("HEIGHT:", currentProfilePictureCirecleImageView.getHeight() + "");
+                currentProfilePictureCircleImageView.setImageBitmap(profilePictureBitmap);
+                Log.i("WIDTH:", currentProfilePictureCircleImageView.getWidth() + "");
+                Log.i("HEIGHT:", currentProfilePictureCircleImageView.getHeight() + "");
                 saveChangesButton.setAlpha(1);
                 saveChangesButton.setEnabled(true);
                 saveChangesButton.setOnClickListener(saveChangesListener);
@@ -435,6 +533,4 @@ public class SettingsFragment extends Fragment {
         cursor.moveToFirst();
         return cursor.getInt(0);
     }
-
-
 }

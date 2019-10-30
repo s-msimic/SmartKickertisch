@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/settingsReauthenticationDialog"
+    android:padding="16dp"
+    android:background="@drawable/match_history_dialog_background">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/settingsReauthenticationTextView"
+        android:text="If you want to "
+        android:textColor="@color/colorWhite"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/settingsReauthenticationDialogPasswordEditText"
+        app:layout_constraintVertical_bias="0.2"
+        />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/settingsReauthenticationDialogPasswordEditText"
+        android:hint="Enter your password"
+        android:inputType="textPassword"
+        android:backgroundTint="@color/colorWhite"
+        android:textColor="@color/colorSignUpButtonText"
+        android:textColorHint="@color/colorWhite"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/settingsReauthenticationTextView"
+        app:layout_constraintBottom_toTopOf="@id/settingsReauthenticationDialogCancelButton"
+        />
+
+    <Button
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/settingsReauthenticationDialogCancelButton"
+        android:background="@drawable/round_button"
+        android:text="Cancel"
+        android:textColor="@color/colorSignUpButtonText"
+        android:textSize="16sp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/settingsReauthenticationDialogConfirmButton"
+        app:layout_constraintTop_toBottomOf="@id/settingsReauthenticationDialogPasswordEditText"
+        />
+
+    <Button
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/settingsReauthenticationDialogConfirmButton"
+        android:background="@drawable/round_button"
+        android:text="Confirm"
+        android:textColor="@color/colorSignUpButtonText"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@id/settingsReauthenticationDialogCancelButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/settingsReauthenticationDialogCancelButton"
+        app:layout_constraintBottom_toBottomOf="@id/settingsReauthenticationDialogCancelButton"
+        />
+
+</android.support.constraint.ConstraintLayout>

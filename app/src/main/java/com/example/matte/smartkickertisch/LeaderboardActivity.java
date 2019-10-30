@@ -46,7 +46,7 @@ public class LeaderboardActivity extends Activity {
     private String playerR2;
     private String playerB3;
     private String playerB4;
-    private String autoID;
+    private String gameID;
     private Query bestPlayers;
 
 
@@ -113,7 +113,7 @@ public class LeaderboardActivity extends Activity {
     }
 
     public void checkForRecentGame(){
-        getSharedPreferences("MyPreferences", 0).edit().clear().apply();
+//        getSharedPreferences("MyPreferences", 0).edit().clear().apply();
         Log.i(TAG, "checkForRecentGame: run into checkForRecentGame");
         SharedPreferences preferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
@@ -130,7 +130,7 @@ public class LeaderboardActivity extends Activity {
                 playerR2 = getSharedPreferences("MyPreferences",0).getString("varPlayerR2", null);
                 playerB3 = getSharedPreferences("MyPreferences",0).getString("varPlayerB3", null);
                 playerB4 = getSharedPreferences("MyPreferences",0).getString("varPlayerB4", null);
-                autoID = getSharedPreferences("MyPreferences", 0).getString("autoID", null);
+                gameID = getSharedPreferences("MyPreferences", 0).getString("gameID", null);
 
             } else {
                 lobbyPathForRecentGameCheck = null;
@@ -143,14 +143,14 @@ public class LeaderboardActivity extends Activity {
     @Override
     protected void onStart(){
         checkForRecentGame();
-        Log.i(TAG, "onCreate: "+ lobbyPathForRecentGameCheck);
+        Log.i(TAG, "onCreate: " + lobbyPathForRecentGameCheck);
         if(!(lobbyPathForRecentGameCheck == null)){
             fullLobyPath = getSharedPreferences("MyPreferences",0).getString("var2", null);
             Log.i(TAG, "onStart: " + fullLobyPath +" is the full lobby path");
             Intent i;
             i = new Intent(LeaderboardActivity.this, ResultActivity.class);
             i.putExtra("lobbyPath", fullLobyPath);
-            i.putExtra("autoID", autoID);
+            i.putExtra("gameID", gameID);
             startActivity(i);
         }
         super.onStart();
@@ -205,6 +205,7 @@ public class LeaderboardActivity extends Activity {
             int posi = countBestPlayers;
             String uid;
 
+            // FIXME: 28.10.2019 deleted players might crash the app
             for (DataSnapshot snap : dataSnapshot.getChildren()) {
 //                Log.i(TAG, "onDataChange: playerCount = " + snap.getChildrenCount());
 //                Log.i(TAG, "onDataChange: playerCount = " + database.getReference("players").count);

@@ -42,6 +42,7 @@ public class ResultActivity extends AppCompatActivity {
 
     public void onClickDiscardGame(View view) {
         getSharedPreferences("MyPreferences", 0).edit().clear().apply();
+        ref.child("games").child(autoID).removeValue();
         Intent toLeaderboard = new Intent(ResultActivity.this, LeaderboardActivity.class);
         startActivity(toLeaderboard);
     }
@@ -54,17 +55,14 @@ public class ResultActivity extends AppCompatActivity {
 
 
     public void onClickCommitResult(View view){
-
         if(editTextResultRed.getText().toString().isEmpty() ||
                 editTextResultBlue.getText().toString().isEmpty()) {
             Toast.makeText(ResultActivity.this, "Make sure to edit results", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String redTeamScoreString = editTextResultRed.getText().toString();
-        editTextNumberResultRed = Integer.parseInt(redTeamScoreString);
-        String blueTeamScoreString = editTextResultBlue.getText().toString();
-        editTextNumberResultBlue = Integer.parseInt(blueTeamScoreString);
+        editTextNumberResultRed = Integer.parseInt(editTextResultRed.getText().toString());
+        editTextNumberResultBlue = Integer.parseInt(editTextResultBlue.getText().toString());
 
         if(editTextNumberResultBlue > 10 || editTextNumberResultBlue < 0 ||
                 editTextNumberResultRed > 10 || editTextNumberResultRed < 0 ||
@@ -77,8 +75,26 @@ public class ResultActivity extends AppCompatActivity {
         Log.i(TAG, "onClickCommitResult: " + autoID);
         ref.child("games").child(autoID).child("teamBlue").child("score").setValue(editTextNumberResultBlue);
         ref.child("games").child(autoID).child("teamRed").child("score").setValue(editTextNumberResultRed);
-        if(teamRedPlayerOne != null) {
-            database.getReference("users").child(teamRedPlayerOne).child("data").child("playedGames").runTransaction(new Transaction.Handler() {
+        ifExistentUpdatePlayerData(teamRedPlayerOne, true);
+        ifExistentUpdatePlayerData(teamRedPlayerTwo, true);
+        ifExistentUpdatePlayerData(teamBluePlayerOne, false);
+        ifExistentUpdatePlayerData(teamBluePlayerTwo, false);
+
+        getSharedPreferences("MyPreferences", 0).edit().clear().apply();
+        Log.i(TAG, "onClickCommitResult: " + getSharedPreferences("MyPreferences", 0).getAll());
+        Intent i = new Intent(ResultActivity.this, LeaderboardActivity.class);
+        startActivity(i);
+    }
+
+    /**
+     * If the player exists, its score will be set in the database, and all of his statistics will be updated.
+     * @param playerID UserID for the player.
+     * @param isRedTeam Identifier it the player belongs to team red or blue.
+     */
+    private void ifExistentUpdatePlayerData(String playerID, boolean isRedTeam) {
+        if(playerID != null) {
+            database.getReference("users").child(playerID).child("data")
+                    .child("playedGames").runTransaction(new Transaction.Handler() {
                 @NonNull
                 @Override
                 public Result doTransaction(@NonNull MutableData mutableData) {
@@ -99,8 +115,12 @@ public class ResultActivity extends AppCompatActivity {
                     Log.d(TAG, "onComplete: "+ databaseError);
                 }
             });
-            if (editTextNumberResultRed == 10) {
-                database.getReference("users").child(teamRedPlayerOne).child("data").child("winCounter").runTransaction(new Transaction.Handler() {
+
+            int myTeamScore = isRedTeam ? editTextNumberResultRed : editTextNumberResultBlue;
+
+            if (myTeamScore == 10) {
+                database.getReference("users").child(playerID).child("data")
+                        .child("winCounter").runTransaction(new Transaction.Handler() {
                     @NonNull
                     @Override
                     public Result doTransaction(@NonNull MutableData mutableData) {
@@ -123,176 +143,15 @@ public class ResultActivity extends AppCompatActivity {
                 });
 
                 // check if this was the best win
-                editBestWin(teamRedPlayerOne, true);
+                editBestWin(playerID, true);
             } else {
-                editWorstLoss(teamRedPlayerOne, true);
+                editWorstLoss(playerID, true);
             }
-            ref.child("users").child(teamRedPlayerOne).child("finishedGames").child(autoID).setValue(unixTime);
+            ref.child("users").child(playerID).child("finishedGames").child(autoID).setValue(unixTime);
         }
-        if(teamRedPlayerTwo != null) {
-            database.getReference("users").child(teamRedPlayerTwo).child("data").child("playedGames").runTransaction(new Transaction.Handler() {
-                @NonNull
-                @Override
-                public Result doTransaction(@NonNull MutableData mutableData) {
-                    Long value = 1L;
-                    if (mutableData.getValue() != null) {
-                        value = mutableData.getValue(Long.class);
-                        mutableData.setValue(value + 1);
-                    }
-                    // for first played game value is null
-                    else {
-                        mutableData.setValue(value);
-                    }
-                    return Transaction.success(mutableData);
-                }
-
-                @Override
-                public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-                    Log.d(TAG, "onComplete: "+ databaseError);
-                }
-            });
-
-            if (editTextNumberResultRed == 10) {
-                database.getReference("users").child(teamRedPlayerTwo).child("data").child("winCounter").runTransaction(new Transaction.Handler() {
-                    @NonNull
-                    @Override
-                    public Result doTransaction(@NonNull MutableData mutableData) {
-                        Long value = 1L;
-                        if (mutableData.getValue() != null) {
-                            value = mutableData.getValue(Long.class);
-                            mutableData.setValue(value + 1);
-                        }
-                        // for first win value is null
-                        else {
-                            mutableData.setValue(value);
-                        }
-                        return Transaction.success(mutableData);
-                    }
-
-                    @Override
-                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-                        Log.d(TAG, "onComplete: " + databaseError);
-                    }
-                });
-
-                editBestWin(teamRedPlayerTwo, true);
-            } else {
-                editWorstLoss(teamRedPlayerTwo, true);
-            }
-            ref.child("users").child(teamRedPlayerTwo).child("finishedGames").child(autoID).setValue(unixTime);
-            Log.d(TAG, "onClickCommitResult: uid = " + teamRedPlayerTwo);
-
-        }
-        if(teamBluePlayerTwo != null) {
-            database.getReference("users").child(teamBluePlayerTwo).child("data").child("playedGames").runTransaction(new Transaction.Handler() {
-                @NonNull
-                @Override
-                public Result doTransaction(@NonNull MutableData mutableData) {
-                    Long value = 1L;
-                    if (mutableData.getValue() != null) {
-                        value = mutableData.getValue(Long.class);
-                        mutableData.setValue(value + 1);
-                    }
-                    // for first played game value is null
-                    else {
-                        mutableData.setValue(value);
-                    }
-                    return Transaction.success(mutableData);
-                }
-
-                @Override
-                public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-                    Log.d(TAG, "onComplete: "+databaseError);
-                }
-            });
-            if (editTextNumberResultBlue == 10) {
-                database.getReference("users").child(teamBluePlayerTwo).child("data").child("winCounter").runTransaction(new Transaction.Handler() {
-                    @NonNull
-                    @Override
-                    public Result doTransaction(@NonNull MutableData mutableData) {
-                        Long value = 1L;
-                        if (mutableData.getValue() != null) {
-                            value = mutableData.getValue(Long.class);
-                            mutableData.setValue(value + 1);
-                        }
-                        // for first win value is null
-                        else {
-                            mutableData.setValue(value);
-                        }
-                        return Transaction.success(mutableData);
-                    }
-
-                    @Override
-                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-                        Log.d(TAG, "onComplete: " + databaseError);
-                    }
-                });
-                editBestWin(teamBluePlayerTwo, false);
-            } else {
-                editWorstLoss(teamBluePlayerTwo, false);
-            }
-            ref.child("users").child(teamBluePlayerTwo).child("finishedGames").child(autoID).setValue(unixTime);
-        }
-        if(teamBluePlayerOne != null) {
-            database.getReference("users").child(teamBluePlayerOne).child("data").child("playedGames").runTransaction(new Transaction.Handler() {
-                @NonNull
-                @Override
-                public Result doTransaction(@NonNull MutableData mutableData) {
-                    Long value = 1L;
-                    if (mutableData.getValue() != null) {
-                        value = mutableData.getValue(Long.class);
-                        mutableData.setValue(value + 1);
-                    }
-                    // for first played game value is null
-                    else {
-                        mutableData.setValue(value);
-                    }
-                    return Transaction.success(mutableData);
-                }
-
-                @Override
-                public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-                    Log.d(TAG, "onComplete: " + databaseError);
-                }
-            });
-            ref.child("users").child(teamBluePlayerOne).child("finishedGames").child(autoID).setValue(unixTime);
-
-            if (editTextNumberResultBlue == 10) {
-                database.getReference("users").child(teamBluePlayerOne).child("data").child("winCounter").runTransaction(new Transaction.Handler() {
-                    @NonNull
-                    @Override
-                    public Result doTransaction(@NonNull MutableData mutableData) {
-                        Long value = 1L;
-                        if (mutableData.getValue() != null) {
-                            value = mutableData.getValue(Long.class);
-                            mutableData.setValue(value + 1);
-                        }
-                        // for first win value is null
-                        else {
-                            mutableData.setValue(value);
-                        }
-                        return Transaction.success(mutableData);
-                    }
-
-                    @Override
-                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-                        Log.d(TAG, "onComplete: " + databaseError);
-                    }
-                });
-                editBestWin(teamBluePlayerOne, false);
-            } else {
-                editWorstLoss(teamBluePlayerOne, false);
-            }
-
-        }
-        
-        //ref.child("lobby").child(lobbyPath).removeValue();
-        getSharedPreferences("MyPreferences", 0).edit().clear().apply();
-        Log.i(TAG, "onClickCommitResult: " + getSharedPreferences("MyPreferences", 0).getAll());
-        Intent i = new Intent(ResultActivity.this, LeaderboardActivity.class);
-        startActivity(i);
     }
 
+    // TODO: 27.10.2019 refactor firebase inputs for bestWin and worstLoss into a method
     private void editBestWin(String playerID, boolean isRedTeam) {
         database.getReference("users").child(playerID).child("data").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -325,10 +184,7 @@ public class ResultActivity extends AppCompatActivity {
                     }
                 }
 
-                Log.i(TAG, "editBestWin: " + dataSnapshot.toString());
                 Log.i(TAG, "editBestWin: autoID:" + autoID);
-                Log.i(TAG, "editBestWin: lobbyPath:" + lobbyPath);
-                Log.i(TAG, "editBestWin: fullLobbyPath:" + fullLobbyPath);
                 Log.i(TAG, "editBestWin: lobbyArray:" + lobbyArray.toString());
             }
 
