@@ -21,16 +21,19 @@ import com.google.firebase.database.Transaction;
 import com.google.firebase.database.Transaction.Result;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Arrays;
+
 public class ResultActivity extends AppCompatActivity {
     DatabaseReference ref;
     FirebaseDatabase database;
+    SharedPreferences preferences;
     private EditText editTextResultRed;
     private EditText editTextResultBlue;
     private String lobbyPath;
-    private String autoID;
+    private String gameID;
     private String fullLobbyPath;
-    private int editTextNumberResultRed;
-    private int editTextNumberResultBlue;
+    private int redTeamScore;
+    private int blueTeamScore;
     private String teamRedPlayerOne;
     private String teamRedPlayerTwo;
     private String teamBluePlayerTwo;
@@ -40,9 +43,13 @@ public class ResultActivity extends AppCompatActivity {
     private long unixTime;
 
 
+    /**
+     * Deletes game from database and goes back to LeaderboardActivity.
+     * @param view Discard game button.
+     */
     public void onClickDiscardGame(View view) {
         getSharedPreferences("MyPreferences", 0).edit().clear().apply();
-        ref.child("games").child(autoID).removeValue();
+        ref.child("games").child(gameID).removeValue();
         Intent toLeaderboard = new Intent(ResultActivity.this, LeaderboardActivity.class);
         startActivity(toLeaderboard);
     }
@@ -53,7 +60,10 @@ public class ResultActivity extends AppCompatActivity {
                 Toast.LENGTH_SHORT).show();
     }
 
-
+    /**
+     * Saves game into database and adds all statistics for all players in the current game.
+     * @param view Commit button.
+     */
     public void onClickCommitResult(View view){
         if(editTextResultRed.getText().toString().isEmpty() ||
                 editTextResultBlue.getText().toString().isEmpty()) {
@@ -61,27 +71,27 @@ public class ResultActivity extends AppCompatActivity {
             return;
         }
 
-        editTextNumberResultRed = Integer.parseInt(editTextResultRed.getText().toString());
-        editTextNumberResultBlue = Integer.parseInt(editTextResultBlue.getText().toString());
+        redTeamScore = Integer.parseInt(editTextResultRed.getText().toString());
+        blueTeamScore = Integer.parseInt(editTextResultBlue.getText().toString());
 
-        if(editTextNumberResultBlue > 10 || editTextNumberResultBlue < 0 ||
-                editTextNumberResultRed > 10 || editTextNumberResultRed < 0 ||
-                editTextNumberResultRed == 10 && editTextNumberResultBlue == 10 ||
-                editTextNumberResultBlue != 10 && editTextNumberResultRed != 10) {
-            Toast.makeText(ResultActivity.this, "Only values between 0 to 10 - one team must win with 10 points", Toast.LENGTH_SHORT).show();
+        if(blueTeamScore > 10 || blueTeamScore < 0 ||
+                redTeamScore > 10 || redTeamScore < 0 ||
+                redTeamScore == 10 && blueTeamScore == 10 ||
+                blueTeamScore != 10 && redTeamScore != 10) {
+            Toast.makeText(ResultActivity.this, "Only values between 0 to 10 - " +
+                    "one team must win with 10 points", Toast.LENGTH_SHORT).show();
             return;
         }
         //put results in each players firebase data
-        Log.i(TAG, "onClickCommitResult: " + autoID);
-        ref.child("games").child(autoID).child("teamBlue").child("score").setValue(editTextNumberResultBlue);
-        ref.child("games").child(autoID).child("teamRed").child("score").setValue(editTextNumberResultRed);
+        Log.i(TAG, "onClickCommitResult: " + gameID);
+        ref.child("games").child(gameID).child("teamBlue").child("score").setValue(blueTeamScore);
+        ref.child("games").child(gameID).child("teamRed").child("score").setValue(redTeamScore);
         ifExistentUpdatePlayerData(teamRedPlayerOne, true);
         ifExistentUpdatePlayerData(teamRedPlayerTwo, true);
         ifExistentUpdatePlayerData(teamBluePlayerOne, false);
         ifExistentUpdatePlayerData(teamBluePlayerTwo, false);
 
         getSharedPreferences("MyPreferences", 0).edit().clear().apply();
-        Log.i(TAG, "onClickCommitResult: " + getSharedPreferences("MyPreferences", 0).getAll());
         Intent i = new Intent(ResultActivity.this, LeaderboardActivity.class);
         startActivity(i);
     }
@@ -111,12 +121,10 @@ public class ResultActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-                    Log.d(TAG, "onComplete: "+ databaseError);
-                }
+                public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) { }
             });
 
-            int myTeamScore = isRedTeam ? editTextNumberResultRed : editTextNumberResultBlue;
+            int myTeamScore = isRedTeam ? redTeamScore : blueTeamScore;
 
             if (myTeamScore == 10) {
                 database.getReference("users").child(playerID).child("data")
@@ -137,115 +145,119 @@ public class ResultActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-                        Log.d(TAG, "onComplete: " + databaseError);
-                    }
+                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) { }
                 });
 
                 // check if this was the best win
-                editBestWin(playerID, true);
+                editBestWin(playerID, isRedTeam);
             } else {
-                editWorstLoss(playerID, true);
+                editWorstLoss(playerID, isRedTeam);
             }
-            ref.child("users").child(playerID).child("finishedGames").child(autoID).setValue(unixTime);
+            ref.child("users").child(playerID).child("finishedGames").child(gameID).setValue(unixTime);
         }
     }
 
-    // TODO: 27.10.2019 refactor firebase inputs for bestWin and worstLoss into a method
+    /**
+     * Called when player has won the game. Checks if the current result is the best win of the player.
+     * If that is the case the game is added as the new best win of the player into the database.
+     * @param playerID UID from firebase database of the current player.
+     * @param isRedTeam True if player is in red team.
+     */
     private void editBestWin(String playerID, boolean isRedTeam) {
         database.getReference("users").child(playerID).child("data").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild("bestWin")) {
-                    if (editTextNumberResultBlue <= Integer.valueOf(
-                            dataSnapshot.child("bestWin").child("score").getValue(String.class).split(":")[1]) && isRedTeam) {
-                        database.getReference("users").child(playerID).child("data").child("bestWin").child("score")
-                                .setValue(editTextNumberResultRed + ":" + editTextNumberResultBlue);
-                        database.getReference("users").child(playerID).child("data").child("bestWin").child("gameID")
-                                .setValue(autoID);
-                    } else if (editTextNumberResultRed <= Integer.valueOf(
-                            dataSnapshot.child("bestWin").child("score").getValue(String.class).split(":")[1]) && !isRedTeam){
-                        database.getReference("users").child(playerID).child("data").child("bestWin").child("score")
-                                .setValue(editTextNumberResultBlue + ":" + editTextNumberResultRed);
-                        database.getReference("users").child(playerID).child("data").child("bestWin").child("gameID")
-                                .setValue(autoID);
+                    // player is team red AND new result better or equal to current result
+                    if (isRedTeam && blueTeamScore <= Integer.valueOf(dataSnapshot.child("bestWin")
+                            .child("score").getValue(String.class).split(":")[1])) {
+                        database.getReference("users").child(playerID).child("data")
+                                .child("bestWin").child("score").setValue(redTeamScore + ":" + blueTeamScore);
+                        database.getReference("users").child(playerID).child("data")
+                                .child("bestWin").child("gameID").setValue(gameID);
+                    }
+                    // player is team blue AND new result is better or equal to current result
+                    else if (redTeamScore <= Integer.valueOf(dataSnapshot.child("bestWin")
+                            .child("score").getValue(String.class).split(":")[1]) && !isRedTeam){
+                        database.getReference("users").child(playerID).child("data")
+                                .child("bestWin").child("score").setValue(blueTeamScore + ":" + redTeamScore);
+                        database.getReference("users").child(playerID).child("data")
+                                .child("bestWin").child("gameID").setValue(gameID);
                     }
                 } else {
+                    // player is team red AND no best game (first win)
                     if (isRedTeam) {
-                        database.getReference("users").child(playerID).child("data").child("bestWin").child("score")
-                                .setValue(editTextNumberResultRed + ":" + editTextNumberResultBlue);
-                        database.getReference("users").child(playerID).child("data").child("bestWin").child("gameID")
-                                .setValue(autoID);
-                    } else {
-                        database.getReference("users").child(playerID).child("data").child("bestWin").child("score")
-                                .setValue(editTextNumberResultBlue + ":" + editTextNumberResultRed);
-                        database.getReference("users").child(playerID).child("data").child("bestWin").child("gameID")
-                                .setValue(autoID);
+                        database.getReference("users").child(playerID).child("data")
+                                .child("bestWin").child("score").setValue(redTeamScore + ":" + blueTeamScore);
+                        database.getReference("users").child(playerID).child("data")
+                                .child("bestWin").child("gameID").setValue(gameID);
+                    }
+                    // player is team blue AND no best game (first win)
+                    else {
+                        database.getReference("users").child(playerID).child("data")
+                                .child("bestWin").child("score").setValue(blueTeamScore + ":" + redTeamScore);
+                        database.getReference("users").child(playerID).child("data")
+                                .child("bestWin").child("gameID").setValue(gameID);
                     }
                 }
-
-                Log.i(TAG, "editBestWin: autoID:" + autoID);
-                Log.i(TAG, "editBestWin: lobbyArray:" + lobbyArray.toString());
+                Log.i(TAG, "editBestWin: lobbyArray:" + Arrays.toString(lobbyArray));
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
     }
 
     private void editWorstLoss(String playerID, boolean isRedTeam) {
-        Log.i(TAG, "editWorstLoss: worstLoss");
         database.getReference("users").child(playerID).child("data").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild("worstLoss")) {
                     // player is team red AND new result worse or equal to current result
-                    if (isRedTeam && editTextNumberResultRed <= Integer.valueOf(
-                            dataSnapshot.child("worstLoss").child("score").getValue(String.class).split(":")[0])) {
-                        database.getReference("users").child(playerID).child("data").child("worstLoss").child("score")
-                                .setValue(editTextNumberResultRed + ":" + editTextNumberResultBlue);
-                        database.getReference("users").child(playerID).child("data").child("worstLoss").child("gameID")
-                                .setValue(autoID);
+                    if (isRedTeam && redTeamScore <= Integer.valueOf(dataSnapshot.child("worstLoss")
+                            .child("score").getValue(String.class).split(":")[0])) {
+                        database.getReference("users").child(playerID).child("data")
+                                .child("worstLoss").child("score").setValue(redTeamScore + ":" + blueTeamScore);
+                        database.getReference("users").child(playerID).child("data")
+                                .child("worstLoss").child("gameID").setValue(gameID);
                     }
                     // player is team blue AND new result is worse or equal to current result
-                    else if (!isRedTeam && editTextNumberResultBlue <= Integer.valueOf(
-                            dataSnapshot.child("worstLoss").child("score").getValue(String.class).split(":")[0])){
-                        database.getReference("users").child(playerID).child("data").child("worstLoss").child("score")
-                                .setValue(editTextNumberResultBlue + ":" + editTextNumberResultRed);
-                        database.getReference("users").child(playerID).child("data").child("worstLoss").child("gameID")
-                                .setValue(autoID);
+                    else if (!isRedTeam && blueTeamScore <= Integer.valueOf(dataSnapshot.child("worstLoss")
+                            .child("score").getValue(String.class).split(":")[0])){
+                        database.getReference("users").child(playerID).child("data")
+                                .child("worstLoss").child("score").setValue(blueTeamScore + ":" + redTeamScore);
+                        database.getReference("users").child(playerID).child("data")
+                                .child("worstLoss").child("gameID").setValue(gameID);
                     }
                 } else {
                     // player is team red AND no worst game (first loss)
                     if (isRedTeam) {
-                        database.getReference("users").child(playerID).child("data").child("worstLoss").child("score")
-                                .setValue(editTextNumberResultRed + ":" + editTextNumberResultBlue);
-                        database.getReference("users").child(playerID).child("data").child("worstLoss").child("gameID")
-                                .setValue(autoID);
+                        database.getReference("users").child(playerID).child("data")
+                                .child("worstLoss").child("score").setValue(redTeamScore + ":" + blueTeamScore);
+                        database.getReference("users").child(playerID).child("data")
+                                .child("worstLoss").child("gameID").setValue(gameID);
                     }
                     // player is team blue AND no worst game (first loss)
                     else {
-                        database.getReference("users").child(playerID).child("data").child("worstLoss").child("score")
-                                .setValue(editTextNumberResultBlue + ":" + editTextNumberResultRed);
-                        database.getReference("users").child(playerID).child("data").child("worstLoss").child("gameID")
-                                .setValue(autoID);
-                        Log.d(TAG, "onDataChange() called with: dataSnapshot = [" + dataSnapshot + "]");
-
+                        database.getReference("users").child(playerID).child("data")
+                                .child("worstLoss").child("score").setValue(blueTeamScore + ":" + redTeamScore);
+                        database.getReference("users").child(playerID).child("data")
+                                .child("worstLoss").child("gameID").setValue(gameID);
                     }
                 }
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
     }
 
+    /**
+     * Save lobby into SharedPreferences, so that if the app is closed by the user he will automatically
+     * go back to the ResultActivity to enter the results.
+     */
     public void commitPreferences(){
-        SharedPreferences preferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
+        preferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("var1", lobbyPath);
         editor.putString("var2", fullLobbyPath);
@@ -253,30 +265,26 @@ public class ResultActivity extends AppCompatActivity {
         editor.putString("varPlayerR2", teamRedPlayerTwo);
         editor.putString("varPlayerB3", teamBluePlayerTwo);
         editor.putString("varPlayerB4", teamBluePlayerOne);
-        editor.putString("autoID", autoID);
+        editor.putString("gameID", gameID);
         editor.apply();
-        Log.i(TAG, "commitPreferences: var1= " + getSharedPreferences("MyPreferences", 0).getString("var1", null));
-        Log.i(TAG, "commitPreferences: var2= " + getSharedPreferences("MyPreferences", 0).getString("var2", null));
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        unixTime = System.currentTimeMillis();
         super.onCreate(savedInstanceState);
-        Log.i(TAG, "onCreate: is called");
+        unixTime = System.currentTimeMillis();
         setContentView(R.layout.activity_result);
+        ref = FirebaseDatabase.getInstance().getReference();
         database = FirebaseDatabase.getInstance();
         editTextResultBlue = findViewById(R.id.editTextResultBlue);
         editTextResultRed = findViewById(R.id.editTextResultRed);
         lobbyPath = this.getIntent().getExtras().getString("lobbyPath");
-        autoID = (String)this.getIntent().getExtras().get("autoID");
+        gameID = (String)this.getIntent().getExtras().get("gameID");
         teamRedPlayerOne = (String)this.getIntent().getExtras().get("teamRedPlayerOne");
         teamRedPlayerTwo = (String)this.getIntent().getExtras().get("teamRedPlayerTwo");
         teamBluePlayerTwo = (String)this.getIntent().getExtras().get("teamBluePlayerTwo");
         teamBluePlayerOne = (String)this.getIntent().getExtras().get("teamBluePlayerOne");
 
-        Log.i(TAG, "onCreate: " + lobbyPath);
-        ref = FirebaseDatabase.getInstance().getReference();
         fullLobbyPath = lobbyPath;
         lobbyArray = lobbyPath.split("/");
         lobbyPath = lobbyArray[0];

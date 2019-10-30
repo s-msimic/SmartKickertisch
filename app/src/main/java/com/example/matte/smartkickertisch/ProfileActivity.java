@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
@@ -27,15 +26,16 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
+        SmartTabLayout viewPagerTab = findViewById(R.id.statisticsSmartTabLayout);
+        ViewPager viewPager = findViewById(R.id.statisticsViewPager);
         SpaceNavigationView menuBottomNavigationView = findViewById(R.id.statisticsBottomNavigationView);
+
         menuBottomNavigationView.initWithSaveInstanceState(savedInstanceState);
         menuBottomNavigationView.addSpaceItem(new SpaceItem("RANKING", R.drawable.ic_leaderboard_icon));
         menuBottomNavigationView.addSpaceItem(new SpaceItem("PROFILE", R.drawable.ic_profile_icon));
         menuBottomNavigationView.changeCurrentItem(1);
 
         menuBottomNavigationView.setSpaceOnClickListener(new SpaceOnClickListener() {
-
             @Override
             public void onCentreButtonClick() {
                 IntentIntegrator integrator = new IntentIntegrator(ProfileActivity.this);
@@ -54,20 +54,17 @@ public class ProfileActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onItemReselected(int itemIndex, String itemName) {
-
-            }
+            public void onItemReselected(int itemIndex, String itemName) { }
         });
 
-        FragmentPagerItems pages = new FragmentPagerItems(this);
-        pages.add(FragmentPagerItem.of(getString(R.string.all_time_stats), AllTimeFragment.class));
-        pages.add(FragmentPagerItem.of(getString(R.string.match_history), MatchHistoryFragment.class));
-        pages.add(FragmentPagerItem.of(getString(R.string.settings), SettingsFragment.class));
+        FragmentPagerItems allFragments = new FragmentPagerItems(this);
+        allFragments.add(FragmentPagerItem.of(getString(R.string.all_time_stats), AllTimeFragment.class));
+        allFragments.add(FragmentPagerItem.of(getString(R.string.match_history), MatchHistoryFragment.class));
+        allFragments.add(FragmentPagerItem.of(getString(R.string.settings), SettingsFragment.class));
 
         FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
-                getSupportFragmentManager(), pages);
+                getSupportFragmentManager(), allFragments);
 
-        ViewPager viewPager = findViewById(R.id.statisticsViewPager);
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -79,49 +76,43 @@ public class ProfileActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPageSelected(int i) {
-
-            }
+            public void onPageSelected(int i) { }
 
             @Override
-            public void onPageScrollStateChanged(int i) {
-
-            }
+            public void onPageScrollStateChanged(int i) { }
         });
-        SmartTabLayout viewPagerTab = findViewById(R.id.statisticsSmartTabLayout);
         viewPagerTab.setViewPager(viewPager);
-
-
     }
 
+    /**
+     * Validates if QR-Code is valid. If the code is valid, a lobby is created in the database
+     * and the user is redirected to the LobbyActivity.
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() == null) {
-                Toast.makeText(this, "You cancelled the scan", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Scan cancelled!", Toast.LENGTH_LONG).show();
             } else {
                 if (result.getContents().matches("(sk[0-9]+)\\/((tb)|(tr))\\/((o)|(d))")) {
                     // go to new window from here after scan was successful
-
-                    DatabaseReference ref;
-                    ref = FirebaseDatabase.getInstance().getReference();
-
-
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
                     ref.child("lobby").child(result.getContents()).setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
                     Intent i = new Intent(ProfileActivity.this, LobbyActivity.class);
                     i.putExtra("lobbyPath", result.getContents());
                     startActivity(i);
                 } else {
-                    // QR Code is none of HAW - Landshut
-                    Toast.makeText(this, "Scanned QR Code is not viable", Toast.LENGTH_LONG).show();
+                    // QR Code is none of HAW-Landshut
+                    Toast.makeText(this, "Scanned QR Code is not valid", Toast.LENGTH_LONG).show();
                 }
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
-
     }
-
 }

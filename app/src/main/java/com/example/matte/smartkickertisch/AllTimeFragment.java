@@ -53,16 +53,12 @@ public class AllTimeFragment extends Fragment {
     private FirebaseAuth auth;
     private FirebaseDatabase database;
     private PieChart allTimeWinLossPieChart;
-    private TextView headlineTextView;
     private List<PieEntry> data = new ArrayList<>();
-    private PieDataSet pieDataSet;
-    private PieData pieData;
     private TextView bestWinTextView;
     private TextView worstLossTextView;
     private static final String TAG = "AllTimeFragment";
 
-    public AllTimeFragment() {
-    }
+    public AllTimeFragment() { }
 
     ValueEventListener allTimeGetDataListener = new ValueEventListener() {
         @Override
@@ -75,7 +71,7 @@ public class AllTimeFragment extends Fragment {
                 data.add(new PieEntry((played - won), (played - won) + " Losses"));
                 data.add(new PieEntry(won, won + " Wins"));
                 allTimeWinLossPieChart.setVisibility(View.VISIBLE);
-                pieDataSet = new PieDataSet(data, "");
+                PieDataSet pieDataSet = new PieDataSet(data, "");
                 pieDataSet.setValueTypeface(Typeface.DEFAULT_BOLD);
                 pieDataSet.setValueTextSize(14);
                 pieDataSet.setColors(new int[]{R.color.colorMatchHistoryLoss, R.color.colorMatchHistoryWin}, getContext());
@@ -84,7 +80,7 @@ public class AllTimeFragment extends Fragment {
                 allTimeWinLossPieChart.setHoleRadius(0);
                 allTimeWinLossPieChart.setTransparentCircleRadius(0);
                 allTimeWinLossPieChart.animateY(1200, Easing.EaseInOutCirc);
-                pieData = new PieData(pieDataSet);
+                PieData pieData = new PieData(pieDataSet);
                 pieData.setValueTextColor(getResources().getColor(R.color.colorWhite));
                 Legend legend = allTimeWinLossPieChart.getLegend();
                 allTimeWinLossPieChart.setEntryLabelTextSize(10);
@@ -112,7 +108,7 @@ public class AllTimeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_all_time, container, false);
         allTimeWinLossPieChart = view.findViewById(R.id.allTimeFragmentPieChart);
-        headlineTextView = view.findViewById(R.id.allTimeHeadlineTextView);
+        TextView headlineTextView = view.findViewById(R.id.allTimeHeadlineTextView);
         bestWinTextView = view.findViewById(R.id.allTimeFragmentBestWinTextView);
         worstLossTextView = view.findViewById(R.id.allTimeFragmentWorstLossTextView);
         if (auth.getCurrentUser() != null && auth.getCurrentUser().getDisplayName() != null)
