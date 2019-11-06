@@ -43,6 +43,7 @@ public class MatchHistoryFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         Query games = FirebaseDatabase.getInstance().getReference("users")
                 .child(mAuth.getCurrentUser().getUid())
+                // TODO: 31.10.2019 check if here orderByValue works/is better!
                 .orderByChild("finishedGames");
 
         games.addListenerForSingleValueEvent(lastGamesListener);

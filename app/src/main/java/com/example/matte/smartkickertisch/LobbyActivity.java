@@ -32,9 +32,9 @@ public class LobbyActivity extends AppCompatActivity {
     boolean isWiggling = false;
     boolean deleteMode = false;
     String lobbyPath;
-    String deletePath;
+    String lobbyID;
+    String myUID;
     DatabaseReference ref;
-    private FirebaseAuth mAuth;
 
     ValueEventListener topLeftEventListener;
     ValueEventListener topRightEventListener;
@@ -70,12 +70,13 @@ public class LobbyActivity extends AppCompatActivity {
         }
 
         ref.child("lobby").removeEventListener(allLobbyChildListener);
-        ref.child("lobby").child(getLobbyID()).removeEventListener(myLobbyChildListener);
-        ref.child("lobby").child(getLobbyID()).removeEventListener(myLobbyValueListener);
+        ref.child("lobby").child(lobbyID).removeEventListener(myLobbyChildListener);
+        ref.child("lobby").child(lobbyID).removeEventListener(myLobbyValueListener);
     }
 
     @Override
     public void onStop(){
+        // TODO: 31.10.2019 check if onStop and onDestroy work properly
         Log.i(TAG, "onStop: is called");
         if(!buttonIsPressed.get()) {
             Log.i(TAG, "onStop: if true");
@@ -90,14 +91,14 @@ public class LobbyActivity extends AppCompatActivity {
     }
 
     /**
-     * removes user ID from lobby in Firebase and directs the user to the 'LeaderboardActivity'
-     * @param view
+     * Removes user ID from lobby in Firebase and directs the user to the 'LeaderboardActivity'
+     * @param view Return button.
      */
     public void onClickReturn(View view){
         Log.i(TAG, "onClickReturn: return button was clicked");
+        // TODO: 31.10.2019 check if it deletes lobby if one player leaves
         ref.child("lobby").child(lobbyPath).removeValue();
         Intent i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
-        Log.i(TAG, "onClickReturn: leaderboard activity called line 93");
         startActivity(i);
     }
 
@@ -110,36 +111,32 @@ public class LobbyActivity extends AppCompatActivity {
             return;
         }
         buttonIsPressed.set(true);
-        Log.d(TAG, "onClickStartGame: buttonIsPressed =" + buttonIsPressed);
+        Log.d(TAG, "onClickStartGame: buttonIsPressed = " + buttonIsPressed);
 
         Map<String, Object> valueMap = new HashMap<>();
-        Map<String, Object> dataMap = new HashMap<>();
         Map<String, Object> playerRedMap = new HashMap<>();
         Map<String, Object> playerBlueMap = new HashMap<>();
 
         // TODO: 26.10.2019 simplify this structure
-        dataMap.put("date", System.currentTimeMillis());
-        valueMap.put("data", dataMap);
         playerRedMap.put("player1", this.topLeftButton.playerUID);
         playerRedMap.put("player2", this.topRightButton.playerUID);
         playerRedMap.put("score", 0);
-        playerBlueMap.put("player2", this.bottomLeftButton.playerUID);
         playerBlueMap.put("player1", this.bottomRightButton.playerUID);
+        playerBlueMap.put("player2", this.bottomLeftButton.playerUID);
         playerBlueMap.put("score", 0);
         valueMap.put("teamRed", playerRedMap);
         valueMap.put("teamBlue", playerBlueMap);
 
         String gameID = ref.child("games").push().getKey();
         ref.child("games").child(gameID).updateChildren(valueMap);
-//        ref.child("lobby").child(lobbyPath).removeValue();
         final Intent i = new Intent(LobbyActivity.this, ResultActivity.class);
-        i.putExtra("lobbyPath", lobbyPath);
-        i.putExtra("autoID", gameID);
+        i.putExtra("gameDate", System.currentTimeMillis());
+        i.putExtra("gameID", gameID);
         i.putExtra("teamRedPlayerOne", this.topLeftButton.playerUID);
         i.putExtra("teamRedPlayerTwo", this.topRightButton.playerUID);
         i.putExtra("teamBluePlayerTwo", this.bottomLeftButton.playerUID);
         i.putExtra("teamBluePlayerOne", this.bottomRightButton.playerUID);
-        Task t = ref.child("lobby").child(getLobbyID()).removeValue();
+        ref.child("lobby").child(lobbyID).removeValue();
         if(topLeftEventListener != null)
             ref.removeEventListener(topLeftEventListener);
         if(topRightEventListener != null)
@@ -150,9 +147,7 @@ public class LobbyActivity extends AppCompatActivity {
             ref.removeEventListener(bottomRightEventListener);
         if(myOwnStatusEventListener != null)
             ref.removeEventListener(myOwnStatusEventListener);
-        Log.i(TAG, "onClickStartGame: " + i);
-        Log.i(TAG, "onClickStartGame: players deleted");
-        Log.d(TAG, "onClickStartGame: buttonIsPressed =" + buttonIsPressed);
+        Log.i(TAG, "onClickStartGame: " + i.toString());
         startActivity(i);
     }
 
@@ -188,56 +183,51 @@ public class LobbyActivity extends AppCompatActivity {
 
     public void onClickPlayerR1(View view){
         if(deleteMode) {
-            if(topLeftButton.playerUID.equals(myUID())) {
-                ref.child("lobby").child(getLobbyID()).child("tr").child("o").removeValue();
+            if(topLeftButton.playerUID.equals(myUID)) {
+                ref.child("lobby").child(lobbyID).child("tr").child("o").removeValue();
                 Intent i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
                 Log.i(TAG, "onClickPlayerR1: leaderboard activity called line 185");
                 startActivity(i);
             }
-            ref.child("lobby").child(getLobbyID()).child("tr").child("o").removeValue();
+            ref.child("lobby").child(lobbyID).child("tr").child("o").removeValue();
         }
     }
 
     public void onClickPlayerR2(View view){
         if(deleteMode) {
-            if(topRightButton.playerUID.equals(myUID())) {
-                ref.child("lobby").child(getLobbyID()).child("tr").child("d").removeValue();
+            if(topRightButton.playerUID.equals(myUID)) {
+                ref.child("lobby").child(lobbyID).child("tr").child("d").removeValue();
                 Intent i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
                 Log.i(TAG, "onClickPlayerR2: leaderboard activity called line 198");
                 startActivity(i);
             }
-            ref.child("lobby").child(getLobbyID()).child("tr").child("d").removeValue();
+            ref.child("lobby").child(lobbyID).child("tr").child("d").removeValue();
         }
     }
 
     public void onClickPlayerB1(View view){
         if(deleteMode) {
-            if(bottomLeftButton.playerUID.equals(myUID())) {
-                ref.child("lobby").child(getLobbyID()).child("tb").child("d").removeValue();
+            if(bottomLeftButton.playerUID.equals(myUID)) {
+                ref.child("lobby").child(lobbyID).child("tb").child("d").removeValue();
                 Intent i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
                 Log.i(TAG, "onClickPlayerB1: leaderboard activity called line 210");
                 startActivity(i);
             }
-            ref.child("lobby").child(getLobbyID()).child("tb").child("d").removeValue();
+            ref.child("lobby").child(lobbyID).child("tb").child("d").removeValue();
         }
     }
 
     public void onClickPlayerB2(View view){
         if(deleteMode) {
-            if(bottomRightButton.playerUID.equals(myUID())) {
-                ref.child("lobby").child(getLobbyID()).child("tb").child("o").removeValue();
+            if(bottomRightButton.playerUID.equals(myUID)) {
+                ref.child("lobby").child(lobbyID).child("tb").child("o").removeValue();
                 Intent i = new Intent(LobbyActivity.this,LeaderboardActivity.class);
                 Log.i(TAG, "onClickPlayerB2: leaderboard activity called line 222");
                 startActivity(i);
             }
-            ref.child("lobby").child(getLobbyID()).child("tb").child("o").removeValue();
+            ref.child("lobby").child(lobbyID).child("tb").child("o").removeValue();
         }
     }
-
-    public String myUID(){
-        return mAuth.getCurrentUser().getUid();
-    }
-
 
     /**
      * Set 'PlayerButtonTag' visibility depending if a player exists.
@@ -266,12 +256,13 @@ public class LobbyActivity extends AppCompatActivity {
                     topLeftButton.isHost = true;
                 }
                 if(player.isHost){
-                    player.setText("Host\n" + player.playerNickName);
+                    player.setText("Host\n");
+                    player.append(player.playerNickName);
                 }
-                if(player.isHost && myUID().equals(player.playerUID)){
+                if(player.isHost && myUID.equals(player.playerUID)){
                     buttonStartGame.setVisibility(View.VISIBLE);
                 }
-                if(!player.isHost && myUID().equals(player.playerUID)){
+                if(!player.isHost && myUID.equals(player.playerUID)){
                     buttonStartGame.setVisibility(View.GONE);
                 }
             }
@@ -281,7 +272,7 @@ public class LobbyActivity extends AppCompatActivity {
     }
 
     public void checkForPlayerChanges(){
-        myLobbyChildListener = ref.child("lobby").child(getLobbyID()).addChildEventListener(new ChildEventListener() {
+        myLobbyChildListener = ref.child("lobby").child(lobbyID).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Log.d(TAG, "checkForPlayerChanges-onChildAdded-280:");
@@ -320,18 +311,18 @@ public class LobbyActivity extends AppCompatActivity {
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Log.d(TAG, "checkForPlayerChanges-onChildChanged-330: snap: " + dataSnapshot);
-                if (dataSnapshot.getKey().equals(getLobbyID())) {
+                if (dataSnapshot.getKey().equals(lobbyID)) {
                     Log.i(TAG, "onChildChanged: was called");
-                    playerNameQuery(dataSnapshot.child(getLobbyID()));
+                    playerNameQuery(dataSnapshot.child(lobbyID));
                 }
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "checkForPlayerChanges-onChildRemoved-339: snap: " + dataSnapshot);
-                if(dataSnapshot.getKey() == getLobbyID() ){
+                if(dataSnapshot.getKey().equals(lobbyID)){
                     Log.i(TAG, "onChildRemoved: was called");
-                    playerNameQuery(dataSnapshot.child(getLobbyID()));
+                    playerNameQuery(dataSnapshot.child(lobbyID));
                 }
             }
 
@@ -345,7 +336,7 @@ public class LobbyActivity extends AppCompatActivity {
                 Log.i(TAG, "onCancelled: called");
             }
         });
-        myLobbyValueListener = ref.child("lobby").child(getLobbyID()).addValueEventListener(new ValueEventListener() {
+        myLobbyValueListener = ref.child("lobby").child(lobbyID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.i(TAG, "checkForPlayerChanges-onDataChange: called " + dataSnapshot);
@@ -359,7 +350,7 @@ public class LobbyActivity extends AppCompatActivity {
         });
 
         // TODO: 30.10.2019 get rid of all but one lobbyListeners
-        testListener = ref.child("lobby").child(getLobbyID()).addValueEventListener(new ValueEventListener() {
+        testListener = ref.child("lobby").child(lobbyID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -397,7 +388,7 @@ public class LobbyActivity extends AppCompatActivity {
                         if (!(topRightButton.playerUID == null)) {
                             Log.i(TAG, "onDataChange: topRightButtonPlayer is not null");
                             topRightButton.isHost = true;
-                            if (myUID().equals(topRightButton.playerUID)) {
+                            if (myUID.equals(topRightButton.playerUID)) {
                                 Log.i(TAG, "onDataChange: myUID is equal to topRightButtonPlayer UID");
                                 buttonStartGame.setVisibility(View.VISIBLE);
                             }
@@ -429,7 +420,7 @@ public class LobbyActivity extends AppCompatActivity {
                         if (dataSnapshot.getKey().equals(lobbyPath.split("/")[2])) {
                             Intent i;
                             i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
-                            Log.i(TAG, "onChildRemoved: startActivity pressed from on childRemoved line 440"); 
+                            Log.i(TAG, "onChildRemoved: startActivity pressed from on childRemoved line 440");
                             startActivity(i);
                         }
                     }
@@ -462,33 +453,26 @@ public class LobbyActivity extends AppCompatActivity {
             topLeftEventListener = ref.child("users").child(UID).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                     if (dataSnapshot.exists()) {
                         topRightButton.playerUID = UID;
-                        topRightButton.playerNickName = dataSnapshot.child("nickName").getValue().toString();
-                        if (!topLeftButton.isHost) {
-                            if (topLeftButton.playerUID == null) {
-                                topRightButton.isHost = true;
-                                if (myUID().equals(topLeftButton.playerUID)) {
-                                    buttonStartGame.setVisibility(View.VISIBLE);
-                                }
+                        topRightButton.playerNickName = dataSnapshot.child("nickName").getValue(String.class);
+                        if (!topLeftButton.isHost && topLeftButton.playerUID == null) {
+                            topRightButton.isHost = true;
+                            if (myUID.equals(topLeftButton.playerUID)) {
+                                buttonStartGame.setVisibility(View.VISIBLE);
                             }
                         }
                         Log.i(TAG, "onDataChange: created myOwnStatusEventListener");
                         myOwnStatusEventListener = ref.child("lobby").child(lobbyPath.split("/")[0]).child(lobbyPath.split("/")[1]).addChildEventListener(new ChildEventListener() {
                             @Override
-                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                            }
+                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
 
                             @Override
-                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                            }
+                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
 
                             @Override
                             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                                if(buttonIsPressed.get() == false && topRightButton.isHost != true) {
+                                if(!buttonIsPressed.get() && !topRightButton.isHost) {
                                     Log.i(TAG, "onChildRemoved: buttonIsPressed false start activity (leaderboard)");
                                     if (dataSnapshot.getKey().equals(lobbyPath.split("/")[2])) {
                                         Intent i;
@@ -516,7 +500,7 @@ public class LobbyActivity extends AppCompatActivity {
                         if (topRightButton.isHost) {
                             topRightButton.isHost = false;
                             if (!(topLeftButton.playerUID == null)) {
-                                if (myUID().equals(topLeftButton.playerUID)) {
+                                if (myUID.equals(topLeftButton.playerUID)) {
                                     buttonStartGame.setVisibility(View.GONE);
                                 }
                             }
@@ -576,7 +560,7 @@ public class LobbyActivity extends AppCompatActivity {
 
                 @Override
                 public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                    if(buttonIsPressed.get() == false) {
+                    if(!buttonIsPressed.get()) {
                         if (dataSnapshot.getKey().equals(lobbyPath.split("/")[2])) {
                             Intent i;
                             i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
@@ -608,15 +592,13 @@ public class LobbyActivity extends AppCompatActivity {
         }
 
         if (snapshot.child("tb").child("o").exists()) {
-
-            final String UID = snapshot.child("tb").child("o").getValue().toString();
+            final String UID = snapshot.child("tb").child("o").getValue(String.class);
             topLeftEventListener = ref.child("users").child(UID).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                     if (dataSnapshot.exists()) {
                         bottomRightButton.playerUID = UID;
-                        bottomRightButton.playerNickName = dataSnapshot.child("nickName").getValue().toString();
+                        bottomRightButton.playerNickName = dataSnapshot.child("nickName").getValue(String.class);
                     } else {
                         bottomRightButton.playerUID = null;
                         bottomRightButton.playerNickName = null;
@@ -625,24 +607,18 @@ public class LobbyActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
+                public void onCancelled(@NonNull DatabaseError databaseError) { }
             });
             myOwnStatusEventListener = ref.child("lobby").child(lobbyPath.split("/")[0]).child(lobbyPath.split("/")[1]).addChildEventListener(new ChildEventListener() {
                 @Override
-                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
 
                 @Override
-                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
 
                 @Override
                 public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                    if(buttonIsPressed.get() == false) {
+                    if(!buttonIsPressed.get()) {
                         if (dataSnapshot.getKey().equals(lobbyPath.split("/")[2])) {
                             Intent i;
                             i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
@@ -650,46 +626,36 @@ public class LobbyActivity extends AppCompatActivity {
                             startActivity(i);
                         }
                     }
-
                 }
 
                 @Override
-                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
 
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
+                public void onCancelled(@NonNull DatabaseError databaseError) { }
             });
         } else {
             bottomRightButton.playerUID = null;
             bottomRightButton.playerNickName = null;
             playerArrangement();
         }
-
-    }
-
-    public String getLobbyID(){
-        return this.lobbyPath.split("/")[0];
     }
 
     /**
-     * if player isn't the Host of the lobby, the 'Commit' button is invisible
+     * If the player isn't the Host of the lobby, the 'Commit' button is invisible.
      */
     public void visibilityCommitButton(){
+        // TODO: 31.10.2019 check if this is correct
         Log.i(TAG, "visibilityCommitButton: button = " + buttonStartGame.getVisibility());
         if(topLeftButton.playerUID != null) {
-            if (!(myUID().equals(topLeftButton.playerUID)) && topLeftButton.isHost) {
+            if (!(myUID.equals(topLeftButton.playerUID)) && topLeftButton.isHost) {
                 buttonStartGame.setVisibility(View.GONE);
             }
         }
 
         if(topRightButton.playerUID != null) {
-            if (!(myUID().equals(topRightButton.playerUID)) && topRightButton.isHost) {
+            if (!(myUID.equals(topRightButton.playerUID)) && topRightButton.isHost) {
                 buttonStartGame.setVisibility(View.GONE);
-
             }
         }
 
@@ -702,14 +668,16 @@ public class LobbyActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        buttonIsPressed = new AtomicBoolean(false);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
         ref = FirebaseDatabase.getInstance().getReference();
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         getSharedPreferences("MyPreferences", 0).edit().clear().apply();
 
-        this.lobbyPath = getIntent().getExtras().getString("lobbyPath");
+        buttonIsPressed = new AtomicBoolean(false);
+        lobbyPath = getIntent().getExtras().getString("lobbyPath");
+        lobbyID = lobbyPath.split("/")[0];
+        myUID = mAuth.getCurrentUser().getUid();
         checkForPlayerChanges();
 
         topLeftButton = findViewById(R.id.buttonR1);
@@ -717,15 +685,13 @@ public class LobbyActivity extends AppCompatActivity {
         bottomLeftButton = findViewById(R.id.buttonB1);
         bottomRightButton = findViewById(R.id.buttonB2);
         buttonStartGame = findViewById(R.id.buttonStartGame);
+        deleteButton = findViewById(R.id.buttonDelete);
 
         players.add(topLeftButton);
         players.add(topRightButton);
         players.add(bottomLeftButton);
         players.add(bottomRightButton);
 
-        deleteButton = findViewById(R.id.buttonDelete);
-        String lobbyPathSplit = lobbyPath;
-        deletePath = lobbyPathSplit.split("/")[0];
         visibilityCommitButton();
     }
 }

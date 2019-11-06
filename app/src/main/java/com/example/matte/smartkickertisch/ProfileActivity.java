@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
 public class ProfileActivity extends AppCompatActivity {
+    private static final String TAG = "ProfileActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,12 +102,16 @@ public class ProfileActivity extends AppCompatActivity {
             } else {
                 if (result.getContents().matches("(sk[0-9]+)\\/((tb)|(tr))\\/((o)|(d))")) {
                     // go to new window from here after scan was successful
-                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-                    ref.child("lobby").child(result.getContents()).setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                    database.child("lobby").child(result.getContents()).setValue
+                            (FirebaseAuth.getInstance().getCurrentUser().getUid())
+                            .addOnSuccessListener(command -> {
+                                Intent i = new Intent(ProfileActivity.this, LobbyActivity.class);
+                                i.putExtra("lobbyPath", result.getContents());
+                                startActivity(i);
+                            })
+                            .addOnFailureListener(command -> Log.d(TAG, "onActivityResult-onFailure-110: " + command.getMessage()));
 
-                    Intent i = new Intent(ProfileActivity.this, LobbyActivity.class);
-                    i.putExtra("lobbyPath", result.getContents());
-                    startActivity(i);
                 } else {
                     // QR Code is none of HAW-Landshut
                     Toast.makeText(this, "Scanned QR Code is not valid", Toast.LENGTH_LONG).show();

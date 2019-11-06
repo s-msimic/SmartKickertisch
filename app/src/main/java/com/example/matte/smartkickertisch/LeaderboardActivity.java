@@ -26,45 +26,36 @@ import java.util.*;
 
 public class LeaderboardActivity extends Activity {
 
-    public static String WINS = "data/winCounter";
-    public static String GAMES = "data/playedGames";
+    private static final String WINS = "data/winCounter";
+    private static final String GAMES = "data/playedGames";
     private static final String TAG = "LeaderboardActivity";
     private FirebaseAuth mAuth;
     private StorageReference storageRef;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
     private TextView spinnerTextView;
     private Spinner dropdown;
     private int countBestPlayers = 15;
     private HashMap<Integer, User> userList = new HashMap<>();
     private ProgressBar progressBar;
-    private SpaceNavigationView menuBottomNavigationView;
-    private String lobbyPathForRecentGameCheck;
-    private String fullLobyPath;
-    private String playerR1;
-    private String playerR2;
-    private String playerB3;
-    private String playerB4;
-    private String gameID;
     private Query bestPlayers;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mAuth = FirebaseAuth.getInstance();
-        storageRef = FirebaseStorage.getInstance().getReference();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leaderboard);
+        mAuth = FirebaseAuth.getInstance();
+        storageRef = FirebaseStorage.getInstance().getReference();
 
         progressBar = findViewById(R.id.leaderboardProgressBar);
         progressBar.setVisibility(View.VISIBLE);
         recyclerView = findViewById(R.id.leaderBoardRecyclerView);
-        layoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         spinnerTextView = findViewById(R.id.spinnerTextView);
         dropdown = findViewById(R.id.spinner);
-        menuBottomNavigationView = findViewById(R.id.menuBottomNavigationView);
+        SpaceNavigationView menuBottomNavigationView = findViewById(R.id.menuBottomNavigationView);
         String[] items = new String[]{"Wins", "Games"};
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
         dropdown.setAdapter(arrayAdapter);
@@ -76,7 +67,7 @@ public class LeaderboardActivity extends Activity {
         menuBottomNavigationView.setSpaceOnClickListener(new SpaceOnClickListener() {
 
             /**
-             * function which opens the QR-Code scanner when the middle "football" button is pressed
+             * Function which opens the QR-Code scanner when the middle "football" button is pressed
              */
             @Override
             public void onCentreButtonClick() {
@@ -106,51 +97,16 @@ public class LeaderboardActivity extends Activity {
              * @param itemName name of the clicked element
              */
             @Override
-            public void onItemReselected(int itemIndex, String itemName) {
-
-            }
+            public void onItemReselected(int itemIndex, String itemName) { }
         });
-    }
-
-    public void checkForRecentGame(){
-//        getSharedPreferences("MyPreferences", 0).edit().clear().apply();
-        Log.i(TAG, "checkForRecentGame: run into checkForRecentGame");
-        SharedPreferences preferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.apply();
-        if(getSharedPreferences("MyPreferences", 0).contains("var1")) {
-            Log.i(TAG, "checkForRecentGame: nullcheck true");
-            Log.i(TAG, "checkForRecentGame: " + getSharedPreferences("MyPreferences", 0).getString("var1", null));
-            if ((getSharedPreferences("MyPreferences", 0).getString("var1", null).contains("sk"))) {
-                Log.i(TAG, "checkForRecentGame: ran into else checkForRecentGame");
-                Log.i(TAG, "checkForRecentGame: " + getSharedPreferences("MyPreferences", 0).toString());
-                Log.i(TAG, "checkForRecentGame: " + getSharedPreferences("MyPreferences", 0).getString("var1", "nothing there"));
-                lobbyPathForRecentGameCheck = getSharedPreferences("MyPreferences", 0).getString("var1", null);
-                playerR1 = getSharedPreferences("MyPreferences", 0).getString("varPlayerR1", null);
-                playerR2 = getSharedPreferences("MyPreferences",0).getString("varPlayerR2", null);
-                playerB3 = getSharedPreferences("MyPreferences",0).getString("varPlayerB3", null);
-                playerB4 = getSharedPreferences("MyPreferences",0).getString("varPlayerB4", null);
-                gameID = getSharedPreferences("MyPreferences", 0).getString("gameID", null);
-
-            } else {
-                lobbyPathForRecentGameCheck = null;
-
-            }
-        }
-
     }
 
     @Override
     protected void onStart(){
-        checkForRecentGame();
-        Log.i(TAG, "onCreate: " + lobbyPathForRecentGameCheck);
-        if(!(lobbyPathForRecentGameCheck == null)){
-            fullLobyPath = getSharedPreferences("MyPreferences",0).getString("var2", null);
-            Log.i(TAG, "onStart: " + fullLobyPath +" is the full lobby path");
-            Intent i;
-            i = new Intent(LeaderboardActivity.this, ResultActivity.class);
-            i.putExtra("lobbyPath", fullLobyPath);
-            i.putExtra("gameID", gameID);
+        Log.d(TAG, "onStart-106");
+        if (getSharedPreferences("MyPreferences", 0).contains("gameID")) {
+            Log.i(TAG, "onStart: gameID= " + getSharedPreferences("MyPreferences", 0).getString("gameID", null));
+            Intent i = new Intent(LeaderboardActivity.this, ResultActivity.class);
             startActivity(i);
         }
         super.onStart();
@@ -158,6 +114,7 @@ public class LeaderboardActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        Log.d(TAG, "onDestroy-116: removed listener");
         bestPlayers.removeEventListener(vel);
         super.onDestroy();
     }
@@ -196,7 +153,6 @@ public class LeaderboardActivity extends Activity {
             Log.i(TAG, "onNothingSelected: nothing selected");
         }
     };
-
     ValueEventListener vel = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -216,6 +172,7 @@ public class LeaderboardActivity extends Activity {
                     userList.put(posi, new User(snap.getKey(), snap.child("nickName").getValue().toString(),
                             posi--, snap.child(WINS).getValue().toString(), snap.child(GAMES).getValue().toString()));
                 }
+                // TODO: 31.10.2019 fix onComplete/onFailure
                 storageRef.child(uid).getDownloadUrl()
                         .addOnFailureListener(e -> Log.e(TAG, "vel-onDataChange-onFailure: getDownloadUrl failed for user ", e))
                         .addOnSuccessListener(uri -> Log.i(TAG, "vel-onDataChange-onSuccess: uri successfully retrieved = " + uri.getPath()))
@@ -239,9 +196,7 @@ public class LeaderboardActivity extends Activity {
         }
 
         @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        }
+        public void onCancelled(@NonNull DatabaseError databaseError) { }
     };
 
     @Override
@@ -249,26 +204,24 @@ public class LeaderboardActivity extends Activity {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if(result != null){
             if(result.getContents() == null){
-                Toast.makeText(this, "You cancelled the scan", Toast.LENGTH_LONG).show();
-            }
-            else{
-                if(result.getContents().matches("(sk[0-9]+)\\/((tb)|(tr))\\/((o)|(d))")) {
+                Toast.makeText(this, "Scan cancelled", Toast.LENGTH_LONG).show();
+            } else {
+                if (result.getContents().matches("(sk[0-9]+)\\/((tb)|(tr))\\/((o)|(d))")) {
                     // go to new window from here after scan was successful
 
-                    DatabaseReference ref;
-                    ref = FirebaseDatabase.getInstance().getReference();
-
-                    Log.i(TAG, "onActivityResult: UID = " + Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
-                    ref.child("lobby").child(result.getContents()).setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                    Log.i(TAG, "onActivityResult: Path = " + ref.child("lobby").child(result.getContents()).toString());
-
-                    Intent i = new Intent(LeaderboardActivity.this, LobbyActivity.class);
-                    i.putExtra("lobbyPath", result.getContents());
-                    startActivity(i);
+                    Log.i(TAG, "onActivityResult: result.getContents = " + result.getContents());
+                    DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                    database.child("lobby").child(result.getContents()).setValue(mAuth.getCurrentUser().getUid())
+                            .addOnSuccessListener(command -> {
+                                Intent i = new Intent(LeaderboardActivity.this, LobbyActivity.class);
+                                i.putExtra("lobbyPath", result.getContents());
+                                startActivity(i);
+                            })
+                            .addOnFailureListener(command -> Log.d(TAG, "onActivityResult-onFailure-221: " + command.getMessage()));
                 }
-                else{
-                    // QR Code is none of HAW - Landshut
-                    Toast.makeText(this, "Scanned QR Code is not viable", Toast.LENGTH_LONG).show();
+                else {
+                    // QR Code is none of HAW-Landshut
+                    Toast.makeText(this, "Scanned QR Code is not valid", Toast.LENGTH_LONG).show();
                 }
             }
         }

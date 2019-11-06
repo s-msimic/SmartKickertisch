@@ -215,7 +215,7 @@ public class SettingsFragment extends Fragment implements SettingsReauthenticati
                 return;
             }
 
-            // TODO: 30.10.2019 if nickname changes fails, write it in sharedpref and check next time
+            // TODO: 30.10.2019 do this with cloud functions, once profile changes change database
             if (!nickname.equals("") && !nickname.equals(currentNickname.getText().toString()) && errorMessage.toString().equals("")) {
                 tasksRunning.addAndGet(1);
                 Log.d(TAG, "onClick: editText nickname = " + newNickname.getText());
@@ -238,7 +238,6 @@ public class SettingsFragment extends Fragment implements SettingsReauthenticati
                                         newNickname.setText("");
                                         if (tasksRunning.decrementAndGet() == 0)
                                             progressBar.setVisibility(View.GONE);
-
                                     });
                         })
                         .addOnFailureListener(e -> {
@@ -320,14 +319,17 @@ public class SettingsFragment extends Fragment implements SettingsReauthenticati
         dialog.show(requireActivity().getSupportFragmentManager(), tag);
     }
 
-    public void changeEMail(String eMail) {
-        assert  mAuth.getCurrentUser() != null;
+    public void changeEMail(String eMail, String tag, String password) {
         mAuth.getCurrentUser().updateEmail(eMail)
                 .addOnSuccessListener(aVoid -> {
                     Log.i(TAG, "onSuccess: new mail = " + eMail);
                     currentEMailAddress.setText(eMail);
-                    Toast.makeText(getContext(), "E-Mail Address updated!", Toast.LENGTH_SHORT).show();
-                    Log.i(TAG, "onClick: new mail = " + mAuth.getCurrentUser().getEmail());
+                    if (tag.equals("changeMailAndPass")) {
+                        changePassword(password);
+                    } else {
+                        Toast.makeText(getContext(), "E-Mail Address updated!", Toast.LENGTH_SHORT).show();
+                        Log.i(TAG, "changeMail-onSuccess: new mail = " + mAuth.getCurrentUser().getEmail());
+                    }
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "onFailure: unvalid eMail ", e);
@@ -343,14 +345,14 @@ public class SettingsFragment extends Fragment implements SettingsReauthenticati
     }
 
     public void changePassword(String password) {
-        assert  mAuth.getCurrentUser() != null;
+        Log.d(TAG, "changePassword-347: UID= " + mAuth.getCurrentUser().getUid());
         mAuth.getCurrentUser().updatePassword(password)
                 .addOnSuccessListener((Void) -> {
-                    Log.d(TAG, "onSuccess: password updated");
+                    Log.d(TAG, "changePassword-onSuccess: password updated");
                     Toast.makeText(getContext(), "Password updated!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "onFailure: ", e);
+                    Log.e(TAG, "changePassword-onFailure: ", e);
                     errorMessageTextView.append(e.getMessage() + "\n");
                 })
                 .addOnCompleteListener(voidTask -> {
@@ -399,14 +401,13 @@ public class SettingsFragment extends Fragment implements SettingsReauthenticati
                     deleteUser();
                     break;
                 case "changeEMail":
-                    changeEMail(data[0]);
+                    changeEMail(data[0], tag, null);
                     break;
                 case "changePassword":
                     changePassword(data[1]);
                     break;
                 case "changeMailAndPass":
-                    changeEMail(data[0]);
-                    changePassword(data[1]);
+                    changeEMail(data[0], tag, data[1]);
                     break;
             }
         } else {
