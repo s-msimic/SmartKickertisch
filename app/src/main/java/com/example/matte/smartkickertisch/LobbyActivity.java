@@ -113,22 +113,7 @@ public class LobbyActivity extends AppCompatActivity {
         buttonIsPressed.set(true);
         Log.d(TAG, "onClickStartGame: buttonIsPressed = " + buttonIsPressed);
 
-        Map<String, Object> valueMap = new HashMap<>();
-        Map<String, Object> playerRedMap = new HashMap<>();
-        Map<String, Object> playerBlueMap = new HashMap<>();
-
-        // TODO: 26.10.2019 simplify this structure
-        playerRedMap.put("player1", this.topLeftButton.playerUID);
-        playerRedMap.put("player2", this.topRightButton.playerUID);
-        playerRedMap.put("score", 0);
-        playerBlueMap.put("player1", this.bottomRightButton.playerUID);
-        playerBlueMap.put("player2", this.bottomLeftButton.playerUID);
-        playerBlueMap.put("score", 0);
-        valueMap.put("teamRed", playerRedMap);
-        valueMap.put("teamBlue", playerBlueMap);
-
         String gameID = ref.child("games").push().getKey();
-        ref.child("games").child(gameID).updateChildren(valueMap);
         final Intent i = new Intent(LobbyActivity.this, ResultActivity.class);
         i.putExtra("gameDate", System.currentTimeMillis());
         i.putExtra("gameID", gameID);
@@ -266,9 +251,7 @@ public class LobbyActivity extends AppCompatActivity {
                     buttonStartGame.setVisibility(View.GONE);
                 }
             }
-
         }
-
     }
 
     public void checkForPlayerChanges(){
@@ -293,15 +276,12 @@ public class LobbyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
+
         allLobbyChildListener = ref.child("lobby").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -363,6 +343,7 @@ public class LobbyActivity extends AppCompatActivity {
         });
     }
 
+    // TODO: 12.11.2019 change this COMPLETELY ASAP
     public void playerNameQuery(final DataSnapshot snapshot) {
 
         if (topLeftEventListener != null) {
@@ -416,15 +397,14 @@ public class LobbyActivity extends AppCompatActivity {
 
                 @Override
                 public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                    if(!buttonIsPressed.get() && !topLeftButton.isHost) {
-                        if (dataSnapshot.getKey().equals(lobbyPath.split("/")[2])) {
-                            Intent i;
-                            i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
-                            Log.i(TAG, "onChildRemoved: startActivity pressed from on childRemoved line 440");
-                            startActivity(i);
-                        }
-                    }
-
+//                    if(!buttonIsPressed.get() && !topLeftButton.isHost) {
+//                        if (dataSnapshot.getKey().equals(lobbyPath.split("/")[2])) {
+//                            Intent i;
+//                            i = new Intent(LobbyActivity.this, LeaderboardActivity.class);
+//                            Log.i(TAG, "onChildRemoved: startActivity pressed from on childRemoved line 440");
+//                            startActivity(i);
+//                        }
+//                    }
                 }
 
                 @Override

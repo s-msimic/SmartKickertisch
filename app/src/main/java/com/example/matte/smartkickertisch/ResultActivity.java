@@ -24,6 +24,8 @@ import com.google.firebase.database.Transaction.Result;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
@@ -67,7 +69,6 @@ public class ResultActivity extends AppCompatActivity {
 
     /**
      * Saves game into database and adds all statistics for all players in the current game.
-     *
      * @param view Commit button.
      */
     public void onClickCommitResult(View view) {
@@ -89,49 +90,51 @@ public class ResultActivity extends AppCompatActivity {
             return;
         }
         //put results in each players firebase data
+        Log.i(TAG, "onClickCommitResult: " + gameID);
+
+        Map<String, Object> valueMap = new HashMap<>();
+        Map<String, Object> dataMap = new HashMap<>();
+        Map<String, Object> playerRedMap = new HashMap<>();
+        Map<String, Object> playerBlueMap = new HashMap<>();
+        dataMap.put("date", gameDate);
+        playerRedMap.put("player1", teamRedPlayerOne);
+        playerRedMap.put("player2", teamRedPlayerTwo);
+        playerRedMap.put("score", redTeamScore);
+        playerBlueMap.put("player1", teamBluePlayerOne);
+        playerBlueMap.put("player2", teamBluePlayerTwo);
+        playerBlueMap.put("score", blueTeamScore);
+        valueMap.put(("data"), dataMap);
+        valueMap.put("teamRed", playerRedMap);
+        valueMap.put("teamBlue", playerBlueMap);
+
+//        ref.child("games").child(gameID).updateChildren(valueMap);
+        ref.child("games").child(gameID).setValue(valueMap)
+                .addOnCompleteListener(command -> {
+                    if (tasksRunning.decrementAndGet() == 0) {
+                        getSharedPreferences("MyPreferences", 0).edit().clear().apply();
+                        Intent i = new Intent(ResultActivity.this, LeaderboardActivity.class);
+                        Log.d(TAG, "onClickCommitResult-114: startActivity");
+                        startActivity(i);
+                    }
+                });
         updateStatistics(teamRedPlayerOne, true);
         updateStatistics(teamRedPlayerTwo, true);
         updateStatistics(teamBluePlayerOne, false);
         updateStatistics(teamBluePlayerTwo, false);
-        Log.i(TAG, "onClickCommitResult: " + gameID);
-        ref.child("games").child(gameID).child("data").child("date").setValue(gameDate);
-        ref.child("games").child(gameID).child("teamBlue").child("score").setValue(blueTeamScore);
-        ref.child("games").child(gameID).child("teamRed").child("score").setValue(redTeamScore);
-
-        String loosingTeamScore = redTeamScore == 10 ? String.valueOf(blueTeamScore) : String.valueOf(redTeamScore);
-        Log.d(TAG, "onClickCommitResult-93: loosingTeamScore= " + loosingTeamScore);
-
-        ref.child("stats").child("resultCount").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d(TAG, "onDataChange-108: resultCountSnapshot= " + dataSnapshot);
-                int resultCount = 1;
-                if (dataSnapshot.hasChild(loosingTeamScore)) {
-                    resultCount = dataSnapshot.child(loosingTeamScore).getValue(int.class);
-                    resultCount += 1;
-                    Log.d(TAG, "onClickCommitResult-onDataChange-101: resultCount= " + resultCount);
-                }
-                ref.child("stats").child("resultCount").child(loosingTeamScore).setValue(resultCount)
-                        .addOnCompleteListener(command -> {
-                            if (tasksRunning.decrementAndGet() == 0) {
-                                getSharedPreferences("MyPreferences", 0).edit().clear().apply();
-                                Intent i = new Intent(ResultActivity.this, LeaderboardActivity.class);
-                                Log.d(TAG, "onClickCommitResult-119: startActivity");
-                                startActivity(i);
-                            }
-                        });
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) { }
-        });
     }
 
     public void updateStatistics(String playerID, boolean isRedTeam) {
         Log.d(TAG, "updateStatistics-119: playerID= " + playerID);
         if (playerID != null) {
-            ifExistentUpdatePlayerData(playerID, isRedTeam);
-            updateResultCount(playerID, isRedTeam);
+            ref.child("users").child(playerID).child("finishedGames").child(gameID).setValue(gameDate)
+                    .addOnCompleteListener(command -> {
+                        if (tasksRunning.decrementAndGet() == 0) {
+                            getSharedPreferences("MyPreferences", 0).edit().clear().apply();
+                            Intent i = new Intent(ResultActivity.this, LeaderboardActivity.class);
+                            Log.d(TAG, "onClickCommitResult-114: startActivity");
+                            startActivity(i);
+                        }
+                    });
         } else {
             if (tasksRunning.decrementAndGet() == 0) {
                 getSharedPreferences("MyPreferences", 0).edit().clear().apply();
@@ -140,176 +143,6 @@ public class ResultActivity extends AppCompatActivity {
                 startActivity(i);
             }
         }
-    }
-
-    /**
-     * If the player exists, its score will be set in the database, and all of his statistics will be updated.
-     *
-     * @param playerID  UserID for the player.
-     * @param isRedTeam Identifier it the player belongs to team red or blue.
-     */
-    private void ifExistentUpdatePlayerData(String playerID, boolean isRedTeam) {
-        database.getReference("users").child(playerID).child("data")
-                .child("playedGames").runTransaction(new Transaction.Handler() {
-            @NonNull
-            @Override
-            public Result doTransaction(@NonNull MutableData mutableData) {
-                Long value = 1L;
-                if (mutableData.getValue() != null) {
-                    value = mutableData.getValue(Long.class);
-                    mutableData.setValue(value + 1);
-                }
-                // for first played game value is null
-                else {
-                    mutableData.setValue(value);
-                }
-                return Transaction.success(mutableData);
-            }
-
-            @Override
-            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-            }
-        });
-
-        int myTeamScore = isRedTeam ? redTeamScore : blueTeamScore;
-
-        if (myTeamScore == 10) {
-            database.getReference("users").child(playerID).child("data")
-                    .child("winCounter").runTransaction(new Transaction.Handler() {
-                @NonNull
-                @Override
-                public Result doTransaction(@NonNull MutableData mutableData) {
-                    Long value = 1L;
-                    if (mutableData.getValue() != null) {
-                        value = mutableData.getValue(Long.class);
-                        mutableData.setValue(value + 1);
-                    }
-                    // for first win value is null
-                    else {
-                        mutableData.setValue(value);
-                    }
-                    Log.d(TAG, "ifExistent-doTransaction-180: valueWinCounter= " + value);
-                    return Transaction.success(mutableData);
-                }
-
-                @Override
-                public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-                }
-            });
-
-            // check if this was the best win
-            editBestWin(playerID, isRedTeam);
-        } else {
-            editWorstLoss(playerID, isRedTeam);
-        }
-        ref.child("users").child(playerID).child("finishedGames").child(gameID).setValue(gameDate);
-    }
-
-    /**
-     * Called when player has won the game. Checks if the current result is the best win of the player.
-     * If that is the case the game is added as the new best win of the player into the database.
-     *
-     * @param playerID  UID String from firebase database of the current player.
-     * @param isRedTeam True if player is in red team.
-     */
-    private void editBestWin(String playerID, boolean isRedTeam) {
-        database.getReference("users").child(playerID).child("data").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                int goalsScored = isRedTeam ? redTeamScore : blueTeamScore;
-                int goalsConceded = isRedTeam ? blueTeamScore : redTeamScore;
-                Log.d(TAG, "editBestWin-onDataChange-192: scored= " + goalsScored + "-conceded= " + goalsConceded);
-                if (dataSnapshot.hasChild("bestWin")) {
-                    // new result better or equal to current result
-                    if (goalsConceded <= Integer.valueOf(dataSnapshot.child("bestWin")
-                            .child("score").getValue(String.class).split(":")[1])) {
-                        database.getReference("users").child(playerID).child("data")
-                                .child("bestWin").child("score").setValue(goalsScored + ":" + goalsConceded);
-                        database.getReference("users").child(playerID).child("data")
-                                .child("bestWin").child("gameID").setValue(gameID);
-                    }
-                } else {
-                    // no best game (first win) yet
-                    database.getReference("users").child(playerID).child("data")
-                            .child("bestWin").child("score").setValue(goalsScored + ":" + goalsConceded);
-                    database.getReference("users").child(playerID).child("data")
-                            .child("bestWin").child("gameID").setValue(gameID);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) { }
-        });
-    }
-
-    private void editWorstLoss(String playerID, boolean isRedTeam) {
-        database.getReference("users").child(playerID).child("data").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                int goalsScored = isRedTeam ? redTeamScore : blueTeamScore;
-                int goalsConceded = isRedTeam ? blueTeamScore : redTeamScore;
-                Log.d(TAG, "editWorstLoss-onDataChange-239: scored= " + goalsScored + "-conceded= " + goalsConceded);
-
-                if (dataSnapshot.hasChild("worstLoss")) {
-                    // new result worse or equal to current result
-                    if (goalsScored <= Integer.valueOf(dataSnapshot.child("worstLoss")
-                            .child("score").getValue(String.class).split(":")[0])) {
-                        database.getReference("users").child(playerID).child("data")
-                                .child("worstLoss").child("score").setValue(goalsScored + ":" + goalsConceded);
-                        database.getReference("users").child(playerID).child("data")
-                                .child("worstLoss").child("gameID").setValue(gameID);
-                    }
-                } else {
-                    // no worst game (first loss) yet
-                    database.getReference("users").child(playerID).child("data")
-                            .child("worstLoss").child("score").setValue(goalsScored + ":" + goalsConceded);
-                    database.getReference("users").child(playerID).child("data")
-                            .child("worstLoss").child("gameID").setValue(gameID);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
-
-    /**
-     * Updates how often this result occurred for the player.
-     *
-     * @param playerID  UID String from firebase database of the current player.
-     * @param isRedTeam True if player is in red team.
-     */
-    private void updateResultCount(String playerID, boolean isRedTeam) {
-        int goalsMade = isRedTeam ? redTeamScore : blueTeamScore;
-        int goalsConceded = isRedTeam ? blueTeamScore : redTeamScore;
-        String result = goalsMade + ":" + goalsConceded;
-        ref.child("users").child(playerID).child("data").child("resultCount")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d(TAG, "updateResultCount-onDataChange-260: snapshot= " + dataSnapshot);
-                int currentCount = 1;
-                if (dataSnapshot.hasChild(result)) {
-                    currentCount = dataSnapshot.child(result).getValue(int.class);
-                    Log.d(TAG, "onDataChange-295: currentCount= " + currentCount);
-                    currentCount += 1;
-                }
-                ref.child("users").child(playerID).child("data").child("resultCount").child(result)
-                        .setValue(currentCount).addOnCompleteListener(command -> {
-                    if (tasksRunning.decrementAndGet() == 0) {
-                        getSharedPreferences("MyPreferences", 0).edit().clear().apply();
-                        Intent i = new Intent(ResultActivity.this, LeaderboardActivity.class);
-                        Log.d(TAG, "onClickCommitResult-114: startActivity");
-                        startActivity(i);
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
     }
 
     /**

@@ -41,7 +41,7 @@
         android:id="@+id/allTimeFragmentBestWinTextView"
         android:textColor="@color/colorWhite"
         android:textSize="22sp"
-        android:text="Best Win: "
+        android:text="Best Win: 10:"
         app:layout_constraintTop_toBottomOf="@+id/allTimeFragmentPieChart"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

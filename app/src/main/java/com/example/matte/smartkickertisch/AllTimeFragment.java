@@ -1,9 +1,6 @@
 package com.example.matte.smartkickertisch;
 
 
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -14,36 +11,23 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
-import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.collection.RBTreeSortedMap;
 
-import java.text.Format;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.TreeSet;
-import java.util.WeakHashMap;
 
 
 /**
@@ -92,10 +76,12 @@ public class AllTimeFragment extends Fragment {
                 description.setEnabled(false);
                 allTimeWinLossPieChart.setData(pieData);
                 allTimeWinLossPieChart.invalidate();
-                if (dataSnapshot.child("bestWin").child("score").exists())
-                    bestWinTextView.append(dataSnapshot.child("bestWin").child("score").getValue(String.class));
-                if (dataSnapshot.child("worstLoss").child("score").exists())
-                    worstLossTextView.append(dataSnapshot.child("worstLoss").child("score").getValue(String.class));
+                if (dataSnapshot.child("bestWin").child("score").exists()) {
+                    bestWinTextView.append(dataSnapshot.child("bestWin").child("score").getValue(Long.class).toString());
+                }
+                if (dataSnapshot.child("worstLoss").child("score").exists()) {
+                    worstLossTextView.append(dataSnapshot.child("worstLoss").child("score").getValue(Long.class) + ":10");
+                }
             }
         }
 

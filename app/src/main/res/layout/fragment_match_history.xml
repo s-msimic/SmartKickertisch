@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/matchHistoryRecyclerView"
         app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/match_history_card_layout"
         >
     </android.support.v7.widget.RecyclerView>
 </android.support.constraint.ConstraintLayout>
